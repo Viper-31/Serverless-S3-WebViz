@@ -1,0 +1,16 @@
+s3:
+  endpoint_url: "https://projects.pawsey.org.au"
+  bucket: "weather"
+  region_name: "us-east-1"
+  auth_mode: "credentials"
+
+paths:
+  ledger_path: "acacia_refs_staging/_state/inventory_ledger.json"
+  refs_root: "acacia_refs_staging/refs"
+
+datasets:
+  ecmwf:
+    flow_id: "ecmwf_weekly_nc"
+  dpird:
+    flow_id: "dpird_final_singleton"
+    time_mode: "force_utc"
