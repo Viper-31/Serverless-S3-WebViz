@@ -25,3 +25,13 @@ dev = [
     "pytest>=8.4.0",
     "pytest-cov>=7.1.0",
 ]
+
+[tool.pytest.ini_options]
+pythonpath= "."
+testpaths= ["tests"]
+
+# Register markers to avoid warnings
+markers= [
+    "e2e: end-to-end integration tests that run against sample S3 targets",
+    "integration: tests that require external dependencies or complex setups"
+    ]
