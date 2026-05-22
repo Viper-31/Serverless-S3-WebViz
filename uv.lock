@@ -1963,6 +1963,7 @@ dependencies = [
 [package.dev-dependencies]
 dev = [
     { name = "netcdf4" },
+    { name = "pytest" },
     { name = "pytest-cov" },
 ]
 
@@ -1985,6 +1986,7 @@ requires-dist = [
 [package.metadata.requires-dev]
 dev = [
     { name = "netcdf4", specifier = ">=1.7.4" },
+    { name = "pytest", specifier = ">=8.4.0" },
     { name = "pytest-cov", specifier = ">=7.1.0" },
 ]
 

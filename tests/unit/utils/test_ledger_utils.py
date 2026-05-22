@@ -1,4 +1,5 @@
 from __future__ import annotations
+from pathlib import Path
 
 import json
 
@@ -54,7 +55,9 @@ def test_ref_store_path_for_key_maps_nc_to_parq(tmp_path):
     refs_root = tmp_path / "refs"
     key = "vz_kerchunk/ECMWF/2024/01/02.nc"
     path = ref_store_path_for_key(refs_root, key)
-    assert str(path).endswith("vz_kerchunk/ECMWF/2024/01/02.nc.parq")
+
+    expected= refs_root / "vz_kerchunk/ECMWF/2024/01/02.nc.parq"
+    assert path == expected
 
 
 def test_ref_store_path_for_key_rejects_non_nc(tmp_path):
