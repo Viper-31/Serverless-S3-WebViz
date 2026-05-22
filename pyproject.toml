@@ -1,0 +1,13 @@
+[project]
+name = "Serverless-S3-WebViz"
+version = "0.1.0"
+description = "A serverless, client-side web portal for real-time visualisation of virtualised datasets on S3 using Kerchunk and direct HTTP range queries"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "cartopy>=0.25.0",
+    "fsspec>=2026.4.0",
+    "pre-commit>=4.6.0",
+    "requests>=2.34.2",
+    "xarray>=2026.4.0",
+]
