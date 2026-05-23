@@ -1978,7 +1978,6 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
-    { name = "h5py" },
     { name = "hdf5plugin" },
     { name = "netcdf4" },
     { name = "pytest" },
@@ -2003,7 +2002,6 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "h5py", specifier = ">=3.16.0" },
     { name = "hdf5plugin", specifier = ">=6.0.0" },
     { name = "netcdf4", specifier = ">=1.7.4" },
     { name = "pytest", specifier = ">=8.4.0" },
