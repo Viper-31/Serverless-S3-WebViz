@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "validate:hdf5": "node validate_hdf5_virtual_zarr.mjs"
+  },
+  "dependencies": {
+    "@zarrita/storage": "latest",
+    "hdf5-as-virtual-zarr": "latest",
+    "zarrita": "latest"
+  }
+}
