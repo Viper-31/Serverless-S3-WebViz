@@ -125,6 +125,10 @@ Interactive map, sliders, overlays, graph views
 
 ## Testing Decisions
 
+Testing should be split into fast offline unit tests and a smaller set of opt-in/online integration tests. The offline layer protects the pure client logic in the Svelte-Vite app and can run without public dataset access; the online layer is reserved for end-to-end confidence against real HTTP range behavior, public fixtures, and browser constraints.
+
+Use Vitest at the Svelte-Vite level as the broad test runner for the offline layer, with browser-facing checks kept lightweight and focused on contracts rather than rendering internals.
+
 - First tests should target the Kerchunk JSON loader and Pawsey URI rewrite because incorrect `s3://` resolution would silently send browser range requests to AWS instead of Pawsey Ceph.
 
 - Worker tests should verify request/response behaviour, not implementation details.
@@ -137,7 +141,23 @@ Interactive map, sliders, overlays, graph views
 
 - Test DPIRD and ECMWF separately because their array shapes and rendering paths differ.
 
+- Keep the DPIRD versus ECMWF split explicit in tests: station and grid behavior, dimensions, and time/step semantics should be asserted separately, not only through shared map rendering snapshots.
+
 - Test anonymous HTTP range behavior against a small public Pawsey fixture before relying on the full `webviz` bucket.
+
+- Keep runtime-only ref rewriting non-mutating, and test that it preserves the original dataset spec while producing rewritten HTTPS references for browser fetches.
+
+- Include fake worker transport tests so the data-access boundary can be exercised without depending on actual WebWorker scheduling.
+
+- Cover the DatasetOption boundary with tests that ensure catalog entries remain stable UI choices rather than leaking raw reference internals.
+
+- Use fake MapLibre map controllers in tests so layer lifecycle and update contracts stay isolated from the real map engine.
+
+- Treat `decodeBase64FixedUTFLE` as a strict boundary: exact strings, null padding, and malformed input should be verified for representative DPIRD station and code fields.
+
+- Treat `withByteCaching` as a memory-only LRU boundary: tests should confirm eviction by entry count or byte budget first, with the expected 96 MiB and 256-entry limits.
+
+- Validate codec metadata early, but leave actual zarrita decode behavior to later tests so shuffle/zlib support and data decoding are tested at the right boundary.
 
 - Add unit tests for `decodeBase64FixedUTFLE` using representative base64 fixed-width Unicode strings for `station` and `code`.
 
