@@ -157,7 +157,7 @@ Interactive map, sliders, overlays, graph views
 
 The current `web-app` is still the starter Svelte scaffold and has no MapLibre, zarrita, zarr-layer, or worker data-access implementation yet.
 
-When implementation starts, package installs and checks should be run from the Windows environment because the WSL agent cannot use `.exe` tools like `npm`, `uv`, or `python`.
+When implementation starts, package installs and checks should be run from the Windows environment because the WSL agent cannot use `.exe` tools like `pnpm`, `uv`, or `python`.
 
 ## Target Reference Implementation
 

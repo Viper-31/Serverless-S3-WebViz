@@ -13,8 +13,8 @@ A serverless, client-side web portal for real-time visualisation of virtualised 
 
 ## Dev workflow
 - Use uv for Python tooling.
-- Install Prettier with npm:
-  - `npm add --save-dev --save-exact prettier`
+- Install Prettier with pnpm:
+  - `pnpm add --save-dev --save-exact prettier`
 
 ## Architecture diagram
 ```
