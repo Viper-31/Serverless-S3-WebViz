@@ -187,7 +187,7 @@ The primary reference implementation is now `charles-turner-1/dwer-csi-streamer`
 
 - Charles Turner's `dwer-csi-streamer` live client: https://charles-turner-1.github.io/dwer-csi-streamer/#/view-data
 
-- Charles Turner's `dwer-csi-streamer` repository: https://github.com/charles-turner-1/dwer-csi-streamer/tree/main
+- Charles Turner's `dwer-csi-streamer` repository: https://deepwiki.com/charles-turner-1/dwer-csi-streamer
 
 - `dwer-csi-streamer` zarr-map implementation notes: https://github.com/charles-turner-1/dwer-csi-streamer/blob/main/zarr-map.readme.md
 
