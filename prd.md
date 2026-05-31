@@ -125,7 +125,7 @@ Interactive map, sliders, overlays, graph views
 
 ## Testing Decisions
 
-Testing should be split into fast offline unit tests and a smaller set of opt-in/online integration tests. The offline layer protects the pure client logic in the Svelte-Vite app and can run without public dataset access; the online layer is reserved for end-to-end confidence against real HTTP range behavior, public fixtures, and browser constraints.
+Testing should be split into fast offline unit tests and a smaller set of opt-in/online integration tests. The offline layer protects the pure client logic in the Svelte-Vite app and can run without public dataset access; the online layer is reserved for confidence against real HTTP range behavior and public fixture access, with browser-specific CORS/rendering checks left to later browser smoke tests.
 
 Use Vitest at the Svelte-Vite level as the broad test runner for the offline layer, with browser-facing checks kept lightweight and focused on contracts rather than rendering internals.
 
@@ -143,7 +143,7 @@ Use Vitest at the Svelte-Vite level as the broad test runner for the offline lay
 
 - Keep the DPIRD versus ECMWF split explicit in tests: station and grid behavior, dimensions, and time/step semantics should be asserted separately, not only through shared map rendering snapshots.
 
-- Test anonymous HTTP range behavior against a small public Pawsey fixture before relying on the full `webviz` bucket.
+- Test anonymous HTTP range behavior as an opt-in online integration test against a tiny byte range from the real DPIRD Pawsey object before relying on broader `webviz` access.
 
 - Keep runtime-only ref rewriting non-mutating, and test that it preserves the original dataset spec while producing rewritten HTTPS references for browser fetches.
 
@@ -155,7 +155,7 @@ Use Vitest at the Svelte-Vite level as the broad test runner for the offline lay
 
 - Treat `decodeBase64FixedUTFLE` as a strict boundary: exact strings, null padding, and malformed input should be verified for representative DPIRD station and code fields.
 
-- Treat `withByteCaching` as a memory-only LRU boundary: tests should confirm eviction by entry count or byte budget first, with the expected 96 MiB and 256-entry limits.
+- Treat `withByteCaching` as a memory-only LRU boundary: tests should confirm eviction until both entry-count and byte-budget limits pass, with the expected 96 MiB and 256-entry limits.
 
 - Validate codec metadata early, but leave actual zarrita decode behavior to later tests so shuffle/zlib support and data decoding are tested at the right boundary.
 

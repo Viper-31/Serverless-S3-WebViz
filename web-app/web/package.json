@@ -7,12 +7,16 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json"
+    "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json",
+    "test": "vitest",
+    "test:online": "cross-env RUN_ONLINE_INTEGRATION=1 vitest run test/integration"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^7.1.2",
     "@tsconfig/svelte": "^5.0.8",
     "@types/node": "^24.12.3",
+    "cross-env": "^10.1.0",
+    "vitest": "^3.2.4",
     "svelte": "^5.55.5",
     "svelte-check": "^4.4.8",
     "typescript": "~6.0.2",
