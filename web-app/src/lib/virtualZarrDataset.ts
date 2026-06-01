@@ -27,7 +27,10 @@ export type VirtualZarrInput<TRefSpec extends VirtualZarrRefSpec = VirtualZarrRe
   kind?: VirtualZarrKind
   dependencies: {
     zarr: {
-      open(location: unknown, options: { kind: VirtualZarrKind }): unknown
+      root(store: unknown): unknown
+      open: {
+        v2(location: unknown, options: { kind: VirtualZarrKind }): unknown
+      }
       extendStore(store: unknown, ...wrappers: Array<(store: unknown) => unknown>): unknown
       withRangeCoalescing(store: unknown): unknown
       withByteCaching(store: unknown, options: { cache: ZarritaCompatibleByteCache }): unknown
@@ -83,12 +86,11 @@ export async function createVirtualZarrDataset(input: VirtualZarrInput): Promise
 
   const openPath = input.arrayPath ?? input.path
   const requestedKind = input.kind ?? (input.arrayPath ? 'array' : 'group')
-  const root = openPath === undefined
-    ? await zarr.open(wrappedStore, openOptions(requestedKind))
-    : await zarr.open(wrappedStore, openOptions('group'))
+  const rootLocation = zarr.root(wrappedStore)
+  const root = await zarr.open.v2(rootLocation, openOptions('group'))
   const node = openPath === undefined
     ? root
-    : await zarr.open(resolvePath(root, openPath), openOptions(requestedKind))
+    : await zarr.open.v2(resolvePath(root, openPath), openOptions(requestedKind))
 
   return {
     store: wrappedStore,
@@ -96,10 +98,10 @@ export async function createVirtualZarrDataset(input: VirtualZarrInput): Promise
     node,
     preparedRefSpec,
     async getArray(path: string) {
-      return zarr.open(resolvePath(root, path), openOptions('array'))
+      return zarr.open.v2(resolvePath(root, path), openOptions('array'))
     },
     async openNode(path: string, kind: VirtualZarrKind = 'group') {
-      return zarr.open(resolvePath(root, path), openOptions(kind))
+      return zarr.open.v2(resolvePath(root, path), openOptions(kind))
     },
   }
 }
