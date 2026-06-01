@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { createByteCache } from '../../src/lib/byteCache'
 
 describe('byte cache', () => {
-  it('uses the MVP memory-only compressed byte cache budget', () => {
+  it('uses the memory-only compressed byte cache budget', () => {
     const maxBytes = 96 * 1024 * 1024
     const cache = createByteCache({ maxBytes, maxEntries: 256 })
     cache.set('a', new Uint8Array(10))

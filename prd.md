@@ -7,7 +7,7 @@ The old FlaskApp depends on Flask, server-side S3 credentials, xarray/dask, full
 The existing architectures clash in three ways:
 
 - The `dwer-csi-streamer` reference implementation proves the target browser-first architecture: Kerchunk JSON references, zarrita.js `ReferenceStore.fromSpec()`, MapLibre GL, `@carbonplan/zarr-layer`, and no backend proxy.
-- This repository's current Acacia references are Kerchunk JSONs under `acacia_refs_staging/refs/**/*.json`.
+- This repository's current Acacia references are Kerchunk JSONs under `web-app/public/refs/**/*.json`.
 - The legacy FlaskApp provides useful UI and domain behavior, but its backend-mediated data model should be retired.
 
 ## Solution
@@ -16,6 +16,8 @@ Build a Svelte-Vite client that preserves the useful FlaskApp UX concepts while 
 
 The main architectural adjustment is to follow the `dwer-csi-streamer` pattern: load Kerchunk JSON references in the client, rewrite any embedded `s3://` object URIs to the Pawsey public HTTPS endpoint, then pass the rewritten spec into `ReferenceStore.fromSpec()`.
 
+The app should be split at a narrow async data-engine/frontend UI seam. The frontend owns Svelte state, UI controls, MapLibre lifecycle, visual layer orchestration, loading states, and user interactions. The data engine owns Kerchunk loading, Pawsey URI rewriting, zarrita storage/open/select calls, worker communication, byte caching, codec validation, decompression, coordinate decoding, and dataset slicing. Data crossing this seam should be plain domain objects such as `DatasetMetadata`, `StationMapFrame`, `StationTimeSeries`, and `GridSlice`, plus transferable typed arrays where needed.
+
 The intended runtime architecture is:
 
 ```text
@@ -23,13 +25,26 @@ Acacia public bucket
   |
   | GET/HEAD/Range, anonymous, CORS-enabled
   v
-Served or bundled Kerchunk JSON references
+Served Kerchunk JSON references
   |
-  | rewrite s3:// refs to https://projects.pawsey.org.au/...
+  | load selected ref spec
   v
-Svelte-Vite app
+Data engine boundary
   |
-  | zarrita + @zarrita/storage/ref + withByteCaching LRU + worker-managed reads
+  | Kerchunk loader + non-mutating s3:// to Pawsey HTTPS rewrite
+  | ReferenceStore.fromSpec()
+  | zarrita open/select + storage extensions
+  | WebWorker reads + codec validation/decompression
+  | withByteCaching bounded LRU + range access
+  v
+Typed async API seam
+  |
+  | DatasetMetadata, StationMapFrame, StationTimeSeries, GridSlice
+  v
+Svelte-Vite frontend UI
+  |
+  | Svelte state, controls, loading/error UI, playback
+  | MapLibre lifecycle and layer orchestration
   v
 MapLibre GL
   |
@@ -95,7 +110,7 @@ Interactive map, sliders, overlays, graph views
 
 - Keep Acacia access anonymous; do not place S3 keys in frontend code.
 
-- Treat `acacia_refs_staging/_state/inventory_ledger.json` as the dataset catalog seed.
+- Treat `web-app/public/_state/inventory_ledger.json` as the dataset catalog seed.
 
 - Treat Kerchunk JSON references as the runtime source of truth for `ReferenceStore.fromSpec()`.
 
@@ -105,7 +120,19 @@ Interactive map, sliders, overlays, graph views
 
 - Put all low-level virtual data access behind a deep module like `VirtualDatasetClient`, including Kerchunk JSON loading, Pawsey URI rewriting, cache wrapping, and worker communication.
 
-- Put worker messaging behind a stable API such as `initDataset`, `getMetadata`, `getGridSlice`, `getStationFrame`, `getStationSeries`, and `getDecodedCoordinates`.
+- Put worker messaging behind a stable API such as `initDataset`, `getMetadata`, `getGridSlice`, `getStationMapFrame`, `getStationTimeSeries`, and `getDecodedCoordinates`.
+
+- Treat `VirtualDatasetClient` as the data-engine/frontend UI seam. Svelte components and map controllers should call this seam asynchronously and should not import zarrita, `@zarrita/storage`, Kerchunk internals, cache implementations, decompression code, or worker implementation details directly.
+
+- Use named domain transfer objects at the seam, including `DatasetMetadata`, `StationMapFrame`, `StationTimeSeries`, and `GridSlice`. These objects should carry UI-ready metadata and values, while hiding `ReferenceStore`, Zarr arrays, raw Kerchunk refs, byte-range tuples, and codec metadata inside the data engine.
+
+- Keep frontend UI modules responsible for Svelte state, dataset/variable controls, DPIRD and ECMWF time controls, ECMWF step controls, playback, overlay mode, opacity, colorbars, legends, loading/error display, station graph panels, and MapLibre add/update/remove orchestration.
+
+- Keep data-engine modules responsible for Kerchunk JSON loading, non-mutating Pawsey URI rewriting, `ReferenceStore.fromSpec()`, `zarr.open`, `zarr.select`, consolidated metadata handling, range coalescing, bounded byte caching, WebWorker protocol, shuffle/zlib metadata validation, decompression, fixed-width coordinate decoding, and DPIRD/ECMWF slice extraction.
+
+- Keep MapLibre objects, DOM nodes, Svelte stores, and component-local UI state out of the data engine. Keep zarrita stores, raw refs, worker handles, cache instances, and decoded internal array handles out of Svelte components.
+
+- Handle `@carbonplan/zarr-layer` as the main integration exception: the frontend should own MapLibre lifecycle and layer visibility, but zarrita-specific gridded layer construction should stay behind a small adapter/factory so Svelte components do not become coupled to storage internals.
 
 - Preserve FlaskApp concepts: dataset mode, variable selection, time controls, step controls, overlay mode, opacity, wind handling, colorbars, playback, and station graph mode.
 
@@ -187,7 +214,7 @@ The primary reference implementation is now `charles-turner-1/dwer-csi-streamer`
 
 - Charles Turner's `dwer-csi-streamer` live client: https://charles-turner-1.github.io/dwer-csi-streamer/#/view-data
 
-- Charles Turner's `dwer-csi-streamer` repository: https://github.com/charles-turner-1/dwer-csi-streamer/tree/main
+- Charles Turner's `dwer-csi-streamer` repository: https://deepwiki.com/charles-turner-1/dwer-csi-streamer
 
 - `dwer-csi-streamer` zarr-map implementation notes: https://github.com/charles-turner-1/dwer-csi-streamer/blob/main/zarr-map.readme.md
 
