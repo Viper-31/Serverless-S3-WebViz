@@ -6,6 +6,7 @@ type RefSpec = {
 const WEBVIZ_PREFIX = 's3://webviz/'
 const PUBLIC_PREFIX = 'https://projects.pawsey.org.au/webviz/'
 
+// Avoid mutating the input reference, but uses a deep copy to ensure nested objects are captured.
 function deepCopy<T>(value: T): T {
   if (Array.isArray(value)) return value.map((item) => deepCopy(item)) as T
   if (value && typeof value === 'object') {
