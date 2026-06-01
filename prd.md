@@ -114,7 +114,7 @@ Interactive map, sliders, overlays, graph views
 
 - Treat Kerchunk JSON references as the runtime source of truth for `ReferenceStore.fromSpec()`.
 
-- Recommended MVP path: serve or bundle Kerchunk JSON reference specs and load them directly in the frontend, following the `dwer-csi-streamer` pattern.
+- Recommended MVP path: serve Kerchunk JSON reference specs and load them directly in the frontend, following the `dwer-csi-streamer` pattern.
 
 - Before constructing a `ReferenceStore`, rewrite every embedded `s3://` URI to the Pawsey public HTTPS endpoint. For this project, references pointing at the public `webviz` bucket should resolve to `https://projects.pawsey.org.au/webviz/...` rather than AWS S3.
 
