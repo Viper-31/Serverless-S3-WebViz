@@ -14,7 +14,10 @@ describe('virtual zarr dataset adapter', () => {
     const wrappedCache = { has: vi.fn(() => false), get: vi.fn(() => undefined), set: vi.fn() }
     let cachedAdapter: { has: (key: string) => boolean; get: (key: string) => Uint8Array | undefined; set: (key: string, value: Uint8Array | undefined) => void } | undefined
     const zarr = {
-      open: vi.fn((location, options) => ({ location, options, resolve: (path: string) => ({ parent: location, path }) })),
+      root: vi.fn((store) => ({ rootStore: store })),
+      open: {
+        v2: vi.fn((location, options) => ({ location, options, resolve: (path: string) => ({ parent: location, path }) })),
+      },
       extendStore: vi.fn((store, rangeWrapper, byteWrapper) => byteWrapper(rangeWrapper(store))),
       withRangeCoalescing: vi.fn((store) => ({ store, rangeCoalesced: true })),
       withByteCaching: vi.fn((store, options) => {
@@ -47,8 +50,9 @@ describe('virtual zarr dataset adapter', () => {
     cachedAdapter?.set('empty', undefined)
     expect(wrappedCache.set).toHaveBeenCalledWith('present', expect.any(Uint8Array))
     expect(wrappedCache.set).not.toHaveBeenCalledWith('skip', undefined)
-    expect(zarr.open).toHaveBeenCalledWith(expect.any(Object), { kind: 'group' })
-    expect(next.root).toMatchObject({ location: { store: { store: { base: true }, rangeCoalesced: true }, cached: true }, options: { kind: 'group' } })
+    expect(zarr.root).toHaveBeenCalledWith({ store: { store: { base: true }, rangeCoalesced: true }, cached: true })
+    expect(zarr.open.v2).toHaveBeenCalledWith({ rootStore: { store: { store: { base: true }, rangeCoalesced: true }, cached: true } }, { kind: 'group' })
+    expect(next.root).toMatchObject({ location: { rootStore: { store: { store: { base: true }, rangeCoalesced: true }, cached: true } }, options: { kind: 'group' } })
     expect(next.node).toBe(next.root)
   })
 
@@ -56,7 +60,10 @@ describe('virtual zarr dataset adapter', () => {
     const referenceStore = { fromSpec: vi.fn(() => ({ base: true })) }
     const rootGroup = { resolve: vi.fn((path: string) => ({ resolved: path })) }
     const zarr = {
-      open: vi.fn((location, options) => (location as { base?: boolean }).base ? rootGroup : { location, options }),
+      root: vi.fn((store) => ({ rootStore: store })),
+      open: {
+        v2: vi.fn((location, options) => (location as { rootStore?: unknown }).rootStore ? rootGroup : { location, options }),
+      },
       extendStore: vi.fn((store, ...wrappers) => wrappers.reduce((next, wrapper) => wrapper(next), store)),
       withRangeCoalescing: vi.fn((store) => store),
       withByteCaching: vi.fn((store) => store),
@@ -69,11 +76,12 @@ describe('virtual zarr dataset adapter', () => {
       dependencies: { zarr, ReferenceStore: referenceStore },
     })
 
-    expect(zarr.open).toHaveBeenNthCalledWith(1, { base: true }, { kind: 'group' })
+    expect(zarr.root).toHaveBeenCalledWith({ base: true })
+    expect(zarr.open.v2).toHaveBeenNthCalledWith(1, { rootStore: { base: true } }, { kind: 'group' })
     expect(zarr.withRangeCoalescing).toHaveBeenCalledTimes(1)
     expect(zarr.withByteCaching).not.toHaveBeenCalled()
     expect(rootGroup.resolve).toHaveBeenCalledWith('airTemperature')
-    expect(zarr.open).toHaveBeenNthCalledWith(2, { resolved: 'airTemperature' }, { kind: 'array' })
+    expect(zarr.open.v2).toHaveBeenNthCalledWith(2, { resolved: 'airTemperature' }, { kind: 'array' })
     await expect(dataset.getArray('temperature')).resolves.toEqual({ location: { resolved: 'temperature' }, options: { kind: 'array' } })
     await expect(dataset.openNode('stations', 'group')).resolves.toEqual({ location: { resolved: 'stations' }, options: { kind: 'group' } })
     expect(rootGroup.resolve).toHaveBeenCalledWith('temperature')

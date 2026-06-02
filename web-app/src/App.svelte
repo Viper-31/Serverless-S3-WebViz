@@ -1,89 +1,153 @@
-<script>
-  import svelteLogo from './assets/svelte.svg'
-  import viteLogo from './assets/vite.svg'
-  import heroImg from './assets/hero.png'
-  import Counter from './lib/Counter.svelte'
+<script lang="ts">
+  import { onMount } from 'svelte'
+  import maplibregl from 'maplibre-gl'
+  import {
+    createEcmwfSmokeLayer,
+    ECMWF_SMOKE_LAYER_ID,
+    ECMWF_SMOKE_REF_PATH,
+    ECMWF_SMOKE_CLIM,
+    ECMWF_RAW_BYTE_CACHE_MAX_BYTES,
+    ECMWF_RAW_BYTE_CACHE_MAX_ENTRIES,
+    ECMWF_SMOKE_STEP_INDEX,
+    ECMWF_SMOKE_TIME_INDEX,
+    ECMWF_SMOKE_UNITS,
+    ECMWF_SMOKE_VARIABLE,
+    type EcmwfSmokeLoadingState,
+  } from './lib/mapRendering/ecmwfSmokeLayer'
+
+
+  type Status = { loadingState: EcmwfSmokeLoadingState; error: string | null }
+
+  let mapNode: HTMLDivElement | undefined
+  let status: Status = { loadingState: { loading: true, metadata: true, chunks: true, error: null }, error: null }
+  let layerAdded = false
+  let localRangeCoalescing = true
+  let mapInstance: maplibregl.Map | undefined
+  let reloadingLayer = false
+
+  async function loadLayer(map: maplibregl.Map, isCancelled: () => boolean) {
+    reloadingLayer = true
+    layerAdded = false
+    status = { loadingState: { loading: true, metadata: true, chunks: true, error: null }, error: null }
+
+    if (map.getLayer(ECMWF_SMOKE_LAYER_ID)) {
+      map.removeLayer(ECMWF_SMOKE_LAYER_ID)
+    }
+
+    const layer = await createEcmwfSmokeLayer({
+      localRangeCoalescing,
+      onLoadingStateChange(next) {
+        if (isCancelled()) return
+        status = { loadingState: next, error: next.error?.message ?? null }
+      },
+    })
+
+    if (isCancelled()) {
+      reloadingLayer = false
+      return
+    }
+
+    map.addLayer(layer as maplibregl.CustomLayerInterface)
+    layerAdded = true
+    reloadingLayer = false
+  }
+
+  function reloadLayer() {
+    if (!mapInstance) return
+    void loadLayer(mapInstance, () => false).catch((error: unknown) => {
+      status = { loadingState: status.loadingState, error: error instanceof Error ? error.message : String(error) }
+      reloadingLayer = false
+    })
+  }
+
+  onMount(() => {
+    if (!mapNode) {
+      status = { loadingState: status.loadingState, error: 'Map container was not mounted.' }
+      return
+    }
+
+    let cancelled = false
+    const map = new maplibregl.Map({
+      container: mapNode,
+      style: {
+        version: 8,
+        sources: {
+          osm: {
+            type: 'raster',
+            tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+            tileSize: 256,
+            attribution: '© OpenStreetMap contributors',
+          },
+        },
+        layers: [
+          { id: 'bg', type: 'background', paint: { 'background-color': '#07111f' } },
+          { id: 'osm-boundaries', type: 'raster', source: 'osm', paint: { 'raster-opacity': 0.82 } },
+        ],
+      },
+      center: [121, -24],
+      zoom: 3,
+      pitch: 0,
+      bearing: 0,
+      attributionControl: { compact: true },
+    })
+    mapInstance = map
+
+    map.on('load', () => {
+      void loadLayer(map, () => cancelled).catch((error: unknown) => {
+        if (cancelled) return
+        status = { loadingState: status.loadingState, error: error instanceof Error ? error.message : String(error) }
+        reloadingLayer = false
+      })
+    })
+
+    return () => {
+      cancelled = true
+      mapInstance = undefined
+      map.remove()
+    }
+  })
 </script>
 
-<section id="center">
-  <div class="hero">
-    <img src={heroImg} class="base" width="170" height="179" alt="" />
-    <img src={svelteLogo} class="framework" alt="Svelte logo" />
-    <img src={viteLogo} class="vite" alt="Vite logo" />
-  </div>
-  <div>
-    <h1>Get started</h1>
-    <p>Edit <code>src/App.svelte</code> and save to test <code>HMR</code></p>
-  </div>
-  <Counter />
-</section>
+<svelte:head>
+  <title>ECMWF smoke</title>
+</svelte:head>
 
-<div class="ticks"></div>
+<main class="shell">
+  <div class="map" bind:this={mapNode}></div>
 
-<section id="next-steps">
-  <div id="docs">
-    <svg class="icon" role="presentation" aria-hidden="true">
-      <use href="/icons.svg#documentation-icon"></use>
-    </svg>
-    <h2>Documentation</h2>
-    <p>Your questions, answered</p>
-    <ul>
-      <li>
-        <a href="https://vite.dev/" target="_blank" rel="noreferrer">
-          <img class="logo" src={viteLogo} alt="" />
-          Explore Vite
-        </a>
-      </li>
-      <li>
-        <a href="https://svelte.dev/" target="_blank" rel="noreferrer">
-          <img class="button-icon" src={svelteLogo} alt="" />
-          Learn more
-        </a>
-      </li>
-    </ul>
-  </div>
-  <div id="social">
-    <svg class="icon" role="presentation" aria-hidden="true">
-      <use href="/icons.svg#social-icon"></use>
-    </svg>
-    <h2>Connect with us</h2>
-    <p>Join the Vite community</p>
-    <ul>
-      <li>
-        <a href="https://github.com/vitejs/vite" target="_blank" rel="noreferrer">
-          <svg class="button-icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#github-icon"></use>
-          </svg>
-          GitHub
-        </a>
-      </li>
-      <li>
-        <a href="https://chat.vite.dev/" target="_blank" rel="noreferrer">
-          <svg class="button-icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#discord-icon"></use>
-          </svg>
-          Discord
-        </a>
-      </li>
-      <li>
-        <a href="https://x.com/vite_js" target="_blank" rel="noreferrer">
-          <svg class="button-icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#x-icon"></use>
-          </svg>
-          X.com
-        </a>
-      </li>
-      <li>
-        <a href="https://bsky.app/profile/vite.dev" target="_blank" rel="noreferrer">
-          <svg class="button-icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#bluesky-icon"></use>
-          </svg>
-          Bluesky
-        </a>
-      </li>
-    </ul>
-  </div>
-</section>
-
-<div class="ticks"></div>
-<section id="spacer"></section>
+  <aside class="overlay">
+    <h1>ECMWF MapLibre smoke</h1>
+    <div class="meta">
+      <span>ref: <code>{ECMWF_SMOKE_REF_PATH}</code></span>
+      <span>variable: <code>{ECMWF_SMOKE_VARIABLE}</code></span>
+      <span>units: <code>{ECMWF_SMOKE_UNITS}</code></span>
+      <span>timeIndex: <code>{ECMWF_SMOKE_TIME_INDEX}</code></span>
+      <span>stepIndex: <code>{ECMWF_SMOKE_STEP_INDEX}</code></span>
+      <span>raw byte cache: <code>{Math.round(ECMWF_RAW_BYTE_CACHE_MAX_BYTES / 1024 / 1024)} MiB / {ECMWF_RAW_BYTE_CACHE_MAX_ENTRIES} entries</code></span>
+      <span>local range coalescing: <code>{localRangeCoalescing ? 'on' : 'off'}</code></span>
+    </div>
+    <details class="dev-tools">
+      <summary>Dev tools</summary>
+      <label>
+        <input type="checkbox" bind:checked={localRangeCoalescing} disabled={reloadingLayer} />
+        local range coalescing
+      </label>
+      <button type="button" onclick={reloadLayer} disabled={reloadingLayer || !mapInstance}>
+        {reloadingLayer ? 'Reloading…' : 'Reload layer'}
+      </button>
+    </details>
+    <div class="legend" aria-hidden="true"></div>
+    <div class="legend-labels" aria-label="thermal color scale">
+      <span>{ECMWF_SMOKE_CLIM[0]} {ECMWF_SMOKE_UNITS}</span>
+      <span>{ECMWF_SMOKE_CLIM[1]} {ECMWF_SMOKE_UNITS}</span>
+    </div>
+    <p>loading: <code>{status.loadingState.loading ? 'true' : 'false'}</code></p>
+    <p>metadata: <code>{status.loadingState.metadata ? 'true' : 'false'}</code></p>
+    <p>chunks: <code>{status.loadingState.chunks ? 'true' : 'false'}</code></p>
+    <p>layerAdded: <code>{layerAdded ? 'true' : 'false'}</code></p>
+    <p class="hint">Toggle local range coalescing in Dev tools, then reload the layer to compare network behavior.</p>
+    {#if status.error}
+      <p class="error">{status.error}</p>
+    {/if}
+  </aside>
+</main>

@@ -114,7 +114,7 @@ Interactive map, sliders, overlays, graph views
 
 - Treat Kerchunk JSON references as the runtime source of truth for `ReferenceStore.fromSpec()`.
 
-- Recommended MVP path: serve or bundle Kerchunk JSON reference specs and load them directly in the frontend, following the `dwer-csi-streamer` pattern.
+- Recommended MVP path: serve Kerchunk JSON reference specs and load them directly in the frontend, following the `dwer-csi-streamer` pattern.
 
 - Before constructing a `ReferenceStore`, rewrite every embedded `s3://` URI to the Pawsey public HTTPS endpoint. For this project, references pointing at the public `webviz` bucket should resolve to `https://projects.pawsey.org.au/webviz/...` rather than AWS S3.
 
@@ -218,15 +218,13 @@ The primary reference implementation is now `charles-turner-1/dwer-csi-streamer`
 
 - `dwer-csi-streamer` zarr-map implementation notes: https://github.com/charles-turner-1/dwer-csi-streamer/blob/main/zarr-map.readme.md
 
-- zarrita documentation: https://zarrita.dev/
+- zarrita API docs: https://jsr.io/@zarrita/zarrita
 
 - zarrita v0.7 migration guide: https://zarrita.dev/migration/v0.7.html#migrating-to-zarrita-v0-7-0
 
 - zarrita storage package docs, including `ReferenceStore`: https://zarrita.dev/packages/storage.html
 
 - zarrita store extensions docs, including `withByteCaching`, range coalescing, and extension patterns: https://zarrita.dev/store-extensions.html
-
-- zarrita cookbook, including consolidated metadata, range coalescing, and byte caching: https://zarrita.dev/cookbook.html
 
 - Kerchunk reference specification, especially JSON `refs` entries and `[url, offset, length]` byte-range references: https://fsspec.github.io/kerchunk/spec
 
