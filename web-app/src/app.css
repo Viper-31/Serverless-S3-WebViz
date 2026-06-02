@@ -96,6 +96,42 @@ code {
   color: var(--error);
 }
 
+.dev-tools {
+  margin: 0.75rem 0;
+  color: var(--muted);
+}
+
+.dev-tools summary {
+  cursor: pointer;
+}
+
+.dev-tools label {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.dev-tools button {
+  margin-top: 0.5rem;
+  border: 1px solid var(--panel-border);
+  border-radius: 999px;
+  padding: 0.25rem 0.7rem;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+}
+
+.dev-tools button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.hint {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
 .thermal-gradient {
   background: var(--thermal-gradient);
 }

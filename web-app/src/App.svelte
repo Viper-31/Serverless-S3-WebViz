@@ -3,8 +3,11 @@
   import maplibregl from 'maplibre-gl'
   import {
     createEcmwfSmokeLayer,
+    ECMWF_SMOKE_LAYER_ID,
     ECMWF_SMOKE_REF_PATH,
     ECMWF_SMOKE_CLIM,
+    ECMWF_RAW_BYTE_CACHE_MAX_BYTES,
+    ECMWF_RAW_BYTE_CACHE_MAX_ENTRIES,
     ECMWF_SMOKE_STEP_INDEX,
     ECMWF_SMOKE_TIME_INDEX,
     ECMWF_SMOKE_UNITS,
@@ -12,26 +15,49 @@
     type EcmwfSmokeLoadingState,
   } from './lib/mapRendering/ecmwfSmokeLayer'
 
-  // WA_BOUNDS = [[-42.0, 106.0], [-10.0, 135.0]]; zarr-layer equivalent [106.0, -42.0, 135.0, -10.0]
-  // The smoke test lets zarr-layer derive bounds first. Use the zarr-layer bounds above only if derived bounds are wrong.
 
   type Status = { loadingState: EcmwfSmokeLoadingState; error: string | null }
 
   let mapNode: HTMLDivElement | undefined
   let status: Status = { loadingState: { loading: true, metadata: true, chunks: true, error: null }, error: null }
   let layerAdded = false
+  let localRangeCoalescing = true
+  let mapInstance: maplibregl.Map | undefined
+  let reloadingLayer = false
 
   async function loadLayer(map: maplibregl.Map, isCancelled: () => boolean) {
+    reloadingLayer = true
+    layerAdded = false
+    status = { loadingState: { loading: true, metadata: true, chunks: true, error: null }, error: null }
+
+    if (map.getLayer(ECMWF_SMOKE_LAYER_ID)) {
+      map.removeLayer(ECMWF_SMOKE_LAYER_ID)
+    }
+
     const layer = await createEcmwfSmokeLayer({
+      localRangeCoalescing,
       onLoadingStateChange(next) {
         if (isCancelled()) return
         status = { loadingState: next, error: next.error?.message ?? null }
       },
     })
 
-    if (isCancelled()) return
+    if (isCancelled()) {
+      reloadingLayer = false
+      return
+    }
+
     map.addLayer(layer as maplibregl.CustomLayerInterface)
     layerAdded = true
+    reloadingLayer = false
+  }
+
+  function reloadLayer() {
+    if (!mapInstance) return
+    void loadLayer(mapInstance, () => false).catch((error: unknown) => {
+      status = { loadingState: status.loadingState, error: error instanceof Error ? error.message : String(error) }
+      reloadingLayer = false
+    })
   }
 
   onMount(() => {
@@ -45,25 +71,38 @@
       container: mapNode,
       style: {
         version: 8,
-        sources: {},
-        layers: [{ id: 'bg', type: 'background', paint: { 'background-color': '#07111f' } }],
+        sources: {
+          osm: {
+            type: 'raster',
+            tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+            tileSize: 256,
+            attribution: '© OpenStreetMap contributors',
+          },
+        },
+        layers: [
+          { id: 'bg', type: 'background', paint: { 'background-color': '#07111f' } },
+          { id: 'osm-boundaries', type: 'raster', source: 'osm', paint: { 'raster-opacity': 0.82 } },
+        ],
       },
       center: [121, -24],
       zoom: 3,
       pitch: 0,
       bearing: 0,
-      attributionControl: false,
+      attributionControl: { compact: true },
     })
+    mapInstance = map
 
     map.on('load', () => {
       void loadLayer(map, () => cancelled).catch((error: unknown) => {
         if (cancelled) return
         status = { loadingState: status.loadingState, error: error instanceof Error ? error.message : String(error) }
+        reloadingLayer = false
       })
     })
 
     return () => {
       cancelled = true
+      mapInstance = undefined
       map.remove()
     }
   })
@@ -84,7 +123,19 @@
       <span>units: <code>{ECMWF_SMOKE_UNITS}</code></span>
       <span>timeIndex: <code>{ECMWF_SMOKE_TIME_INDEX}</code></span>
       <span>stepIndex: <code>{ECMWF_SMOKE_STEP_INDEX}</code></span>
+      <span>raw byte cache: <code>{Math.round(ECMWF_RAW_BYTE_CACHE_MAX_BYTES / 1024 / 1024)} MiB / {ECMWF_RAW_BYTE_CACHE_MAX_ENTRIES} entries</code></span>
+      <span>local range coalescing: <code>{localRangeCoalescing ? 'on' : 'off'}</code></span>
     </div>
+    <details class="dev-tools">
+      <summary>Dev tools</summary>
+      <label>
+        <input type="checkbox" bind:checked={localRangeCoalescing} disabled={reloadingLayer} />
+        local range coalescing
+      </label>
+      <button type="button" onclick={reloadLayer} disabled={reloadingLayer || !mapInstance}>
+        {reloadingLayer ? 'Reloading…' : 'Reload layer'}
+      </button>
+    </details>
     <div class="legend" aria-hidden="true"></div>
     <div class="legend-labels" aria-label="thermal color scale">
       <span>{ECMWF_SMOKE_CLIM[0]} {ECMWF_SMOKE_UNITS}</span>
@@ -94,6 +145,7 @@
     <p>metadata: <code>{status.loadingState.metadata ? 'true' : 'false'}</code></p>
     <p>chunks: <code>{status.loadingState.chunks ? 'true' : 'false'}</code></p>
     <p>layerAdded: <code>{layerAdded ? 'true' : 'false'}</code></p>
+    <p class="hint">Toggle local range coalescing in Dev tools, then reload the layer to compare network behavior.</p>
     {#if status.error}
       <p class="error">{status.error}</p>
     {/if}
