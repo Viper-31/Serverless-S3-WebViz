@@ -1,0 +1,1182 @@
+{
+  "version": 1,
+  "refs": {
+    ".zgroup": "{\"zarr_format\":2}",
+    ".zattrs": "{\"GRIB_edition\":1,\"GRIB_centre\":\"ecmf\",\"GRIB_centreDescription\":\"European Centre for Medium-Range Weather Forecasts\",\"GRIB_subCentre\":0,\"Conventions\":\"CF-1.7\",\"institution\":\"European Centre for Medium-Range Weather Forecasts\",\"history\":\"2026-01-15T17:08 GRIB to CDM+CF via cfgrib-0.9.15.1\\\/ecCodes-2.44.1 with {\\\"source\\\": \\\"data\\\/ecmwf_op_unzip\\\/2024\\\/10\\\/08\\\/single.grib\\\", \\\"filter_by_keys\\\": {}, \\\"encode_cf\\\": [\\\"parameter\\\", \\\"time\\\", \\\"geography\\\", \\\"vertical\\\"]}\"}",
+    "t2m\/0.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      134982511,
+      7727536
+    ],
+    "t2m\/0.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      127500917,
+      7481594
+    ],
+    "t2m\/0.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      120782755,
+      6718162
+    ],
+    "t2m\/1.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      113153387,
+      7629368
+    ],
+    "t2m\/1.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      105604645,
+      7548742
+    ],
+    "t2m\/1.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      98804352,
+      6800293
+    ],
+    "t2m\/.zarray": "{\"shape\":[14,113,111,151],\"chunks\":[7,113,37,151],\"dtype\":\"<f4\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":[{\"id\":\"shuffle\",\"elementsize\":4},{\"id\":\"zlib\",\"level\":7}],\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "t2m\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"GRIB_paramId\":167,\"GRIB_dataType\":\"fc\",\"GRIB_numberOfPoints\":16761,\"GRIB_typeOfLevel\":\"surface\",\"GRIB_stepUnits\":1,\"GRIB_stepType\":\"instant\",\"GRIB_gridType\":\"regular_ll\",\"GRIB_uvRelativeToGrid\":0,\"GRIB_NV\":0,\"GRIB_Nx\":151,\"GRIB_Ny\":111,\"GRIB_cfName\":\"unknown\",\"GRIB_cfVarName\":\"t2m\",\"GRIB_gridDefinitionDescription\":\"Latitude\/Longitude Grid\",\"GRIB_iDirectionIncrementInDegrees\":0.1,\"GRIB_iScansNegatively\":0,\"GRIB_jDirectionIncrementInDegrees\":0.1,\"GRIB_jPointsAreConsecutive\":0,\"GRIB_jScansPositively\":0,\"GRIB_latitudeOfFirstGridPointInDegrees\":-26.0,\"GRIB_latitudeOfLastGridPointInDegrees\":-37.0,\"GRIB_longitudeOfFirstGridPointInDegrees\":111.0,\"GRIB_longitudeOfLastGridPointInDegrees\":126.0,\"GRIB_missingValue\":3.4028234663852886e+38,\"GRIB_name\":\"2 metre temperature\",\"GRIB_shortName\":\"2t\",\"GRIB_totalNumber\":0,\"GRIB_units\":\"C\",\"long_name\":\"2 metre temperature\",\"units\":\"C\",\"standard_name\":\"unknown\",\"coordinates\":\"depthBelowLandLayer number surface valid_time\",\"_ARRAY_DIMENSIONS\":[\"time\",\"step\",\"latitude\",\"longitude\"]}",
+    "d2m\/0.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      709666608,
+      8536872
+    ],
+    "d2m\/0.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      701514106,
+      8152502
+    ],
+    "d2m\/0.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      694155465,
+      7358641
+    ],
+    "d2m\/1.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      685335518,
+      8819947
+    ],
+    "d2m\/1.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      677269417,
+      8066101
+    ],
+    "d2m\/1.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      670000034,
+      7269383
+    ],
+    "d2m\/.zarray": "{\"shape\":[14,113,111,151],\"chunks\":[7,113,37,151],\"dtype\":\"<f4\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":[{\"id\":\"shuffle\",\"elementsize\":4},{\"id\":\"zlib\",\"level\":7}],\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "d2m\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"GRIB_paramId\":168,\"GRIB_dataType\":\"fc\",\"GRIB_numberOfPoints\":16761,\"GRIB_typeOfLevel\":\"surface\",\"GRIB_stepUnits\":1,\"GRIB_stepType\":\"instant\",\"GRIB_gridType\":\"regular_ll\",\"GRIB_uvRelativeToGrid\":0,\"GRIB_NV\":0,\"GRIB_Nx\":151,\"GRIB_Ny\":111,\"GRIB_cfName\":\"unknown\",\"GRIB_cfVarName\":\"d2m\",\"GRIB_gridDefinitionDescription\":\"Latitude\/Longitude Grid\",\"GRIB_iDirectionIncrementInDegrees\":0.1,\"GRIB_iScansNegatively\":0,\"GRIB_jDirectionIncrementInDegrees\":0.1,\"GRIB_jPointsAreConsecutive\":0,\"GRIB_jScansPositively\":0,\"GRIB_latitudeOfFirstGridPointInDegrees\":-26.0,\"GRIB_latitudeOfLastGridPointInDegrees\":-37.0,\"GRIB_longitudeOfFirstGridPointInDegrees\":111.0,\"GRIB_longitudeOfLastGridPointInDegrees\":126.0,\"GRIB_missingValue\":3.4028234663852886e+38,\"GRIB_name\":\"2 metre dewpoint temperature\",\"GRIB_shortName\":\"2d\",\"GRIB_totalNumber\":0,\"GRIB_units\":\"C\",\"long_name\":\"2 metre dewpoint temperature\",\"units\":\"C\",\"standard_name\":\"unknown\",\"coordinates\":\"depthBelowLandLayer number surface valid_time\",\"_ARRAY_DIMENSIONS\":[\"time\",\"step\",\"latitude\",\"longitude\"]}",
+    "msl\/0.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      594163418,
+      7511002
+    ],
+    "msl\/0.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      586932308,
+      7231110
+    ],
+    "msl\/0.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      580412139,
+      6520169
+    ],
+    "msl\/1.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      573088765,
+      7323374
+    ],
+    "msl\/1.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      565833974,
+      7254791
+    ],
+    "msl\/1.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      559218254,
+      6615720
+    ],
+    "msl\/.zarray": "{\"shape\":[14,113,111,151],\"chunks\":[7,113,37,151],\"dtype\":\"<f4\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":[{\"id\":\"shuffle\",\"elementsize\":4},{\"id\":\"zlib\",\"level\":7}],\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "msl\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"GRIB_paramId\":151,\"GRIB_dataType\":\"fc\",\"GRIB_numberOfPoints\":16761,\"GRIB_typeOfLevel\":\"surface\",\"GRIB_stepUnits\":1,\"GRIB_stepType\":\"instant\",\"GRIB_gridType\":\"regular_ll\",\"GRIB_uvRelativeToGrid\":0,\"GRIB_NV\":0,\"GRIB_Nx\":151,\"GRIB_Ny\":111,\"GRIB_cfName\":\"air_pressure_at_mean_sea_level\",\"GRIB_cfVarName\":\"msl\",\"GRIB_gridDefinitionDescription\":\"Latitude\/Longitude Grid\",\"GRIB_iDirectionIncrementInDegrees\":0.1,\"GRIB_iScansNegatively\":0,\"GRIB_jDirectionIncrementInDegrees\":0.1,\"GRIB_jPointsAreConsecutive\":0,\"GRIB_jScansPositively\":0,\"GRIB_latitudeOfFirstGridPointInDegrees\":-26.0,\"GRIB_latitudeOfLastGridPointInDegrees\":-37.0,\"GRIB_longitudeOfFirstGridPointInDegrees\":111.0,\"GRIB_longitudeOfLastGridPointInDegrees\":126.0,\"GRIB_missingValue\":3.4028234663852886e+38,\"GRIB_name\":\"Mean sea level pressure\",\"GRIB_shortName\":\"msl\",\"GRIB_totalNumber\":0,\"GRIB_units\":\"hPa\",\"long_name\":\"Mean sea level pressure\",\"units\":\"hPa\",\"standard_name\":\"air_pressure_at_mean_sea_level\",\"coordinates\":\"depthBelowLandLayer number surface valid_time\",\"_ARRAY_DIMENSIONS\":[\"time\",\"step\",\"latitude\",\"longitude\"]}",
+    "tcc\/0.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1604423895,
+      5175482
+    ],
+    "tcc\/0.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1598324450,
+      6099445
+    ],
+    "tcc\/0.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1591138907,
+      7185543
+    ],
+    "tcc\/1.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1585758826,
+      5380081
+    ],
+    "tcc\/1.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1579029925,
+      6728901
+    ],
+    "tcc\/1.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1572037954,
+      6991971
+    ],
+    "tcc\/.zarray": "{\"shape\":[14,113,111,151],\"chunks\":[7,113,37,151],\"dtype\":\"<f4\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":[{\"id\":\"shuffle\",\"elementsize\":4},{\"id\":\"zlib\",\"level\":7}],\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "tcc\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"GRIB_paramId\":164,\"GRIB_dataType\":\"fc\",\"GRIB_numberOfPoints\":16761,\"GRIB_typeOfLevel\":\"surface\",\"GRIB_stepUnits\":1,\"GRIB_stepType\":\"instant\",\"GRIB_gridType\":\"regular_ll\",\"GRIB_uvRelativeToGrid\":0,\"GRIB_NV\":0,\"GRIB_Nx\":151,\"GRIB_Ny\":111,\"GRIB_cfName\":\"cloud_area_fraction\",\"GRIB_cfVarName\":\"tcc\",\"GRIB_gridDefinitionDescription\":\"Latitude\/Longitude Grid\",\"GRIB_iDirectionIncrementInDegrees\":0.1,\"GRIB_iScansNegatively\":0,\"GRIB_jDirectionIncrementInDegrees\":0.1,\"GRIB_jPointsAreConsecutive\":0,\"GRIB_jScansPositively\":0,\"GRIB_latitudeOfFirstGridPointInDegrees\":-26.0,\"GRIB_latitudeOfLastGridPointInDegrees\":-37.0,\"GRIB_longitudeOfFirstGridPointInDegrees\":111.0,\"GRIB_longitudeOfLastGridPointInDegrees\":126.0,\"GRIB_missingValue\":3.4028234663852886e+38,\"GRIB_name\":\"Total cloud cover\",\"GRIB_shortName\":\"tcc\",\"GRIB_totalNumber\":0,\"GRIB_units\":\"(0 - 1)\",\"long_name\":\"Total cloud cover\",\"units\":\"(0 - 1)\",\"standard_name\":\"cloud_area_fraction\",\"coordinates\":\"number time step surface latitude longitude valid_time\",\"_ARRAY_DIMENSIONS\":[\"time\",\"step\",\"latitude\",\"longitude\"]}",
+    "lcc\/0.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1841474649,
+      2243932
+    ],
+    "lcc\/0.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1838089789,
+      3384860
+    ],
+    "lcc\/0.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1831874392,
+      6215397
+    ],
+    "lcc\/1.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1828574555,
+      3299837
+    ],
+    "lcc\/1.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1823148111,
+      5426444
+    ],
+    "lcc\/1.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1815797944,
+      7350167
+    ],
+    "lcc\/.zarray": "{\"shape\":[14,113,111,151],\"chunks\":[7,113,37,151],\"dtype\":\"<f4\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":[{\"id\":\"shuffle\",\"elementsize\":4},{\"id\":\"zlib\",\"level\":7}],\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "lcc\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"GRIB_paramId\":186,\"GRIB_dataType\":\"fc\",\"GRIB_numberOfPoints\":16761,\"GRIB_typeOfLevel\":\"surface\",\"GRIB_stepUnits\":1,\"GRIB_stepType\":\"instant\",\"GRIB_gridType\":\"regular_ll\",\"GRIB_uvRelativeToGrid\":0,\"GRIB_NV\":0,\"GRIB_Nx\":151,\"GRIB_Ny\":111,\"GRIB_cfName\":\"unknown\",\"GRIB_cfVarName\":\"lcc\",\"GRIB_gridDefinitionDescription\":\"Latitude\/Longitude Grid\",\"GRIB_iDirectionIncrementInDegrees\":0.1,\"GRIB_iScansNegatively\":0,\"GRIB_jDirectionIncrementInDegrees\":0.1,\"GRIB_jPointsAreConsecutive\":0,\"GRIB_jScansPositively\":0,\"GRIB_latitudeOfFirstGridPointInDegrees\":-26.0,\"GRIB_latitudeOfLastGridPointInDegrees\":-37.0,\"GRIB_longitudeOfFirstGridPointInDegrees\":111.0,\"GRIB_longitudeOfLastGridPointInDegrees\":126.0,\"GRIB_missingValue\":3.4028234663852886e+38,\"GRIB_name\":\"Low cloud cover\",\"GRIB_shortName\":\"lcc\",\"GRIB_totalNumber\":0,\"GRIB_units\":\"(0 - 1)\",\"long_name\":\"Low cloud cover\",\"units\":\"(0 - 1)\",\"standard_name\":\"unknown\",\"coordinates\":\"number time step surface latitude longitude valid_time\",\"_ARRAY_DIMENSIONS\":[\"time\",\"step\",\"latitude\",\"longitude\"]}",
+    "i10fg\/0.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1050836920,
+      11623722
+    ],
+    "i10fg\/0.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1039505173,
+      11331747
+    ],
+    "i10fg\/0.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1028376622,
+      11128551
+    ],
+    "i10fg\/1.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1017013193,
+      11363429
+    ],
+    "i10fg\/1.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1005546017,
+      11467176
+    ],
+    "i10fg\/1.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      994289549,
+      11256468
+    ],
+    "i10fg\/.zarray": "{\"shape\":[14,113,111,151],\"chunks\":[7,113,37,151],\"dtype\":\"<f4\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":[{\"id\":\"shuffle\",\"elementsize\":4},{\"id\":\"zlib\",\"level\":7}],\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "i10fg\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"GRIB_paramId\":228029,\"GRIB_dataType\":\"fc\",\"GRIB_numberOfPoints\":16761,\"GRIB_typeOfLevel\":\"surface\",\"GRIB_stepUnits\":1,\"GRIB_stepType\":\"instant\",\"GRIB_gridType\":\"regular_ll\",\"GRIB_uvRelativeToGrid\":0,\"GRIB_NV\":0,\"GRIB_Nx\":151,\"GRIB_Ny\":111,\"GRIB_cfName\":\"unknown\",\"GRIB_cfVarName\":\"i10fg\",\"GRIB_gridDefinitionDescription\":\"Latitude\/Longitude Grid\",\"GRIB_iDirectionIncrementInDegrees\":0.1,\"GRIB_iScansNegatively\":0,\"GRIB_jDirectionIncrementInDegrees\":0.1,\"GRIB_jPointsAreConsecutive\":0,\"GRIB_jScansPositively\":0,\"GRIB_latitudeOfFirstGridPointInDegrees\":-26.0,\"GRIB_latitudeOfLastGridPointInDegrees\":-37.0,\"GRIB_longitudeOfFirstGridPointInDegrees\":111.0,\"GRIB_longitudeOfLastGridPointInDegrees\":126.0,\"GRIB_missingValue\":3.4028234663852886e+38,\"GRIB_name\":\"Instantaneous 10 metre wind gust\",\"GRIB_shortName\":\"i10fg\",\"GRIB_totalNumber\":0,\"GRIB_units\":\"km\/h\",\"long_name\":\"Instantaneous 10 metre wind gust\",\"units\":\"km\/h\",\"standard_name\":\"unknown\",\"coordinates\":\"depthBelowLandLayer number surface valid_time\",\"_ARRAY_DIMENSIONS\":[\"time\",\"step\",\"latitude\",\"longitude\"]}",
+    "u10\/0.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      203298720,
+      12544968
+    ],
+    "u10\/0.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      191080046,
+      12218674
+    ],
+    "u10\/0.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      179258456,
+      11821590
+    ],
+    "u10\/1.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      166784405,
+      12474051
+    ],
+    "u10\/1.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      154535674,
+      12248731
+    ],
+    "u10\/1.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      142713703,
+      11821971
+    ],
+    "u10\/.zarray": "{\"shape\":[14,113,111,151],\"chunks\":[7,113,37,151],\"dtype\":\"<f4\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":[{\"id\":\"shuffle\",\"elementsize\":4},{\"id\":\"zlib\",\"level\":7}],\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "u10\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"GRIB_paramId\":165,\"GRIB_dataType\":\"fc\",\"GRIB_numberOfPoints\":16761,\"GRIB_typeOfLevel\":\"surface\",\"GRIB_stepUnits\":1,\"GRIB_stepType\":\"instant\",\"GRIB_gridType\":\"regular_ll\",\"GRIB_uvRelativeToGrid\":0,\"GRIB_NV\":0,\"GRIB_Nx\":151,\"GRIB_Ny\":111,\"GRIB_cfName\":\"unknown\",\"GRIB_cfVarName\":\"u10\",\"GRIB_gridDefinitionDescription\":\"Latitude\/Longitude Grid\",\"GRIB_iDirectionIncrementInDegrees\":0.1,\"GRIB_iScansNegatively\":0,\"GRIB_jDirectionIncrementInDegrees\":0.1,\"GRIB_jPointsAreConsecutive\":0,\"GRIB_jScansPositively\":0,\"GRIB_latitudeOfFirstGridPointInDegrees\":-26.0,\"GRIB_latitudeOfLastGridPointInDegrees\":-37.0,\"GRIB_longitudeOfFirstGridPointInDegrees\":111.0,\"GRIB_longitudeOfLastGridPointInDegrees\":126.0,\"GRIB_missingValue\":3.4028234663852886e+38,\"GRIB_name\":\"10 metre U wind component\",\"GRIB_shortName\":\"10u\",\"GRIB_totalNumber\":0,\"GRIB_units\":\"km\/h\",\"long_name\":\"10 metre U wind component\",\"units\":\"km\/h\",\"standard_name\":\"unknown\",\"coordinates\":\"depthBelowLandLayer number surface valid_time\",\"_ARRAY_DIMENSIONS\":[\"time\",\"step\",\"latitude\",\"longitude\"]}",
+    "v10\/0.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      923473525,
+      12592325
+    ],
+    "v10\/0.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      911085153,
+      12388372
+    ],
+    "v10\/0.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      899048545,
+      12036608
+    ],
+    "v10\/1.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      886763584,
+      12284961
+    ],
+    "v10\/1.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      874212576,
+      12551008
+    ],
+    "v10\/1.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      861931537,
+      12281039
+    ],
+    "v10\/.zarray": "{\"shape\":[14,113,111,151],\"chunks\":[7,113,37,151],\"dtype\":\"<f4\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":[{\"id\":\"shuffle\",\"elementsize\":4},{\"id\":\"zlib\",\"level\":7}],\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "v10\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"GRIB_paramId\":166,\"GRIB_dataType\":\"fc\",\"GRIB_numberOfPoints\":16761,\"GRIB_typeOfLevel\":\"surface\",\"GRIB_stepUnits\":1,\"GRIB_stepType\":\"instant\",\"GRIB_gridType\":\"regular_ll\",\"GRIB_uvRelativeToGrid\":0,\"GRIB_NV\":0,\"GRIB_Nx\":151,\"GRIB_Ny\":111,\"GRIB_cfName\":\"unknown\",\"GRIB_cfVarName\":\"v10\",\"GRIB_gridDefinitionDescription\":\"Latitude\/Longitude Grid\",\"GRIB_iDirectionIncrementInDegrees\":0.1,\"GRIB_iScansNegatively\":0,\"GRIB_jDirectionIncrementInDegrees\":0.1,\"GRIB_jPointsAreConsecutive\":0,\"GRIB_jScansPositively\":0,\"GRIB_latitudeOfFirstGridPointInDegrees\":-26.0,\"GRIB_latitudeOfLastGridPointInDegrees\":-37.0,\"GRIB_longitudeOfFirstGridPointInDegrees\":111.0,\"GRIB_longitudeOfLastGridPointInDegrees\":126.0,\"GRIB_missingValue\":3.4028234663852886e+38,\"GRIB_name\":\"10 metre V wind component\",\"GRIB_shortName\":\"10v\",\"GRIB_totalNumber\":0,\"GRIB_units\":\"km\/h\",\"long_name\":\"10 metre V wind component\",\"units\":\"km\/h\",\"standard_name\":\"unknown\",\"coordinates\":\"depthBelowLandLayer number surface valid_time\",\"_ARRAY_DIMENSIONS\":[\"time\",\"step\",\"latitude\",\"longitude\"]}",
+    "cp\/0.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      668167342,
+      1829036
+    ],
+    "cp\/0.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      666207491,
+      1959851
+    ],
+    "cp\/0.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      663063855,
+      3143636
+    ],
+    "cp\/1.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      661509169,
+      1554686
+    ],
+    "cp\/1.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      657395754,
+      4113415
+    ],
+    "cp\/1.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      651001060,
+      6394694
+    ],
+    "cp\/.zarray": "{\"shape\":[14,113,111,151],\"chunks\":[7,113,37,151],\"dtype\":\"<f4\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":[{\"id\":\"shuffle\",\"elementsize\":4},{\"id\":\"zlib\",\"level\":7}],\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "cp\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"GRIB_paramId\":143,\"GRIB_dataType\":\"fc\",\"GRIB_numberOfPoints\":16761,\"GRIB_typeOfLevel\":\"surface\",\"GRIB_stepUnits\":1,\"GRIB_stepType\":\"instant\",\"GRIB_gridType\":\"regular_ll\",\"GRIB_uvRelativeToGrid\":0,\"GRIB_NV\":0,\"GRIB_Nx\":151,\"GRIB_Ny\":111,\"GRIB_cfName\":\"lwe_thickness_of_convective_precipitation_amount\",\"GRIB_cfVarName\":\"cp\",\"GRIB_gridDefinitionDescription\":\"Latitude\/Longitude Grid\",\"GRIB_iDirectionIncrementInDegrees\":0.1,\"GRIB_iScansNegatively\":0,\"GRIB_jDirectionIncrementInDegrees\":0.1,\"GRIB_jPointsAreConsecutive\":0,\"GRIB_jScansPositively\":0,\"GRIB_latitudeOfFirstGridPointInDegrees\":-26.0,\"GRIB_latitudeOfLastGridPointInDegrees\":-37.0,\"GRIB_longitudeOfFirstGridPointInDegrees\":111.0,\"GRIB_longitudeOfLastGridPointInDegrees\":126.0,\"GRIB_missingValue\":3.4028234663852886e+38,\"GRIB_name\":\"Convective precipitation\",\"GRIB_shortName\":\"cp\",\"GRIB_totalNumber\":0,\"GRIB_units\":\"mm\",\"long_name\":\"Convective precipitation\",\"units\":\"mm\",\"standard_name\":\"lwe_thickness_of_convective_precipitation_amount\",\"coordinates\":\"depthBelowLandLayer number surface valid_time\",\"_ARRAY_DIMENSIONS\":[\"time\",\"step\",\"latitude\",\"longitude\"]}",
+    "lsp\/0.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      947253182,
+      1285073
+    ],
+    "lsp\/0.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      946177721,
+      1075461
+    ],
+    "lsp\/0.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      944428799,
+      1748922
+    ],
+    "lsp\/1.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      943441560,
+      987239
+    ],
+    "lsp\/1.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      940876269,
+      2565291
+    ],
+    "lsp\/1.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      936069506,
+      4806763
+    ],
+    "lsp\/.zarray": "{\"shape\":[14,113,111,151],\"chunks\":[7,113,37,151],\"dtype\":\"<f4\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":[{\"id\":\"shuffle\",\"elementsize\":4},{\"id\":\"zlib\",\"level\":7}],\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "lsp\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"GRIB_paramId\":142,\"GRIB_dataType\":\"fc\",\"GRIB_numberOfPoints\":16761,\"GRIB_typeOfLevel\":\"surface\",\"GRIB_stepUnits\":1,\"GRIB_stepType\":\"instant\",\"GRIB_gridType\":\"regular_ll\",\"GRIB_uvRelativeToGrid\":0,\"GRIB_NV\":0,\"GRIB_Nx\":151,\"GRIB_Ny\":111,\"GRIB_cfName\":\"lwe_thickness_of_stratiform_precipitation_amount\",\"GRIB_cfVarName\":\"lsp\",\"GRIB_gridDefinitionDescription\":\"Latitude\/Longitude Grid\",\"GRIB_iDirectionIncrementInDegrees\":0.1,\"GRIB_iScansNegatively\":0,\"GRIB_jDirectionIncrementInDegrees\":0.1,\"GRIB_jPointsAreConsecutive\":0,\"GRIB_jScansPositively\":0,\"GRIB_latitudeOfFirstGridPointInDegrees\":-26.0,\"GRIB_latitudeOfLastGridPointInDegrees\":-37.0,\"GRIB_longitudeOfFirstGridPointInDegrees\":111.0,\"GRIB_longitudeOfLastGridPointInDegrees\":126.0,\"GRIB_missingValue\":3.4028234663852886e+38,\"GRIB_name\":\"Large-scale precipitation\",\"GRIB_shortName\":\"lsp\",\"GRIB_totalNumber\":0,\"GRIB_units\":\"mm\",\"long_name\":\"Large-scale precipitation\",\"units\":\"mm\",\"standard_name\":\"lwe_thickness_of_stratiform_precipitation_amount\",\"coordinates\":\"depthBelowLandLayer number surface valid_time\",\"_ARRAY_DIMENSIONS\":[\"time\",\"step\",\"latitude\",\"longitude\"]}",
+    "tp\/0.0.0.0": ["s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc", 96734393, 2066303],
+    "tp\/0.0.1.0": ["s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc", 94752280, 1982113],
+    "tp\/0.0.2.0": ["s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc", 91633888, 3118392],
+    "tp\/1.0.0.0": ["s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc", 90093387, 1540501],
+    "tp\/1.0.1.0": ["s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc", 85925483, 4167904],
+    "tp\/1.0.2.0": ["s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc", 79285444, 6640039],
+    "tp\/.zarray": "{\"shape\":[14,113,111,151],\"chunks\":[7,113,37,151],\"dtype\":\"<f4\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":[{\"id\":\"shuffle\",\"elementsize\":4},{\"id\":\"zlib\",\"level\":7}],\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "tp\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"GRIB_paramId\":228,\"GRIB_dataType\":\"fc\",\"GRIB_numberOfPoints\":16761,\"GRIB_typeOfLevel\":\"surface\",\"GRIB_stepUnits\":1,\"GRIB_stepType\":\"instant\",\"GRIB_gridType\":\"regular_ll\",\"GRIB_uvRelativeToGrid\":0,\"GRIB_NV\":0,\"GRIB_Nx\":151,\"GRIB_Ny\":111,\"GRIB_cfName\":\"unknown\",\"GRIB_cfVarName\":\"tp\",\"GRIB_gridDefinitionDescription\":\"Latitude\/Longitude Grid\",\"GRIB_iDirectionIncrementInDegrees\":0.1,\"GRIB_iScansNegatively\":0,\"GRIB_jDirectionIncrementInDegrees\":0.1,\"GRIB_jPointsAreConsecutive\":0,\"GRIB_jScansPositively\":0,\"GRIB_latitudeOfFirstGridPointInDegrees\":-26.0,\"GRIB_latitudeOfLastGridPointInDegrees\":-37.0,\"GRIB_longitudeOfFirstGridPointInDegrees\":111.0,\"GRIB_longitudeOfLastGridPointInDegrees\":126.0,\"GRIB_missingValue\":3.4028234663852886e+38,\"GRIB_name\":\"Total precipitation\",\"GRIB_shortName\":\"tp\",\"GRIB_totalNumber\":0,\"GRIB_units\":\"mm\",\"long_name\":\"Total precipitation\",\"units\":\"mm\",\"standard_name\":\"unknown\",\"coordinates\":\"depthBelowLandLayer number surface valid_time\",\"_ARRAY_DIMENSIONS\":[\"time\",\"step\",\"latitude\",\"longitude\"]}",
+    "swvl1\/0.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      297831874,
+      5597642
+    ],
+    "swvl1\/0.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      293167661,
+      4664213
+    ],
+    "swvl1\/0.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      291905119,
+      1262542
+    ],
+    "swvl1\/1.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      286692030,
+      5213089
+    ],
+    "swvl1\/1.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      281733527,
+      4958503
+    ],
+    "swvl1\/1.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      280389472,
+      1344055
+    ],
+    "swvl1\/.zarray": "{\"shape\":[14,113,111,151],\"chunks\":[7,113,37,151],\"dtype\":\"<f4\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":[{\"id\":\"shuffle\",\"elementsize\":4},{\"id\":\"zlib\",\"level\":7}],\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "swvl1\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"GRIB_paramId\":39,\"GRIB_dataType\":\"fc\",\"GRIB_numberOfPoints\":16761,\"GRIB_typeOfLevel\":\"depthBelowLandLayer\",\"GRIB_stepUnits\":1,\"GRIB_stepType\":\"instant\",\"GRIB_gridType\":\"regular_ll\",\"GRIB_uvRelativeToGrid\":0,\"GRIB_NV\":0,\"GRIB_Nx\":151,\"GRIB_Ny\":111,\"GRIB_cfName\":\"unknown\",\"GRIB_cfVarName\":\"swvl1\",\"GRIB_gridDefinitionDescription\":\"Latitude\/Longitude Grid\",\"GRIB_iDirectionIncrementInDegrees\":0.1,\"GRIB_iScansNegatively\":0,\"GRIB_jDirectionIncrementInDegrees\":0.1,\"GRIB_jPointsAreConsecutive\":0,\"GRIB_jScansPositively\":0,\"GRIB_latitudeOfFirstGridPointInDegrees\":-26.0,\"GRIB_latitudeOfLastGridPointInDegrees\":-37.0,\"GRIB_longitudeOfFirstGridPointInDegrees\":111.0,\"GRIB_longitudeOfLastGridPointInDegrees\":126.0,\"GRIB_missingValue\":3.4028234663852886e+38,\"GRIB_name\":\"Volumetric soil water layer 1\",\"GRIB_shortName\":\"swvl1\",\"GRIB_totalNumber\":0,\"GRIB_units\":\"m**3 m**-3\",\"long_name\":\"Volumetric soil water layer 1\",\"units\":\"m**3 m**-3\",\"standard_name\":\"unknown\",\"coordinates\":\"number time step depthBelowLandLayer latitude longitude valid_time\",\"_ARRAY_DIMENSIONS\":[\"time\",\"step\",\"latitude\",\"longitude\"]}",
+    "sh2\/0.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      986168747,
+      8117146
+    ],
+    "sh2\/0.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      978541618,
+      7627129
+    ],
+    "sh2\/0.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      971551531,
+      6990087
+    ],
+    "sh2\/1.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      963426292,
+      8125239
+    ],
+    "sh2\/1.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      955660118,
+      7766174
+    ],
+    "sh2\/1.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      948541911,
+      7118207
+    ],
+    "sh2\/.zarray": "{\"shape\":[14,113,111,151],\"chunks\":[7,113,37,151],\"dtype\":\"<f4\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":[{\"id\":\"shuffle\",\"elementsize\":4},{\"id\":\"zlib\",\"level\":7}],\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "sh2\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"GRIB_paramId\":174096,\"GRIB_dataType\":\"fc\",\"GRIB_numberOfPoints\":16761,\"GRIB_typeOfLevel\":\"surface\",\"GRIB_stepUnits\":1,\"GRIB_stepType\":\"instant\",\"GRIB_gridType\":\"regular_ll\",\"GRIB_uvRelativeToGrid\":0,\"GRIB_NV\":0,\"GRIB_Nx\":151,\"GRIB_Ny\":111,\"GRIB_cfName\":\"unknown\",\"GRIB_cfVarName\":\"sh2\",\"GRIB_gridDefinitionDescription\":\"Latitude\/Longitude Grid\",\"GRIB_iDirectionIncrementInDegrees\":0.1,\"GRIB_iScansNegatively\":0,\"GRIB_jDirectionIncrementInDegrees\":0.1,\"GRIB_jPointsAreConsecutive\":0,\"GRIB_jScansPositively\":0,\"GRIB_latitudeOfFirstGridPointInDegrees\":-26.0,\"GRIB_latitudeOfLastGridPointInDegrees\":-37.0,\"GRIB_longitudeOfFirstGridPointInDegrees\":111.0,\"GRIB_longitudeOfLastGridPointInDegrees\":126.0,\"GRIB_missingValue\":3.4028234663852886e+38,\"GRIB_name\":\"2 metre specific humidity\",\"GRIB_shortName\":\"2sh\",\"GRIB_totalNumber\":0,\"GRIB_units\":\"kg kg**-1\",\"long_name\":\"2 metre specific humidity\",\"units\":\"kg kg**-1\",\"standard_name\":\"unknown\",\"coordinates\":\"number time step surface latitude longitude valid_time\",\"_ARRAY_DIMENSIONS\":[\"time\",\"step\",\"latitude\",\"longitude\"]}",
+    "t250\/0.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      72839565,
+      6442223
+    ],
+    "t250\/0.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      66397887,
+      6441678
+    ],
+    "t250\/0.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      59870531,
+      6527356
+    ],
+    "t250\/1.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      53277686,
+      6592845
+    ],
+    "t250\/1.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      46592081,
+      6685605
+    ],
+    "t250\/1.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      39792247,
+      6799834
+    ],
+    "t250\/.zarray": "{\"shape\":[14,113,111,151],\"chunks\":[7,113,37,151],\"dtype\":\"<f4\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":[{\"id\":\"shuffle\",\"elementsize\":4},{\"id\":\"zlib\",\"level\":7}],\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "t250\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"GRIB_paramId\":130,\"GRIB_dataType\":\"fc\",\"GRIB_numberOfPoints\":16761,\"GRIB_typeOfLevel\":\"isobaricInhPa\",\"GRIB_stepUnits\":1,\"GRIB_stepType\":\"instant\",\"GRIB_gridType\":\"regular_ll\",\"GRIB_uvRelativeToGrid\":0,\"GRIB_NV\":0,\"GRIB_Nx\":151,\"GRIB_Ny\":111,\"GRIB_cfName\":\"air_temperature\",\"GRIB_cfVarName\":\"t\",\"GRIB_gridDefinitionDescription\":\"Latitude\/Longitude Grid\",\"GRIB_iDirectionIncrementInDegrees\":0.1,\"GRIB_iScansNegatively\":0,\"GRIB_jDirectionIncrementInDegrees\":0.1,\"GRIB_jPointsAreConsecutive\":0,\"GRIB_jScansPositively\":0,\"GRIB_latitudeOfFirstGridPointInDegrees\":-26.0,\"GRIB_latitudeOfLastGridPointInDegrees\":-37.0,\"GRIB_longitudeOfFirstGridPointInDegrees\":111.0,\"GRIB_longitudeOfLastGridPointInDegrees\":126.0,\"GRIB_missingValue\":3.4028234663852886e+38,\"GRIB_name\":\"Temperature\",\"GRIB_shortName\":\"t\",\"GRIB_totalNumber\":0,\"GRIB_units\":\"C\",\"long_name\":\"Temperature\",\"units\":\"C\",\"standard_name\":\"air_temperature\",\"coordinates\":\"depthBelowLandLayer number surface valid_time\",\"_ARRAY_DIMENSIONS\":[\"time\",\"step\",\"latitude\",\"longitude\"]}",
+    "t500\/0.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1376868626,
+      6892474
+    ],
+    "t500\/0.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1370591364,
+      6277262
+    ],
+    "t500\/0.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1364390982,
+      6200382
+    ],
+    "t500\/1.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1357721263,
+      6669719
+    ],
+    "t500\/1.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1351387365,
+      6333898
+    ],
+    "t500\/1.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1345218356,
+      6169009
+    ],
+    "t500\/.zarray": "{\"shape\":[14,113,111,151],\"chunks\":[7,113,37,151],\"dtype\":\"<f4\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":[{\"id\":\"shuffle\",\"elementsize\":4},{\"id\":\"zlib\",\"level\":7}],\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "t500\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"GRIB_paramId\":130,\"GRIB_dataType\":\"fc\",\"GRIB_numberOfPoints\":16761,\"GRIB_typeOfLevel\":\"isobaricInhPa\",\"GRIB_stepUnits\":1,\"GRIB_stepType\":\"instant\",\"GRIB_gridType\":\"regular_ll\",\"GRIB_uvRelativeToGrid\":0,\"GRIB_NV\":0,\"GRIB_Nx\":151,\"GRIB_Ny\":111,\"GRIB_cfName\":\"air_temperature\",\"GRIB_cfVarName\":\"t\",\"GRIB_gridDefinitionDescription\":\"Latitude\/Longitude Grid\",\"GRIB_iDirectionIncrementInDegrees\":0.1,\"GRIB_iScansNegatively\":0,\"GRIB_jDirectionIncrementInDegrees\":0.1,\"GRIB_jPointsAreConsecutive\":0,\"GRIB_jScansPositively\":0,\"GRIB_latitudeOfFirstGridPointInDegrees\":-26.0,\"GRIB_latitudeOfLastGridPointInDegrees\":-37.0,\"GRIB_longitudeOfFirstGridPointInDegrees\":111.0,\"GRIB_longitudeOfLastGridPointInDegrees\":126.0,\"GRIB_missingValue\":3.4028234663852886e+38,\"GRIB_name\":\"Temperature\",\"GRIB_shortName\":\"t\",\"GRIB_totalNumber\":0,\"GRIB_units\":\"C\",\"long_name\":\"Temperature\",\"units\":\"C\",\"standard_name\":\"air_temperature\",\"coordinates\":\"depthBelowLandLayer number surface valid_time\",\"_ARRAY_DIMENSIONS\":[\"time\",\"step\",\"latitude\",\"longitude\"]}",
+    "t850\/0.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1167511983,
+      6908210
+    ],
+    "t850\/0.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1160302123,
+      7209860
+    ],
+    "t850\/0.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1152912411,
+      7389712
+    ],
+    "t850\/1.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1145773426,
+      7138985
+    ],
+    "t850\/1.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1138086829,
+      7686597
+    ],
+    "t850\/1.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1130241373,
+      7845456
+    ],
+    "t850\/.zarray": "{\"shape\":[14,113,111,151],\"chunks\":[7,113,37,151],\"dtype\":\"<f4\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":[{\"id\":\"shuffle\",\"elementsize\":4},{\"id\":\"zlib\",\"level\":7}],\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "t850\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"GRIB_paramId\":130,\"GRIB_dataType\":\"fc\",\"GRIB_numberOfPoints\":16761,\"GRIB_typeOfLevel\":\"isobaricInhPa\",\"GRIB_stepUnits\":1,\"GRIB_stepType\":\"instant\",\"GRIB_gridType\":\"regular_ll\",\"GRIB_uvRelativeToGrid\":0,\"GRIB_NV\":0,\"GRIB_Nx\":151,\"GRIB_Ny\":111,\"GRIB_cfName\":\"air_temperature\",\"GRIB_cfVarName\":\"t\",\"GRIB_gridDefinitionDescription\":\"Latitude\/Longitude Grid\",\"GRIB_iDirectionIncrementInDegrees\":0.1,\"GRIB_iScansNegatively\":0,\"GRIB_jDirectionIncrementInDegrees\":0.1,\"GRIB_jPointsAreConsecutive\":0,\"GRIB_jScansPositively\":0,\"GRIB_latitudeOfFirstGridPointInDegrees\":-26.0,\"GRIB_latitudeOfLastGridPointInDegrees\":-37.0,\"GRIB_longitudeOfFirstGridPointInDegrees\":111.0,\"GRIB_longitudeOfLastGridPointInDegrees\":126.0,\"GRIB_missingValue\":3.4028234663852886e+38,\"GRIB_name\":\"Temperature\",\"GRIB_shortName\":\"t\",\"GRIB_totalNumber\":0,\"GRIB_units\":\"C\",\"long_name\":\"Temperature\",\"units\":\"C\",\"standard_name\":\"air_temperature\",\"coordinates\":\"depthBelowLandLayer number surface valid_time\",\"_ARRAY_DIMENSIONS\":[\"time\",\"step\",\"latitude\",\"longitude\"]}",
+    "t1000\/0.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      383852015,
+      7257360
+    ],
+    "t1000\/0.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      376725622,
+      7126393
+    ],
+    "t1000\/0.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      370123809,
+      6601813
+    ],
+    "t1000\/1.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      363037165,
+      7086644
+    ],
+    "t1000\/1.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      355895277,
+      7141888
+    ],
+    "t1000\/1.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      349266337,
+      6628940
+    ],
+    "t1000\/.zarray": "{\"shape\":[14,113,111,151],\"chunks\":[7,113,37,151],\"dtype\":\"<f4\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":[{\"id\":\"shuffle\",\"elementsize\":4},{\"id\":\"zlib\",\"level\":7}],\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "t1000\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"GRIB_paramId\":130,\"GRIB_dataType\":\"fc\",\"GRIB_numberOfPoints\":16761,\"GRIB_typeOfLevel\":\"isobaricInhPa\",\"GRIB_stepUnits\":1,\"GRIB_stepType\":\"instant\",\"GRIB_gridType\":\"regular_ll\",\"GRIB_uvRelativeToGrid\":0,\"GRIB_NV\":0,\"GRIB_Nx\":151,\"GRIB_Ny\":111,\"GRIB_cfName\":\"air_temperature\",\"GRIB_cfVarName\":\"t\",\"GRIB_gridDefinitionDescription\":\"Latitude\/Longitude Grid\",\"GRIB_iDirectionIncrementInDegrees\":0.1,\"GRIB_iScansNegatively\":0,\"GRIB_jDirectionIncrementInDegrees\":0.1,\"GRIB_jPointsAreConsecutive\":0,\"GRIB_jScansPositively\":0,\"GRIB_latitudeOfFirstGridPointInDegrees\":-26.0,\"GRIB_latitudeOfLastGridPointInDegrees\":-37.0,\"GRIB_longitudeOfFirstGridPointInDegrees\":111.0,\"GRIB_longitudeOfLastGridPointInDegrees\":126.0,\"GRIB_missingValue\":3.4028234663852886e+38,\"GRIB_name\":\"Temperature\",\"GRIB_shortName\":\"t\",\"GRIB_totalNumber\":0,\"GRIB_units\":\"C\",\"long_name\":\"Temperature\",\"units\":\"C\",\"standard_name\":\"air_temperature\",\"coordinates\":\"depthBelowLandLayer number surface valid_time\",\"_ARRAY_DIMENSIONS\":[\"time\",\"step\",\"latitude\",\"longitude\"]}",
+    "z250\/0.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      796585705,
+      5961720
+    ],
+    "z250\/0.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      790762138,
+      5823567
+    ],
+    "z250\/0.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      785213986,
+      5548152
+    ],
+    "z250\/1.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      779329819,
+      5884167
+    ],
+    "z250\/1.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      773179909,
+      6149910
+    ],
+    "z250\/1.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      767312528,
+      5867381
+    ],
+    "z250\/.zarray": "{\"shape\":[14,113,111,151],\"chunks\":[7,113,37,151],\"dtype\":\"<f4\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":[{\"id\":\"shuffle\",\"elementsize\":4},{\"id\":\"zlib\",\"level\":7}],\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "z250\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"GRIB_paramId\":129,\"GRIB_dataType\":\"fc\",\"GRIB_numberOfPoints\":16761,\"GRIB_typeOfLevel\":\"isobaricInhPa\",\"GRIB_stepUnits\":1,\"GRIB_stepType\":\"instant\",\"GRIB_gridType\":\"regular_ll\",\"GRIB_uvRelativeToGrid\":0,\"GRIB_NV\":0,\"GRIB_Nx\":151,\"GRIB_Ny\":111,\"GRIB_cfName\":\"geopotential\",\"GRIB_cfVarName\":\"z\",\"GRIB_gridDefinitionDescription\":\"Latitude\/Longitude Grid\",\"GRIB_iDirectionIncrementInDegrees\":0.1,\"GRIB_iScansNegatively\":0,\"GRIB_jDirectionIncrementInDegrees\":0.1,\"GRIB_jPointsAreConsecutive\":0,\"GRIB_jScansPositively\":0,\"GRIB_latitudeOfFirstGridPointInDegrees\":-26.0,\"GRIB_latitudeOfLastGridPointInDegrees\":-37.0,\"GRIB_longitudeOfFirstGridPointInDegrees\":111.0,\"GRIB_longitudeOfLastGridPointInDegrees\":126.0,\"GRIB_missingValue\":3.4028234663852886e+38,\"GRIB_name\":\"Geopotential\",\"GRIB_shortName\":\"z\",\"GRIB_totalNumber\":0,\"GRIB_units\":\"m**2 s**-2\",\"long_name\":\"Geopotential\",\"units\":\"m**2 s**-2\",\"standard_name\":\"geopotential\",\"coordinates\":\"number time step isobaricInhPa latitude longitude valid_time\",\"_ARRAY_DIMENSIONS\":[\"time\",\"step\",\"latitude\",\"longitude\"]}",
+    "z500\/0.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      33005389,
+      6783202
+    ],
+    "z500\/0.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      13178145,
+      6453204
+    ],
+    "z500\/0.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      6808363,
+      6369782
+    ],
+    "z500\/1.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      19631349,
+      6623287
+    ],
+    "z500\/1.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      26254636,
+      6750753
+    ],
+    "z500\/1.0.2.0": ["s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc", 280343, 6528020],
+    "z500\/.zarray": "{\"shape\":[14,113,111,151],\"chunks\":[7,113,37,151],\"dtype\":\"<f4\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":[{\"id\":\"shuffle\",\"elementsize\":4},{\"id\":\"zlib\",\"level\":7}],\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "z500\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"GRIB_paramId\":129,\"GRIB_dataType\":\"fc\",\"GRIB_numberOfPoints\":16761,\"GRIB_typeOfLevel\":\"isobaricInhPa\",\"GRIB_stepUnits\":1,\"GRIB_stepType\":\"instant\",\"GRIB_gridType\":\"regular_ll\",\"GRIB_uvRelativeToGrid\":0,\"GRIB_NV\":0,\"GRIB_Nx\":151,\"GRIB_Ny\":111,\"GRIB_cfName\":\"geopotential\",\"GRIB_cfVarName\":\"z\",\"GRIB_gridDefinitionDescription\":\"Latitude\/Longitude Grid\",\"GRIB_iDirectionIncrementInDegrees\":0.1,\"GRIB_iScansNegatively\":0,\"GRIB_jDirectionIncrementInDegrees\":0.1,\"GRIB_jPointsAreConsecutive\":0,\"GRIB_jScansPositively\":0,\"GRIB_latitudeOfFirstGridPointInDegrees\":-26.0,\"GRIB_latitudeOfLastGridPointInDegrees\":-37.0,\"GRIB_longitudeOfFirstGridPointInDegrees\":111.0,\"GRIB_longitudeOfLastGridPointInDegrees\":126.0,\"GRIB_missingValue\":3.4028234663852886e+38,\"GRIB_name\":\"Geopotential\",\"GRIB_shortName\":\"z\",\"GRIB_totalNumber\":0,\"GRIB_units\":\"m**2 s**-2\",\"long_name\":\"Geopotential\",\"units\":\"m**2 s**-2\",\"standard_name\":\"geopotential\",\"coordinates\":\"number time step isobaricInhPa latitude longitude valid_time\",\"_ARRAY_DIMENSIONS\":[\"time\",\"step\",\"latitude\",\"longitude\"]}",
+    "z850\/0.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1210302496,
+      7465363
+    ],
+    "z850\/0.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1202929564,
+      7372932
+    ],
+    "z850\/0.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1195760480,
+      7169084
+    ],
+    "z850\/1.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1188665484,
+      7094996
+    ],
+    "z850\/1.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1181500342,
+      7165142
+    ],
+    "z850\/1.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1174423849,
+      7076493
+    ],
+    "z850\/.zarray": "{\"shape\":[14,113,111,151],\"chunks\":[7,113,37,151],\"dtype\":\"<f4\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":[{\"id\":\"shuffle\",\"elementsize\":4},{\"id\":\"zlib\",\"level\":7}],\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "z850\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"GRIB_paramId\":129,\"GRIB_dataType\":\"fc\",\"GRIB_numberOfPoints\":16761,\"GRIB_typeOfLevel\":\"isobaricInhPa\",\"GRIB_stepUnits\":1,\"GRIB_stepType\":\"instant\",\"GRIB_gridType\":\"regular_ll\",\"GRIB_uvRelativeToGrid\":0,\"GRIB_NV\":0,\"GRIB_Nx\":151,\"GRIB_Ny\":111,\"GRIB_cfName\":\"geopotential\",\"GRIB_cfVarName\":\"z\",\"GRIB_gridDefinitionDescription\":\"Latitude\/Longitude Grid\",\"GRIB_iDirectionIncrementInDegrees\":0.1,\"GRIB_iScansNegatively\":0,\"GRIB_jDirectionIncrementInDegrees\":0.1,\"GRIB_jPointsAreConsecutive\":0,\"GRIB_jScansPositively\":0,\"GRIB_latitudeOfFirstGridPointInDegrees\":-26.0,\"GRIB_latitudeOfLastGridPointInDegrees\":-37.0,\"GRIB_longitudeOfFirstGridPointInDegrees\":111.0,\"GRIB_longitudeOfLastGridPointInDegrees\":126.0,\"GRIB_missingValue\":3.4028234663852886e+38,\"GRIB_name\":\"Geopotential\",\"GRIB_shortName\":\"z\",\"GRIB_totalNumber\":0,\"GRIB_units\":\"m**2 s**-2\",\"long_name\":\"Geopotential\",\"units\":\"m**2 s**-2\",\"standard_name\":\"geopotential\",\"coordinates\":\"number time step isobaricInhPa latitude longitude valid_time\",\"_ARRAY_DIMENSIONS\":[\"time\",\"step\",\"latitude\",\"longitude\"]}",
+    "z1000\/0.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      552493378,
+      6721220
+    ],
+    "z1000\/0.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      545892031,
+      6601347
+    ],
+    "z1000\/0.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      539639708,
+      6252323
+    ],
+    "z1000\/1.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      532686377,
+      6953331
+    ],
+    "z1000\/1.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      525658643,
+      7027734
+    ],
+    "z1000\/1.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      519008251,
+      6650392
+    ],
+    "z1000\/.zarray": "{\"shape\":[14,113,111,151],\"chunks\":[7,113,37,151],\"dtype\":\"<f4\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":[{\"id\":\"shuffle\",\"elementsize\":4},{\"id\":\"zlib\",\"level\":7}],\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "z1000\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"GRIB_paramId\":129,\"GRIB_dataType\":\"fc\",\"GRIB_numberOfPoints\":16761,\"GRIB_typeOfLevel\":\"isobaricInhPa\",\"GRIB_stepUnits\":1,\"GRIB_stepType\":\"instant\",\"GRIB_gridType\":\"regular_ll\",\"GRIB_uvRelativeToGrid\":0,\"GRIB_NV\":0,\"GRIB_Nx\":151,\"GRIB_Ny\":111,\"GRIB_cfName\":\"geopotential\",\"GRIB_cfVarName\":\"z\",\"GRIB_gridDefinitionDescription\":\"Latitude\/Longitude Grid\",\"GRIB_iDirectionIncrementInDegrees\":0.1,\"GRIB_iScansNegatively\":0,\"GRIB_jDirectionIncrementInDegrees\":0.1,\"GRIB_jPointsAreConsecutive\":0,\"GRIB_jScansPositively\":0,\"GRIB_latitudeOfFirstGridPointInDegrees\":-26.0,\"GRIB_latitudeOfLastGridPointInDegrees\":-37.0,\"GRIB_longitudeOfFirstGridPointInDegrees\":111.0,\"GRIB_longitudeOfLastGridPointInDegrees\":126.0,\"GRIB_missingValue\":3.4028234663852886e+38,\"GRIB_name\":\"Geopotential\",\"GRIB_shortName\":\"z\",\"GRIB_totalNumber\":0,\"GRIB_units\":\"m**2 s**-2\",\"long_name\":\"Geopotential\",\"units\":\"m**2 s**-2\",\"standard_name\":\"geopotential\",\"coordinates\":\"number time step isobaricInhPa latitude longitude valid_time\",\"_ARRAY_DIMENSIONS\":[\"time\",\"step\",\"latitude\",\"longitude\"]}",
+    "q250\/0.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1491734183,
+      7284262
+    ],
+    "q250\/0.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1484510269,
+      7223914
+    ],
+    "q250\/0.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1477126367,
+      7383902
+    ],
+    "q250\/1.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1469828978,
+      7297389
+    ],
+    "q250\/1.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1462344218,
+      7484760
+    ],
+    "q250\/1.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1455041118,
+      7303100
+    ],
+    "q250\/.zarray": "{\"shape\":[14,113,111,151],\"chunks\":[7,113,37,151],\"dtype\":\"<f4\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":[{\"id\":\"shuffle\",\"elementsize\":4},{\"id\":\"zlib\",\"level\":7}],\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "q250\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"GRIB_paramId\":133,\"GRIB_dataType\":\"fc\",\"GRIB_numberOfPoints\":16761,\"GRIB_typeOfLevel\":\"isobaricInhPa\",\"GRIB_stepUnits\":1,\"GRIB_stepType\":\"instant\",\"GRIB_gridType\":\"regular_ll\",\"GRIB_uvRelativeToGrid\":0,\"GRIB_NV\":0,\"GRIB_Nx\":151,\"GRIB_Ny\":111,\"GRIB_cfName\":\"specific_humidity\",\"GRIB_cfVarName\":\"q\",\"GRIB_gridDefinitionDescription\":\"Latitude\/Longitude Grid\",\"GRIB_iDirectionIncrementInDegrees\":0.1,\"GRIB_iScansNegatively\":0,\"GRIB_jDirectionIncrementInDegrees\":0.1,\"GRIB_jPointsAreConsecutive\":0,\"GRIB_jScansPositively\":0,\"GRIB_latitudeOfFirstGridPointInDegrees\":-26.0,\"GRIB_latitudeOfLastGridPointInDegrees\":-37.0,\"GRIB_longitudeOfFirstGridPointInDegrees\":111.0,\"GRIB_longitudeOfLastGridPointInDegrees\":126.0,\"GRIB_missingValue\":3.4028234663852886e+38,\"GRIB_name\":\"Specific humidity\",\"GRIB_shortName\":\"q\",\"GRIB_totalNumber\":0,\"GRIB_units\":\"kg kg**-1\",\"long_name\":\"Specific humidity\",\"units\":\"kg kg**-1\",\"standard_name\":\"specific_humidity\",\"coordinates\":\"number time step isobaricInhPa latitude longitude valid_time\",\"_ARRAY_DIMENSIONS\":[\"time\",\"step\",\"latitude\",\"longitude\"]}",
+    "q500\/0.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      758853653,
+      8455219
+    ],
+    "q500\/0.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      750635643,
+      8218010
+    ],
+    "q500\/0.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      742538235,
+      8097408
+    ],
+    "q500\/1.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      734797538,
+      7740697
+    ],
+    "q500\/1.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      726531336,
+      8266202
+    ],
+    "q500\/1.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      718207136,
+      8324200
+    ],
+    "q500\/.zarray": "{\"shape\":[14,113,111,151],\"chunks\":[7,113,37,151],\"dtype\":\"<f4\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":[{\"id\":\"shuffle\",\"elementsize\":4},{\"id\":\"zlib\",\"level\":7}],\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "q500\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"GRIB_paramId\":133,\"GRIB_dataType\":\"fc\",\"GRIB_numberOfPoints\":16761,\"GRIB_typeOfLevel\":\"isobaricInhPa\",\"GRIB_stepUnits\":1,\"GRIB_stepType\":\"instant\",\"GRIB_gridType\":\"regular_ll\",\"GRIB_uvRelativeToGrid\":0,\"GRIB_NV\":0,\"GRIB_Nx\":151,\"GRIB_Ny\":111,\"GRIB_cfName\":\"specific_humidity\",\"GRIB_cfVarName\":\"q\",\"GRIB_gridDefinitionDescription\":\"Latitude\/Longitude Grid\",\"GRIB_iDirectionIncrementInDegrees\":0.1,\"GRIB_iScansNegatively\":0,\"GRIB_jDirectionIncrementInDegrees\":0.1,\"GRIB_jPointsAreConsecutive\":0,\"GRIB_jScansPositively\":0,\"GRIB_latitudeOfFirstGridPointInDegrees\":-26.0,\"GRIB_latitudeOfLastGridPointInDegrees\":-37.0,\"GRIB_longitudeOfFirstGridPointInDegrees\":111.0,\"GRIB_longitudeOfLastGridPointInDegrees\":126.0,\"GRIB_missingValue\":3.4028234663852886e+38,\"GRIB_name\":\"Specific humidity\",\"GRIB_shortName\":\"q\",\"GRIB_totalNumber\":0,\"GRIB_units\":\"kg kg**-1\",\"long_name\":\"Specific humidity\",\"units\":\"kg kg**-1\",\"standard_name\":\"specific_humidity\",\"coordinates\":\"number time step isobaricInhPa latitude longitude valid_time\",\"_ARRAY_DIMENSIONS\":[\"time\",\"step\",\"latitude\",\"longitude\"]}",
+    "q850\/0.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      642807365,
+      8190039
+    ],
+    "q850\/0.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      634543390,
+      8263975
+    ],
+    "q850\/0.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      626209539,
+      8333851
+    ],
+    "q850\/1.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      617768515,
+      8441024
+    ],
+    "q850\/1.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      609628091,
+      8140424
+    ],
+    "q850\/1.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      601678076,
+      7950015
+    ],
+    "q850\/.zarray": "{\"shape\":[14,113,111,151],\"chunks\":[7,113,37,151],\"dtype\":\"<f4\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":[{\"id\":\"shuffle\",\"elementsize\":4},{\"id\":\"zlib\",\"level\":7}],\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "q850\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"GRIB_paramId\":133,\"GRIB_dataType\":\"fc\",\"GRIB_numberOfPoints\":16761,\"GRIB_typeOfLevel\":\"isobaricInhPa\",\"GRIB_stepUnits\":1,\"GRIB_stepType\":\"instant\",\"GRIB_gridType\":\"regular_ll\",\"GRIB_uvRelativeToGrid\":0,\"GRIB_NV\":0,\"GRIB_Nx\":151,\"GRIB_Ny\":111,\"GRIB_cfName\":\"specific_humidity\",\"GRIB_cfVarName\":\"q\",\"GRIB_gridDefinitionDescription\":\"Latitude\/Longitude Grid\",\"GRIB_iDirectionIncrementInDegrees\":0.1,\"GRIB_iScansNegatively\":0,\"GRIB_jDirectionIncrementInDegrees\":0.1,\"GRIB_jPointsAreConsecutive\":0,\"GRIB_jScansPositively\":0,\"GRIB_latitudeOfFirstGridPointInDegrees\":-26.0,\"GRIB_latitudeOfLastGridPointInDegrees\":-37.0,\"GRIB_longitudeOfFirstGridPointInDegrees\":111.0,\"GRIB_longitudeOfLastGridPointInDegrees\":126.0,\"GRIB_missingValue\":3.4028234663852886e+38,\"GRIB_name\":\"Specific humidity\",\"GRIB_shortName\":\"q\",\"GRIB_totalNumber\":0,\"GRIB_units\":\"kg kg**-1\",\"long_name\":\"Specific humidity\",\"units\":\"kg kg**-1\",\"standard_name\":\"specific_humidity\",\"coordinates\":\"number time step isobaricInhPa latitude longitude valid_time\",\"_ARRAY_DIMENSIONS\":[\"time\",\"step\",\"latitude\",\"longitude\"]}",
+    "q1000\/0.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      341223709,
+      8038972
+    ],
+    "q1000\/0.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      333653381,
+      7570328
+    ],
+    "q1000\/0.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      326583864,
+      7069517
+    ],
+    "q1000\/1.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      318500051,
+      8083813
+    ],
+    "q1000\/1.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      310705775,
+      7794276
+    ],
+    "q1000\/1.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      303433172,
+      7272603
+    ],
+    "q1000\/.zarray": "{\"shape\":[14,113,111,151],\"chunks\":[7,113,37,151],\"dtype\":\"<f4\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":[{\"id\":\"shuffle\",\"elementsize\":4},{\"id\":\"zlib\",\"level\":7}],\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "q1000\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"GRIB_paramId\":133,\"GRIB_dataType\":\"fc\",\"GRIB_numberOfPoints\":16761,\"GRIB_typeOfLevel\":\"isobaricInhPa\",\"GRIB_stepUnits\":1,\"GRIB_stepType\":\"instant\",\"GRIB_gridType\":\"regular_ll\",\"GRIB_uvRelativeToGrid\":0,\"GRIB_NV\":0,\"GRIB_Nx\":151,\"GRIB_Ny\":111,\"GRIB_cfName\":\"specific_humidity\",\"GRIB_cfVarName\":\"q\",\"GRIB_gridDefinitionDescription\":\"Latitude\/Longitude Grid\",\"GRIB_iDirectionIncrementInDegrees\":0.1,\"GRIB_iScansNegatively\":0,\"GRIB_jDirectionIncrementInDegrees\":0.1,\"GRIB_jPointsAreConsecutive\":0,\"GRIB_jScansPositively\":0,\"GRIB_latitudeOfFirstGridPointInDegrees\":-26.0,\"GRIB_latitudeOfLastGridPointInDegrees\":-37.0,\"GRIB_longitudeOfFirstGridPointInDegrees\":111.0,\"GRIB_longitudeOfLastGridPointInDegrees\":126.0,\"GRIB_missingValue\":3.4028234663852886e+38,\"GRIB_name\":\"Specific humidity\",\"GRIB_shortName\":\"q\",\"GRIB_totalNumber\":0,\"GRIB_units\":\"kg kg**-1\",\"long_name\":\"Specific humidity\",\"units\":\"kg kg**-1\",\"standard_name\":\"specific_humidity\",\"coordinates\":\"number time step isobaricInhPa latitude longitude valid_time\",\"_ARRAY_DIMENSIONS\":[\"time\",\"step\",\"latitude\",\"longitude\"]}",
+    "w250\/0.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1334227168,
+      10987532
+    ],
+    "w250\/0.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1323455251,
+      10771917
+    ],
+    "w250\/0.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1313044547,
+      10410704
+    ],
+    "w250\/1.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1302131001,
+      10913546
+    ],
+    "w250\/1.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1291230219,
+      10900782
+    ],
+    "w250\/1.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1280719348,
+      10510871
+    ],
+    "w250\/.zarray": "{\"shape\":[14,113,111,151],\"chunks\":[7,113,37,151],\"dtype\":\"<f4\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":[{\"id\":\"shuffle\",\"elementsize\":4},{\"id\":\"zlib\",\"level\":7}],\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "w250\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"GRIB_paramId\":135,\"GRIB_dataType\":\"fc\",\"GRIB_numberOfPoints\":16761,\"GRIB_typeOfLevel\":\"isobaricInhPa\",\"GRIB_stepUnits\":1,\"GRIB_stepType\":\"instant\",\"GRIB_gridType\":\"regular_ll\",\"GRIB_uvRelativeToGrid\":0,\"GRIB_NV\":0,\"GRIB_Nx\":151,\"GRIB_Ny\":111,\"GRIB_cfName\":\"lagrangian_tendency_of_air_pressure\",\"GRIB_cfVarName\":\"w\",\"GRIB_gridDefinitionDescription\":\"Latitude\/Longitude Grid\",\"GRIB_iDirectionIncrementInDegrees\":0.1,\"GRIB_iScansNegatively\":0,\"GRIB_jDirectionIncrementInDegrees\":0.1,\"GRIB_jPointsAreConsecutive\":0,\"GRIB_jScansPositively\":0,\"GRIB_latitudeOfFirstGridPointInDegrees\":-26.0,\"GRIB_latitudeOfLastGridPointInDegrees\":-37.0,\"GRIB_longitudeOfFirstGridPointInDegrees\":111.0,\"GRIB_longitudeOfLastGridPointInDegrees\":126.0,\"GRIB_missingValue\":3.4028234663852886e+38,\"GRIB_name\":\"Vertical velocity\",\"GRIB_shortName\":\"w\",\"GRIB_totalNumber\":0,\"GRIB_units\":\"Pa s**-1\",\"long_name\":\"Vertical velocity\",\"units\":\"Pa s**-1\",\"standard_name\":\"lagrangian_tendency_of_air_pressure\",\"coordinates\":\"number time step isobaricInhPa latitude longitude valid_time\",\"_ARRAY_DIMENSIONS\":[\"time\",\"step\",\"latitude\",\"longitude\"]}",
+    "w500\/0.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1270081299,
+      10634393
+    ],
+    "w500\/0.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1259766827,
+      10314472
+    ],
+    "w500\/0.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1249736230,
+      10030597
+    ],
+    "w500\/1.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1239143376,
+      10592854
+    ],
+    "w500\/1.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1228374258,
+      10769118
+    ],
+    "w500\/1.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1217771515,
+      10602743
+    ],
+    "w500\/.zarray": "{\"shape\":[14,113,111,151],\"chunks\":[7,113,37,151],\"dtype\":\"<f4\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":[{\"id\":\"shuffle\",\"elementsize\":4},{\"id\":\"zlib\",\"level\":7}],\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "w500\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"GRIB_paramId\":135,\"GRIB_dataType\":\"fc\",\"GRIB_numberOfPoints\":16761,\"GRIB_typeOfLevel\":\"isobaricInhPa\",\"GRIB_stepUnits\":1,\"GRIB_stepType\":\"instant\",\"GRIB_gridType\":\"regular_ll\",\"GRIB_uvRelativeToGrid\":0,\"GRIB_NV\":0,\"GRIB_Nx\":151,\"GRIB_Ny\":111,\"GRIB_cfName\":\"lagrangian_tendency_of_air_pressure\",\"GRIB_cfVarName\":\"w\",\"GRIB_gridDefinitionDescription\":\"Latitude\/Longitude Grid\",\"GRIB_iDirectionIncrementInDegrees\":0.1,\"GRIB_iScansNegatively\":0,\"GRIB_jDirectionIncrementInDegrees\":0.1,\"GRIB_jPointsAreConsecutive\":0,\"GRIB_jScansPositively\":0,\"GRIB_latitudeOfFirstGridPointInDegrees\":-26.0,\"GRIB_latitudeOfLastGridPointInDegrees\":-37.0,\"GRIB_longitudeOfFirstGridPointInDegrees\":111.0,\"GRIB_longitudeOfLastGridPointInDegrees\":126.0,\"GRIB_missingValue\":3.4028234663852886e+38,\"GRIB_name\":\"Vertical velocity\",\"GRIB_shortName\":\"w\",\"GRIB_totalNumber\":0,\"GRIB_units\":\"Pa s**-1\",\"long_name\":\"Vertical velocity\",\"units\":\"Pa s**-1\",\"standard_name\":\"lagrangian_tendency_of_air_pressure\",\"coordinates\":\"number time step isobaricInhPa latitude longitude valid_time\",\"_ARRAY_DIMENSIONS\":[\"time\",\"step\",\"latitude\",\"longitude\"]}",
+    "w850\/0.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      269202379,
+      11183437
+    ],
+    "w850\/0.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      258531205,
+      10671174
+    ],
+    "w850\/0.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      248540452,
+      9990753
+    ],
+    "w850\/1.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      237532583,
+      11007869
+    ],
+    "w850\/1.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      226525333,
+      11007250
+    ],
+    "w850\/1.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      215847344,
+      10677989
+    ],
+    "w850\/.zarray": "{\"shape\":[14,113,111,151],\"chunks\":[7,113,37,151],\"dtype\":\"<f4\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":[{\"id\":\"shuffle\",\"elementsize\":4},{\"id\":\"zlib\",\"level\":7}],\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "w850\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"GRIB_paramId\":135,\"GRIB_dataType\":\"fc\",\"GRIB_numberOfPoints\":16761,\"GRIB_typeOfLevel\":\"isobaricInhPa\",\"GRIB_stepUnits\":1,\"GRIB_stepType\":\"instant\",\"GRIB_gridType\":\"regular_ll\",\"GRIB_uvRelativeToGrid\":0,\"GRIB_NV\":0,\"GRIB_Nx\":151,\"GRIB_Ny\":111,\"GRIB_cfName\":\"lagrangian_tendency_of_air_pressure\",\"GRIB_cfVarName\":\"w\",\"GRIB_gridDefinitionDescription\":\"Latitude\/Longitude Grid\",\"GRIB_iDirectionIncrementInDegrees\":0.1,\"GRIB_iScansNegatively\":0,\"GRIB_jDirectionIncrementInDegrees\":0.1,\"GRIB_jPointsAreConsecutive\":0,\"GRIB_jScansPositively\":0,\"GRIB_latitudeOfFirstGridPointInDegrees\":-26.0,\"GRIB_latitudeOfLastGridPointInDegrees\":-37.0,\"GRIB_longitudeOfFirstGridPointInDegrees\":111.0,\"GRIB_longitudeOfLastGridPointInDegrees\":126.0,\"GRIB_missingValue\":3.4028234663852886e+38,\"GRIB_name\":\"Vertical velocity\",\"GRIB_shortName\":\"w\",\"GRIB_totalNumber\":0,\"GRIB_units\":\"Pa s**-1\",\"long_name\":\"Vertical velocity\",\"units\":\"Pa s**-1\",\"standard_name\":\"lagrangian_tendency_of_air_pressure\",\"coordinates\":\"number time step isobaricInhPa latitude longitude valid_time\",\"_ARRAY_DIMENSIONS\":[\"time\",\"step\",\"latitude\",\"longitude\"]}",
+    "w1000\/0.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1804069785,
+      11724503
+    ],
+    "w1000\/0.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1792407250,
+      11662535
+    ],
+    "w1000\/0.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1781079719,
+      11327531
+    ],
+    "w1000\/1.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1769329579,
+      11750140
+    ],
+    "w1000\/1.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1757679778,
+      11649801
+    ],
+    "w1000\/1.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1746420097,
+      11259681
+    ],
+    "w1000\/.zarray": "{\"shape\":[14,113,111,151],\"chunks\":[7,113,37,151],\"dtype\":\"<f4\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":[{\"id\":\"shuffle\",\"elementsize\":4},{\"id\":\"zlib\",\"level\":7}],\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "w1000\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"GRIB_paramId\":135,\"GRIB_dataType\":\"fc\",\"GRIB_numberOfPoints\":16761,\"GRIB_typeOfLevel\":\"isobaricInhPa\",\"GRIB_stepUnits\":1,\"GRIB_stepType\":\"instant\",\"GRIB_gridType\":\"regular_ll\",\"GRIB_uvRelativeToGrid\":0,\"GRIB_NV\":0,\"GRIB_Nx\":151,\"GRIB_Ny\":111,\"GRIB_cfName\":\"lagrangian_tendency_of_air_pressure\",\"GRIB_cfVarName\":\"w\",\"GRIB_gridDefinitionDescription\":\"Latitude\/Longitude Grid\",\"GRIB_iDirectionIncrementInDegrees\":0.1,\"GRIB_iScansNegatively\":0,\"GRIB_jDirectionIncrementInDegrees\":0.1,\"GRIB_jPointsAreConsecutive\":0,\"GRIB_jScansPositively\":0,\"GRIB_latitudeOfFirstGridPointInDegrees\":-26.0,\"GRIB_latitudeOfLastGridPointInDegrees\":-37.0,\"GRIB_longitudeOfFirstGridPointInDegrees\":111.0,\"GRIB_longitudeOfLastGridPointInDegrees\":126.0,\"GRIB_missingValue\":3.4028234663852886e+38,\"GRIB_name\":\"Vertical velocity\",\"GRIB_shortName\":\"w\",\"GRIB_totalNumber\":0,\"GRIB_units\":\"Pa s**-1\",\"long_name\":\"Vertical velocity\",\"units\":\"Pa s**-1\",\"standard_name\":\"lagrangian_tendency_of_air_pressure\",\"coordinates\":\"number time step isobaricInhPa latitude longitude valid_time\",\"_ARRAY_DIMENSIONS\":[\"time\",\"step\",\"latitude\",\"longitude\"]}",
+    "u250\/0.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      509875973,
+      9128622
+    ],
+    "u250\/0.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      500737837,
+      9138136
+    ],
+    "u250\/0.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      491707832,
+      9030005
+    ],
+    "u250\/1.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      483010739,
+      8697093
+    ],
+    "u250\/1.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      474217726,
+      8793013
+    ],
+    "u250\/1.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      465155828,
+      9061898
+    ],
+    "u250\/.zarray": "{\"shape\":[14,113,111,151],\"chunks\":[7,113,37,151],\"dtype\":\"<f4\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":[{\"id\":\"shuffle\",\"elementsize\":4},{\"id\":\"zlib\",\"level\":7}],\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "u250\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"GRIB_paramId\":131,\"GRIB_dataType\":\"fc\",\"GRIB_numberOfPoints\":16761,\"GRIB_typeOfLevel\":\"isobaricInhPa\",\"GRIB_stepUnits\":1,\"GRIB_stepType\":\"instant\",\"GRIB_gridType\":\"regular_ll\",\"GRIB_uvRelativeToGrid\":0,\"GRIB_NV\":0,\"GRIB_Nx\":151,\"GRIB_Ny\":111,\"GRIB_cfName\":\"eastward_wind\",\"GRIB_cfVarName\":\"u\",\"GRIB_gridDefinitionDescription\":\"Latitude\/Longitude Grid\",\"GRIB_iDirectionIncrementInDegrees\":0.1,\"GRIB_iScansNegatively\":0,\"GRIB_jDirectionIncrementInDegrees\":0.1,\"GRIB_jPointsAreConsecutive\":0,\"GRIB_jScansPositively\":0,\"GRIB_latitudeOfFirstGridPointInDegrees\":-26.0,\"GRIB_latitudeOfLastGridPointInDegrees\":-37.0,\"GRIB_longitudeOfFirstGridPointInDegrees\":111.0,\"GRIB_longitudeOfLastGridPointInDegrees\":126.0,\"GRIB_missingValue\":3.4028234663852886e+38,\"GRIB_name\":\"U component of wind\",\"GRIB_shortName\":\"u\",\"GRIB_totalNumber\":0,\"GRIB_units\":\"km\/h\",\"long_name\":\"U component of wind\",\"units\":\"km\/h\",\"standard_name\":\"eastward_wind\",\"coordinates\":\"depthBelowLandLayer number surface valid_time\",\"_ARRAY_DIMENSIONS\":[\"time\",\"step\",\"latitude\",\"longitude\"]}",
+    "u500\/0.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      850928193,
+      10999688
+    ],
+    "u500\/0.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      840379571,
+      10548622
+    ],
+    "u500\/0.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      830934879,
+      9444692
+    ],
+    "u500\/1.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      821492248,
+      9442631
+    ],
+    "u500\/1.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      812123964,
+      9368284
+    ],
+    "u500\/1.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      802551081,
+      9572883
+    ],
+    "u500\/.zarray": "{\"shape\":[14,113,111,151],\"chunks\":[7,113,37,151],\"dtype\":\"<f4\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":[{\"id\":\"shuffle\",\"elementsize\":4},{\"id\":\"zlib\",\"level\":7}],\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "u500\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"GRIB_paramId\":131,\"GRIB_dataType\":\"fc\",\"GRIB_numberOfPoints\":16761,\"GRIB_typeOfLevel\":\"isobaricInhPa\",\"GRIB_stepUnits\":1,\"GRIB_stepType\":\"instant\",\"GRIB_gridType\":\"regular_ll\",\"GRIB_uvRelativeToGrid\":0,\"GRIB_NV\":0,\"GRIB_Nx\":151,\"GRIB_Ny\":111,\"GRIB_cfName\":\"eastward_wind\",\"GRIB_cfVarName\":\"u\",\"GRIB_gridDefinitionDescription\":\"Latitude\/Longitude Grid\",\"GRIB_iDirectionIncrementInDegrees\":0.1,\"GRIB_iScansNegatively\":0,\"GRIB_jDirectionIncrementInDegrees\":0.1,\"GRIB_jPointsAreConsecutive\":0,\"GRIB_jScansPositively\":0,\"GRIB_latitudeOfFirstGridPointInDegrees\":-26.0,\"GRIB_latitudeOfLastGridPointInDegrees\":-37.0,\"GRIB_longitudeOfFirstGridPointInDegrees\":111.0,\"GRIB_longitudeOfLastGridPointInDegrees\":126.0,\"GRIB_missingValue\":3.4028234663852886e+38,\"GRIB_name\":\"U component of wind\",\"GRIB_shortName\":\"u\",\"GRIB_totalNumber\":0,\"GRIB_units\":\"km\/h\",\"long_name\":\"U component of wind\",\"units\":\"km\/h\",\"standard_name\":\"eastward_wind\",\"coordinates\":\"depthBelowLandLayer number surface valid_time\",\"_ARRAY_DIMENSIONS\":[\"time\",\"step\",\"latitude\",\"longitude\"]}",
+    "u850\/0.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1442601243,
+      12436219
+    ],
+    "u850\/0.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1430437215,
+      12164028
+    ],
+    "u850\/0.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1418937667,
+      11499548
+    ],
+    "u850\/1.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1406829611,
+      12108056
+    ],
+    "u850\/1.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1394919949,
+      11909662
+    ],
+    "u850\/1.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1383764756,
+      11155193
+    ],
+    "u850\/.zarray": "{\"shape\":[14,113,111,151],\"chunks\":[7,113,37,151],\"dtype\":\"<f4\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":[{\"id\":\"shuffle\",\"elementsize\":4},{\"id\":\"zlib\",\"level\":7}],\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "u850\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"GRIB_paramId\":131,\"GRIB_dataType\":\"fc\",\"GRIB_numberOfPoints\":16761,\"GRIB_typeOfLevel\":\"isobaricInhPa\",\"GRIB_stepUnits\":1,\"GRIB_stepType\":\"instant\",\"GRIB_gridType\":\"regular_ll\",\"GRIB_uvRelativeToGrid\":0,\"GRIB_NV\":0,\"GRIB_Nx\":151,\"GRIB_Ny\":111,\"GRIB_cfName\":\"eastward_wind\",\"GRIB_cfVarName\":\"u\",\"GRIB_gridDefinitionDescription\":\"Latitude\/Longitude Grid\",\"GRIB_iDirectionIncrementInDegrees\":0.1,\"GRIB_iScansNegatively\":0,\"GRIB_jDirectionIncrementInDegrees\":0.1,\"GRIB_jPointsAreConsecutive\":0,\"GRIB_jScansPositively\":0,\"GRIB_latitudeOfFirstGridPointInDegrees\":-26.0,\"GRIB_latitudeOfLastGridPointInDegrees\":-37.0,\"GRIB_longitudeOfFirstGridPointInDegrees\":111.0,\"GRIB_longitudeOfLastGridPointInDegrees\":126.0,\"GRIB_missingValue\":3.4028234663852886e+38,\"GRIB_name\":\"U component of wind\",\"GRIB_shortName\":\"u\",\"GRIB_totalNumber\":0,\"GRIB_units\":\"km\/h\",\"long_name\":\"U component of wind\",\"units\":\"km\/h\",\"standard_name\":\"eastward_wind\",\"coordinates\":\"depthBelowLandLayer number surface valid_time\",\"_ARRAY_DIMENSIONS\":[\"time\",\"step\",\"latitude\",\"longitude\"]}",
+    "u1000\/0.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1559534631,
+      12499667
+    ],
+    "u1000\/0.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1547304590,
+      12230041
+    ],
+    "u1000\/0.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1535582499,
+      11722091
+    ],
+    "u1000\/1.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1523090785,
+      12491714
+    ],
+    "u1000\/1.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1510789946,
+      12300839
+    ],
+    "u1000\/1.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1499022101,
+      11767845
+    ],
+    "u1000\/.zarray": "{\"shape\":[14,113,111,151],\"chunks\":[7,113,37,151],\"dtype\":\"<f4\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":[{\"id\":\"shuffle\",\"elementsize\":4},{\"id\":\"zlib\",\"level\":7}],\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "u1000\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"GRIB_paramId\":131,\"GRIB_dataType\":\"fc\",\"GRIB_numberOfPoints\":16761,\"GRIB_typeOfLevel\":\"isobaricInhPa\",\"GRIB_stepUnits\":1,\"GRIB_stepType\":\"instant\",\"GRIB_gridType\":\"regular_ll\",\"GRIB_uvRelativeToGrid\":0,\"GRIB_NV\":0,\"GRIB_Nx\":151,\"GRIB_Ny\":111,\"GRIB_cfName\":\"eastward_wind\",\"GRIB_cfVarName\":\"u\",\"GRIB_gridDefinitionDescription\":\"Latitude\/Longitude Grid\",\"GRIB_iDirectionIncrementInDegrees\":0.1,\"GRIB_iScansNegatively\":0,\"GRIB_jDirectionIncrementInDegrees\":0.1,\"GRIB_jPointsAreConsecutive\":0,\"GRIB_jScansPositively\":0,\"GRIB_latitudeOfFirstGridPointInDegrees\":-26.0,\"GRIB_latitudeOfLastGridPointInDegrees\":-37.0,\"GRIB_longitudeOfFirstGridPointInDegrees\":111.0,\"GRIB_longitudeOfLastGridPointInDegrees\":126.0,\"GRIB_missingValue\":3.4028234663852886e+38,\"GRIB_name\":\"U component of wind\",\"GRIB_shortName\":\"u\",\"GRIB_totalNumber\":0,\"GRIB_units\":\"km\/h\",\"long_name\":\"U component of wind\",\"units\":\"km\/h\",\"standard_name\":\"eastward_wind\",\"coordinates\":\"depthBelowLandLayer number surface valid_time\",\"_ARRAY_DIMENSIONS\":[\"time\",\"step\",\"latitude\",\"longitude\"]}",
+    "v250\/0.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1662810643,
+      10359467
+    ],
+    "v250\/0.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1652301350,
+      10509293
+    ],
+    "v250\/0.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1641294298,
+      11007052
+    ],
+    "v250\/1.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1630573358,
+      10720940
+    ],
+    "v250\/1.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1620081153,
+      10492205
+    ],
+    "v250\/1.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1609603033,
+      10478120
+    ],
+    "v250\/.zarray": "{\"shape\":[14,113,111,151],\"chunks\":[7,113,37,151],\"dtype\":\"<f4\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":[{\"id\":\"shuffle\",\"elementsize\":4},{\"id\":\"zlib\",\"level\":7}],\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "v250\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"GRIB_paramId\":132,\"GRIB_dataType\":\"fc\",\"GRIB_numberOfPoints\":16761,\"GRIB_typeOfLevel\":\"isobaricInhPa\",\"GRIB_stepUnits\":1,\"GRIB_stepType\":\"instant\",\"GRIB_gridType\":\"regular_ll\",\"GRIB_uvRelativeToGrid\":0,\"GRIB_NV\":0,\"GRIB_Nx\":151,\"GRIB_Ny\":111,\"GRIB_cfName\":\"northward_wind\",\"GRIB_cfVarName\":\"v\",\"GRIB_gridDefinitionDescription\":\"Latitude\/Longitude Grid\",\"GRIB_iDirectionIncrementInDegrees\":0.1,\"GRIB_iScansNegatively\":0,\"GRIB_jDirectionIncrementInDegrees\":0.1,\"GRIB_jPointsAreConsecutive\":0,\"GRIB_jScansPositively\":0,\"GRIB_latitudeOfFirstGridPointInDegrees\":-26.0,\"GRIB_latitudeOfLastGridPointInDegrees\":-37.0,\"GRIB_longitudeOfFirstGridPointInDegrees\":111.0,\"GRIB_longitudeOfLastGridPointInDegrees\":126.0,\"GRIB_missingValue\":3.4028234663852886e+38,\"GRIB_name\":\"V component of wind\",\"GRIB_shortName\":\"v\",\"GRIB_totalNumber\":0,\"GRIB_units\":\"km\/h\",\"long_name\":\"V component of wind\",\"units\":\"km\/h\",\"standard_name\":\"northward_wind\",\"coordinates\":\"depthBelowLandLayer number surface valid_time\",\"_ARRAY_DIMENSIONS\":[\"time\",\"step\",\"latitude\",\"longitude\"]}",
+    "v500\/0.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1118228119,
+      12009598
+    ],
+    "v500\/0.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1106560980,
+      11667139
+    ],
+    "v500\/0.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1095511115,
+      11049865
+    ],
+    "v500\/1.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1084181064,
+      11330051
+    ],
+    "v500\/1.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1073171402,
+      11009662
+    ],
+    "v500\/1.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1062464298,
+      10707104
+    ],
+    "v500\/.zarray": "{\"shape\":[14,113,111,151],\"chunks\":[7,113,37,151],\"dtype\":\"<f4\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":[{\"id\":\"shuffle\",\"elementsize\":4},{\"id\":\"zlib\",\"level\":7}],\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "v500\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"GRIB_paramId\":132,\"GRIB_dataType\":\"fc\",\"GRIB_numberOfPoints\":16761,\"GRIB_typeOfLevel\":\"isobaricInhPa\",\"GRIB_stepUnits\":1,\"GRIB_stepType\":\"instant\",\"GRIB_gridType\":\"regular_ll\",\"GRIB_uvRelativeToGrid\":0,\"GRIB_NV\":0,\"GRIB_Nx\":151,\"GRIB_Ny\":111,\"GRIB_cfName\":\"northward_wind\",\"GRIB_cfVarName\":\"v\",\"GRIB_gridDefinitionDescription\":\"Latitude\/Longitude Grid\",\"GRIB_iDirectionIncrementInDegrees\":0.1,\"GRIB_iScansNegatively\":0,\"GRIB_jDirectionIncrementInDegrees\":0.1,\"GRIB_jPointsAreConsecutive\":0,\"GRIB_jScansPositively\":0,\"GRIB_latitudeOfFirstGridPointInDegrees\":-26.0,\"GRIB_latitudeOfLastGridPointInDegrees\":-37.0,\"GRIB_longitudeOfFirstGridPointInDegrees\":111.0,\"GRIB_longitudeOfLastGridPointInDegrees\":126.0,\"GRIB_missingValue\":3.4028234663852886e+38,\"GRIB_name\":\"V component of wind\",\"GRIB_shortName\":\"v\",\"GRIB_totalNumber\":0,\"GRIB_units\":\"km\/h\",\"long_name\":\"V component of wind\",\"units\":\"km\/h\",\"standard_name\":\"northward_wind\",\"coordinates\":\"depthBelowLandLayer number surface valid_time\",\"_ARRAY_DIMENSIONS\":[\"time\",\"step\",\"latitude\",\"longitude\"]}",
+    "v850\/0.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1733741672,
+      12674769
+    ],
+    "v850\/0.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1721489806,
+      12251866
+    ],
+    "v850\/0.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1709767220,
+      11722586
+    ],
+    "v850\/1.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1697542169,
+      12225051
+    ],
+    "v850\/1.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1685275973,
+      12266196
+    ],
+    "v850\/1.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1673173766,
+      12102207
+    ],
+    "v850\/.zarray": "{\"shape\":[14,113,111,151],\"chunks\":[7,113,37,151],\"dtype\":\"<f4\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":[{\"id\":\"shuffle\",\"elementsize\":4},{\"id\":\"zlib\",\"level\":7}],\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "v850\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"GRIB_paramId\":132,\"GRIB_dataType\":\"fc\",\"GRIB_numberOfPoints\":16761,\"GRIB_typeOfLevel\":\"isobaricInhPa\",\"GRIB_stepUnits\":1,\"GRIB_stepType\":\"instant\",\"GRIB_gridType\":\"regular_ll\",\"GRIB_uvRelativeToGrid\":0,\"GRIB_NV\":0,\"GRIB_Nx\":151,\"GRIB_Ny\":111,\"GRIB_cfName\":\"northward_wind\",\"GRIB_cfVarName\":\"v\",\"GRIB_gridDefinitionDescription\":\"Latitude\/Longitude Grid\",\"GRIB_iDirectionIncrementInDegrees\":0.1,\"GRIB_iScansNegatively\":0,\"GRIB_jDirectionIncrementInDegrees\":0.1,\"GRIB_jPointsAreConsecutive\":0,\"GRIB_jScansPositively\":0,\"GRIB_latitudeOfFirstGridPointInDegrees\":-26.0,\"GRIB_latitudeOfLastGridPointInDegrees\":-37.0,\"GRIB_longitudeOfFirstGridPointInDegrees\":111.0,\"GRIB_longitudeOfLastGridPointInDegrees\":126.0,\"GRIB_missingValue\":3.4028234663852886e+38,\"GRIB_name\":\"V component of wind\",\"GRIB_shortName\":\"v\",\"GRIB_totalNumber\":0,\"GRIB_units\":\"km\/h\",\"long_name\":\"V component of wind\",\"units\":\"km\/h\",\"standard_name\":\"northward_wind\",\"coordinates\":\"depthBelowLandLayer number surface valid_time\",\"_ARRAY_DIMENSIONS\":[\"time\",\"step\",\"latitude\",\"longitude\"]}",
+    "v1000\/0.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      452576836,
+      12575336
+    ],
+    "v1000\/0.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      440170222,
+      12406614
+    ],
+    "v1000\/0.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      428217600,
+      11952622
+    ],
+    "v1000\/1.0.0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      415938248,
+      12279352
+    ],
+    "v1000\/1.0.1.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      403379304,
+      12558944
+    ],
+    "v1000\/1.0.2.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      391113031,
+      12266273
+    ],
+    "v1000\/.zarray": "{\"shape\":[14,113,111,151],\"chunks\":[7,113,37,151],\"dtype\":\"<f4\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":[{\"id\":\"shuffle\",\"elementsize\":4},{\"id\":\"zlib\",\"level\":7}],\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "v1000\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"GRIB_paramId\":132,\"GRIB_dataType\":\"fc\",\"GRIB_numberOfPoints\":16761,\"GRIB_typeOfLevel\":\"isobaricInhPa\",\"GRIB_stepUnits\":1,\"GRIB_stepType\":\"instant\",\"GRIB_gridType\":\"regular_ll\",\"GRIB_uvRelativeToGrid\":0,\"GRIB_NV\":0,\"GRIB_Nx\":151,\"GRIB_Ny\":111,\"GRIB_cfName\":\"northward_wind\",\"GRIB_cfVarName\":\"v\",\"GRIB_gridDefinitionDescription\":\"Latitude\/Longitude Grid\",\"GRIB_iDirectionIncrementInDegrees\":0.1,\"GRIB_iScansNegatively\":0,\"GRIB_jDirectionIncrementInDegrees\":0.1,\"GRIB_jPointsAreConsecutive\":0,\"GRIB_jScansPositively\":0,\"GRIB_latitudeOfFirstGridPointInDegrees\":-26.0,\"GRIB_latitudeOfLastGridPointInDegrees\":-37.0,\"GRIB_longitudeOfFirstGridPointInDegrees\":111.0,\"GRIB_longitudeOfLastGridPointInDegrees\":126.0,\"GRIB_missingValue\":3.4028234663852886e+38,\"GRIB_name\":\"V component of wind\",\"GRIB_shortName\":\"v\",\"GRIB_totalNumber\":0,\"GRIB_units\":\"km\/h\",\"long_name\":\"V component of wind\",\"units\":\"km\/h\",\"standard_name\":\"northward_wind\",\"coordinates\":\"depthBelowLandLayer number surface valid_time\",\"_ARRAY_DIMENSIONS\":[\"time\",\"step\",\"latitude\",\"longitude\"]}",
+    "time\/0": ["s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc", 138298, 112],
+    "time\/.zarray": "{\"shape\":[14],\"chunks\":[14],\"dtype\":\"<i8\",\"fill_value\":0,\"order\":\"C\",\"filters\":null,\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "time\/.zattrs": "{\"long_name\":\"initial time of forecast\",\"standard_name\":\"forecast_reference_time\",\"units\":\"seconds since 1970-01-01\",\"calendar\":\"proleptic_gregorian\",\"_ARRAY_DIMENSIONS\":[\"time\"]}",
+    "step\/0": ["s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc", 258327, 904],
+    "step\/.zarray": "{\"shape\":[113],\"chunks\":[113],\"dtype\":\"<f8\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":null,\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "step\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"long_name\":\"time since forecast_reference_time\",\"standard_name\":\"forecast_period\",\"_ARRAY_DIMENSIONS\":[\"step\"]}",
+    "latitude\/0": ["s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc", 261279, 888],
+    "latitude\/.zarray": "{\"shape\":[111],\"chunks\":[111],\"dtype\":\"<f8\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":null,\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "latitude\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"units\":\"degrees_north\",\"standard_name\":\"latitude\",\"long_name\":\"latitude\",\"stored_direction\":\"decreasing\",\"_ARRAY_DIMENSIONS\":[\"latitude\"]}",
+    "longitude\/0": ["s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc", 266263, 1208],
+    "longitude\/.zarray": "{\"shape\":[151],\"chunks\":[151],\"dtype\":\"<f8\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":null,\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "longitude\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"units\":\"degrees_east\",\"standard_name\":\"longitude\",\"long_name\":\"longitude\",\"_ARRAY_DIMENSIONS\":[\"longitude\"]}",
+    "valid_time\/0.0": [
+      "s3:\/\/webviz\/ECMWF\/2024\/10\/08.nc",
+      1843718581,
+      12656
+    ],
+    "valid_time\/.zarray": "{\"shape\":[14,113],\"chunks\":[14,113],\"dtype\":\"<f8\",\"fill_value\":\"NaN\",\"order\":\"C\",\"filters\":null,\"dimension_separator\":\".\",\"compressor\":null,\"attributes\":{},\"zarr_format\":2}",
+    "valid_time\/.zattrs": "{\"_FillValue\":\"AAAAAAAA+H8=\",\"standard_name\":\"time\",\"long_name\":\"time\",\"units\":\"seconds since 1970-01-01\",\"calendar\":\"proleptic_gregorian\",\"_ARRAY_DIMENSIONS\":[\"time\",\"step\"]}"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "name": "serverless-s3-web-app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json",
+    "test": "vitest",
+    "test:online": "cross-env RUN_ONLINE_INTEGRATION=1 vitest run test/integration"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^7.1.2",
+    "@tsconfig/svelte": "^5.0.8",
+    "@types/node": "^24.12.3",
+    "cross-env": "^10.1.0",
+    "svelte": "^5.55.5",
+    "svelte-check": "^4.4.8",
+    "typescript": "~6.0.2",
+    "vite": "^8.0.12",
+    "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "@carbonplan/zarr-layer": "^0.5.0",
+    "@zarrita/storage": "^0.2.0",
+    "maplibre-gl": "^5.24.0",
+    "zarrita": "^0.7.3"
+  }
+}
