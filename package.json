@@ -1,4 +1,15 @@
 {
+  "private": true,
+  "packageManager": "pnpm@11.0.0",
+  "scripts": {
+    "prepare": "husky",
+    "dev": "pnpm --dir web-app dev",
+    "build": "pnpm --dir web-app build",
+    "check": "pnpm --dir web-app check",
+    "test": "pnpm --dir web-app test",
+    "test:online": "pnpm --dir web-app test:online",
+    "format": "prettier --write ."
+  },
   "devDependencies": {
     "husky": "^9.1.7",
     "lint-staged": "^17.0.7",
@@ -6,8 +17,5 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,css,scss,html,json,yaml,md}": "prettier --write --ignore-unknown"
-  },
-  "scripts": {
-    "prepare": "husky"
   }
 }
