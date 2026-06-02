@@ -6,8 +6,6 @@
     ECMWF_SMOKE_LAYER_ID,
     ECMWF_SMOKE_REF_PATH,
     ECMWF_SMOKE_CLIM,
-    ECMWF_RAW_BYTE_CACHE_MAX_BYTES,
-    ECMWF_RAW_BYTE_CACHE_MAX_ENTRIES,
     ECMWF_SMOKE_STEP_INDEX,
     ECMWF_SMOKE_TIME_INDEX,
     ECMWF_SMOKE_UNITS,
@@ -123,7 +121,6 @@
       <span>units: <code>{ECMWF_SMOKE_UNITS}</code></span>
       <span>timeIndex: <code>{ECMWF_SMOKE_TIME_INDEX}</code></span>
       <span>stepIndex: <code>{ECMWF_SMOKE_STEP_INDEX}</code></span>
-      <span>raw byte cache: <code>{Math.round(ECMWF_RAW_BYTE_CACHE_MAX_BYTES / 1024 / 1024)} MiB / {ECMWF_RAW_BYTE_CACHE_MAX_ENTRIES} entries</code></span>
       <span>local range coalescing: <code>{localRangeCoalescing ? 'on' : 'off'}</code></span>
     </div>
     <details class="dev-tools">
