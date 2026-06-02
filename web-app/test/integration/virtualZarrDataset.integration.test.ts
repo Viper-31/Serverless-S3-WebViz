@@ -97,7 +97,7 @@ onlineDescribe('virtualZarrDataset integration smoke', () => {
   it('decodes ECMWF time, step, latitude, longitude, and valid_time with select/get', async () => {
     const { zarr, ReferenceStore } = await loadRealZarrStack()
     const { createVirtualZarrDataset } = await import('../../src/lib/virtualZarrDataset')
-    const refSpec = await loadRefSpec('../../public/refs/ECMWF/2024/02/27.nc.json')
+    const refSpec = await loadRefSpec('../../public/refs/ECMWF/2024/01/02.nc.json')
 
     const dataset = await createVirtualZarrDataset({ refSpec, dependencies: { zarr, ReferenceStore } })
 
