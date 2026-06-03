@@ -2,8 +2,8 @@
   import { onMount } from 'svelte'
   import maplibregl from 'maplibre-gl'
   import DevToolsMenu from './lib/components/DevToolsMenu.svelte'
-  import SliderSideBar from './lib/components/SliderSideBar.svelte'
-  import { getDefaultSidebarWidth, type SidebarState } from './lib/components/sidebarState'
+  import MainSideBar from './lib/components/MainSideBar.svelte'
+  import { getDefaultMainSideBarWidth, type MainSideBarState } from './lib/components/mainSideBarState'
   import {
     createEcmwfSmokeLayer,
     ECMWF_SMOKE_LAYER_ID,
@@ -25,11 +25,11 @@
   let localRangeCoalescing = true
   let mapInstance: maplibregl.Map | undefined
   let reloadingLayer = false
-  const initialSidebarWidthPx = getDefaultSidebarWidth(typeof window === 'undefined' ? 1024 : window.innerWidth)
-  let sliderSidebarState: SidebarState = {
+  const initialMainSideBarWidthPx = getDefaultMainSideBarWidth(typeof window === 'undefined' ? 1024 : window.innerWidth)
+  let mainSideBarState: MainSideBarState = {
     collapsed: false,
-    widthPx: initialSidebarWidthPx,
-    previousWidthPx: initialSidebarWidthPx,
+    widthPx: initialMainSideBarWidthPx,
+    previousWidthPx: initialMainSideBarWidthPx,
   }
 
   async function loadLayer(map: maplibregl.Map, isCancelled: () => boolean) {
@@ -67,8 +67,8 @@
     })
   }
 
-  function updateSliderSidebarState(next: SidebarState) {
-    sliderSidebarState = next
+  function updateMainSideBarState(next: MainSideBarState) {
+    mainSideBarState = next
   }
 
   function updateLocalRangeCoalescing(next: boolean) {
@@ -130,18 +130,18 @@
 <main class="shell">
   <div class="map" bind:this={mapNode}></div>
 
-  <SliderSideBar
+  <MainSideBar
     refPath={ECMWF_SMOKE_REF_PATH}
     variable={ECMWF_SMOKE_VARIABLE}
     units={ECMWF_SMOKE_UNITS}
     timeIndex={ECMWF_SMOKE_TIME_INDEX}
     stepIndex={ECMWF_SMOKE_STEP_INDEX}
     clim={ECMWF_SMOKE_CLIM}
-    collapsed={sliderSidebarState.collapsed}
-    widthPx={sliderSidebarState.widthPx}
-    previousWidthPx={sliderSidebarState.previousWidthPx}
+    collapsed={mainSideBarState.collapsed}
+    widthPx={mainSideBarState.widthPx}
+    previousWidthPx={mainSideBarState.previousWidthPx}
     error={status.error}
-    onSidebarStateChange={updateSliderSidebarState}
+    onMainSideBarStateChange={updateMainSideBarState}
   />
 
   <DevToolsMenu

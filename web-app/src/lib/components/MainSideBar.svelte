@@ -1,11 +1,11 @@
 <script lang="ts">
   import { onDestroy, onMount } from "svelte";
   import {
-    clampSidebarWidth,
-    collapseSidebar,
-    expandSidebar,
-    type SidebarState,
-  } from "./sidebarState";
+    clampMainSideBarWidth,
+    collapseMainSideBar,
+    expandMainSideBar,
+    type MainSideBarState,
+  } from "./mainSideBarState";
 
   type Props = {
     refPath: string
@@ -18,7 +18,7 @@
     widthPx: number
     previousWidthPx: number
     error?: string | null
-    onSidebarStateChange: (next: SidebarState) => void
+    onMainSideBarStateChange: (next: MainSideBarState) => void
   }
 
   let {
@@ -32,31 +32,31 @@
     widthPx,
     previousWidthPx,
     error = null,
-    onSidebarStateChange,
+    onMainSideBarStateChange,
   }: Props = $props();
 
   let isResizing = $state(false);
 
-  function currentState(): SidebarState {
+  function currentState(): MainSideBarState {
     return { collapsed, widthPx, previousWidthPx };
   }
 
   function toggleCollapsed() {
     const next = collapsed
-      ? expandSidebar(currentState(), window.innerWidth)
-      : collapseSidebar(currentState());
-    onSidebarStateChange(next);
+      ? expandMainSideBar(currentState(), window.innerWidth)
+      : collapseMainSideBar(currentState());
+    onMainSideBarStateChange(next);
   }
 
   function handleMouseMove(event: MouseEvent) {
     if (!isResizing) return;
 
     event.preventDefault();
-    const nextWidthPx = clampSidebarWidth(
+    const nextWidthPx = clampMainSideBarWidth(
       event.clientX,
       window.innerWidth,
     );
-    onSidebarStateChange({
+    onMainSideBarStateChange({
       collapsed: false,
       widthPx: nextWidthPx,
       previousWidthPx: nextWidthPx,
@@ -81,9 +81,9 @@
   onMount(() => {
     function clampToViewport() {
       if (collapsed) return;
-      const nextWidthPx = clampSidebarWidth(widthPx, window.innerWidth);
+      const nextWidthPx = clampMainSideBarWidth(widthPx, window.innerWidth);
       if (nextWidthPx !== widthPx) {
-        onSidebarStateChange({
+        onMainSideBarStateChange({
           collapsed: false,
           widthPx: nextWidthPx,
           previousWidthPx: nextWidthPx,
@@ -105,16 +105,16 @@
 </script>
 
 <aside
-  class="sliderSideBar"
+  class="mainSideBar"
   class:collapsed
   class:resizing={isResizing}
-  style={`--slider-sidebar-width: ${widthPx}px`}
-  aria-label="Dataset slider sidebar"
+  style={`--main-sidebar-width: ${widthPx}px`}
+  aria-label="Dataset main sidebar"
 >
   <button
     class="collapse-button"
     type="button"
-    aria-label={collapsed ? 'Expand slider sidebar' : 'Collapse slider sidebar'}
+    aria-label={collapsed ? 'Expand main sidebar' : 'Collapse main sidebar'}
     aria-expanded={!collapsed}
     onclick={toggleCollapsed}
   >
@@ -146,19 +146,19 @@
     class="resize-handle"
     class:active={isResizing}
     type="button"
-    aria-label="Resize slider sidebar"
+    aria-label="Resize main sidebar"
     title="Drag to resize"
     onmousedown={startResize}
   ></button>
 </aside>
 
 <style>
-  .sliderSideBar {
+  .mainSideBar {
     position: absolute;
     top: 0;
     left: 0;
     z-index: 2;
-    width: var(--slider-sidebar-width);
+    width: var(--main-sidebar-width);
     height: 100%;
     max-width: 35vw;
     min-width: min(240px, 35vw);
@@ -172,11 +172,11 @@
     transition: width 140ms ease, min-width 140ms ease, padding 140ms ease;
   }
 
-  .sliderSideBar.resizing {
+  .mainSideBar.resizing {
     transition: none;
   }
 
-  .sliderSideBar.collapsed {
+  .mainSideBar.collapsed {
     width: 2.75rem;
     min-width: 2.75rem;
     padding: 0.5rem;
