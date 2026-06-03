@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
+  import { onDestroy, onMount } from "svelte";
   import {
     clampSidebarWidth,
     collapseSidebar,
     expandSidebar,
     resizeSidebarWidth,
     type SidebarState,
-  } from './sidebarState'
+  } from "./sidebarState";
 
   type Props = {
     refPath: string
@@ -34,59 +34,81 @@
     previousWidthPx,
     error = null,
     onSidebarStateChange,
-  }: Props = $props()
+  }: Props = $props();
+
+  let isResizing = $state(false);
 
   function currentState(): SidebarState {
-    return { collapsed, widthPx, previousWidthPx }
+    return { collapsed, widthPx, previousWidthPx };
   }
 
   function toggleCollapsed() {
-    const next = collapsed ? expandSidebar(currentState(), window.innerWidth) : collapseSidebar(currentState())
-    onSidebarStateChange(next)
+    const next = collapsed
+      ? expandSidebar(currentState(), window.innerWidth)
+      : collapseSidebar(currentState());
+    onSidebarStateChange(next);
   }
 
-  function startResize(event: PointerEvent) {
-    if (collapsed) return
+  function handleMouseMove(event: MouseEvent) {
+    if (!isResizing) return;
 
-    event.preventDefault()
-    const startX = event.clientX
-    const startWidthPx = widthPx
+    event.preventDefault();
+    const nextWidthPx = resizeSidebarWidth(
+      event.clientX,
+      window.innerWidth,
+    );
+    onSidebarStateChange({
+      collapsed: false,
+      widthPx: nextWidthPx,
+      previousWidthPx: nextWidthPx,
+    });
+  }
 
-    function handlePointerMove(moveEvent: PointerEvent) {
-      const nextWidthPx = resizeSidebarWidth(startWidthPx, moveEvent.clientX - startX, window.innerWidth)
-      onSidebarStateChange({ collapsed: false, widthPx: nextWidthPx, previousWidthPx: nextWidthPx })
-    }
+  function stopResize() {
+    isResizing = false;
+    window.removeEventListener("mousemove", handleMouseMove);
+    window.removeEventListener("mouseup", stopResize);
+  }
 
-    function stopResize() {
-      window.removeEventListener('pointermove', handlePointerMove)
-      window.removeEventListener('pointerup', stopResize)
-    }
+  function startResize(event: MouseEvent) {
+    if (collapsed) return;
 
-    window.addEventListener('pointermove', handlePointerMove)
-    window.addEventListener('pointerup', stopResize)
+    event.preventDefault();
+    isResizing = true;
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", stopResize);
   }
 
   onMount(() => {
     function clampToViewport() {
-      if (collapsed) return
-      const nextWidthPx = clampSidebarWidth(widthPx, window.innerWidth)
+      if (collapsed) return;
+      const nextWidthPx = clampSidebarWidth(widthPx, window.innerWidth);
       if (nextWidthPx !== widthPx) {
-        onSidebarStateChange({ collapsed: false, widthPx: nextWidthPx, previousWidthPx: nextWidthPx })
+        onSidebarStateChange({
+          collapsed: false,
+          widthPx: nextWidthPx,
+          previousWidthPx: nextWidthPx,
+        });
       }
     }
 
-    clampToViewport()
-    window.addEventListener('resize', clampToViewport)
+    clampToViewport();
+    window.addEventListener("resize", clampToViewport);
 
     return () => {
-      window.removeEventListener('resize', clampToViewport)
-    }
-  })
+      window.removeEventListener("resize", clampToViewport);
+    };
+  });
+
+  onDestroy(() => {
+    stopResize();
+  });
 </script>
 
 <aside
   class="sliderSideBar"
   class:collapsed
+  class:resizing={isResizing}
   style={`--slider-sidebar-width: ${widthPx}px`}
   aria-label="Dataset slider sidebar"
 >
@@ -123,29 +145,36 @@
 
   <button
     class="resize-handle"
+    class:active={isResizing}
     type="button"
     aria-label="Resize slider sidebar"
     title="Drag to resize"
-    onpointerdown={startResize}
+    onmousedown={startResize}
   ></button>
 </aside>
 
 <style>
   .sliderSideBar {
     position: absolute;
-    top: 1rem;
-    left: 1rem;
+    top: 0;
+    left: 0;
     z-index: 2;
     width: var(--slider-sidebar-width);
+    height: 100%;
     max-width: 30vw;
     min-width: min(240px, 30vw);
-    padding: 1rem;
-    border: 1px solid var(--panel-border);
-    border-radius: 16px;
+    padding: 1rem 1.25rem 1rem 1rem;
+    border: 0 solid var(--panel-border);
+    border-right-width: 1px;
+    border-radius: 0 16px 16px 0;
     background: var(--panel);
     backdrop-filter: blur(14px);
     box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
     transition: width 140ms ease, min-width 140ms ease, padding 140ms ease;
+  }
+
+  .sliderSideBar.resizing {
+    transition: none;
   }
 
   .sliderSideBar.collapsed {
@@ -155,7 +184,8 @@
   }
 
   .sidebar-content {
-    overflow: hidden;
+    height: 100%;
+    overflow: auto;
   }
 
   .collapsed .sidebar-content {
@@ -202,25 +232,33 @@
 
   .collapse-button {
     position: absolute;
-    top: 0.65rem;
-    right: 0.65rem;
+    top: 50%;
+    right: -0.9rem;
+    z-index: 2;
     display: grid;
     width: 1.8rem;
     height: 1.8rem;
     place-items: center;
     border-radius: 999px;
+    transform: translateY(-50%);
     cursor: pointer;
   }
 
   .resize-handle {
     position: absolute;
-    top: 0.75rem;
-    right: -0.45rem;
-    bottom: 0.75rem;
-    width: 0.45rem;
+    top: 0;
+    right: -0.25rem;
+    bottom: 0;
+    width: 0.5rem;
     padding: 0;
-    border-radius: 999px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
     cursor: ew-resize;
+  }
+
+  .resize-handle.active {
+    background: rgba(255, 255, 255, 0.08);
   }
 
   .collapsed .resize-handle {

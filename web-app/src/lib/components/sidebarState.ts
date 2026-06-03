@@ -24,11 +24,10 @@ export function clampSidebarWidth(
 }
 
 export function resizeSidebarWidth(
-  currentWidthPx: number,
-  dragDeltaPx: number,
+  clientX: number,
   viewportWidth: number,
 ): number {
-  return clampSidebarWidth(currentWidthPx + dragDeltaPx, viewportWidth);
+  return clampSidebarWidth(clientX, viewportWidth);
 }
 
 export function collapseSidebar(state: SidebarState): SidebarState {

@@ -32,9 +32,9 @@ describe("sidebar state", () => {
     });
   });
 
-  it("applies drag delta before clamping resized width", () => {
-    expect(resizeSidebarWidth(300, 40, 1200)).toBe(340);
-    expect(resizeSidebarWidth(350, 40, 1200)).toBe(360);
-    expect(resizeSidebarWidth(260, -40, 1200)).toBe(240);
+  it("uses pointer x position as width for a flush-left sidebar resize", () => {
+    expect(resizeSidebarWidth(340, 1200)).toBe(340);
+    expect(resizeSidebarWidth(500, 1200)).toBe(360);
+    expect(resizeSidebarWidth(120, 1200)).toBe(240);
   });
 });
