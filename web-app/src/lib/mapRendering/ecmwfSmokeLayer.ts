@@ -7,7 +7,7 @@ import { prepareRefSpec } from "../refRewrite";
 
 // Smoke-only direct ZarrLayer adapter. This intentionally proves the MapLibre
 // render path before introducing a worker-backed store or broader data-engine API.
-export const ECMWF_SMOKE_REF_PATH = "/refs/ECMWF/2024/01/02.nc.json";
+export const ECMWF_SMOKE_REF = "/refs/ECMWF/2024/01/02.nc.json";
 export const ECMWF_SMOKE_LAYER_ID = "ecmwf-smoke-t2m";
 export const ECMWF_SMOKE_VARIABLE = "t2m";
 export const ECMWF_SMOKE_TIME_INDEX = 0;
@@ -59,18 +59,18 @@ function createZarritaByteCache(): ZarritaByteCache {
   };
 }
 
-async function loadRefSpec(refPath: string): Promise<RefSpec> {
-  const response = await fetch(refPath, { credentials: "omit" });
+async function loadRefSpec(ref: string): Promise<RefSpec> {
+  const response = await fetch(ref, { credentials: "omit" });
   if (!response.ok)
-    throw new Error(`Failed to load ${refPath}: HTTP ${response.status}`);
+    throw new Error(`Failed to load ${ref}: HTTP ${response.status}`);
   return response.json() as Promise<RefSpec>;
 }
 
 async function createEcmwfReadableStore(
-  refPath: string,
+  ref: string,
   options: { localRangeCoalescing: boolean },
 ) {
-  const refSpec = await loadRefSpec(refPath);
+  const refSpec = await loadRefSpec(ref);
   const preparedSpec = prepareRefSpec(refSpec);
   const baseStore = (await ReferenceStore.fromSpec(
     preparedSpec,
@@ -94,7 +94,7 @@ export async function createEcmwfSmokeLayer(options: {
   localRangeCoalescing: boolean;
   onLoadingStateChange?: (state: LoadingState) => void;
 }) {
-  const store = await createEcmwfReadableStore(ECMWF_SMOKE_REF_PATH, {
+  const store = await createEcmwfReadableStore(ECMWF_SMOKE_REF, {
     localRangeCoalescing: options.localRangeCoalescing,
   });
 

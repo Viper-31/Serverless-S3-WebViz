@@ -7,7 +7,7 @@
   import {
     createEcmwfSmokeLayer,
     ECMWF_SMOKE_LAYER_ID,
-    ECMWF_SMOKE_REF_PATH,
+    ECMWF_SMOKE_REF,
     ECMWF_SMOKE_CLIM,
     ECMWF_SMOKE_STEP_INDEX,
     ECMWF_SMOKE_TIME_INDEX,
@@ -131,7 +131,7 @@
   <div class="map" bind:this={mapNode}></div>
 
   <MainSideBar
-    refPath={ECMWF_SMOKE_REF_PATH}
+    ref={ECMWF_SMOKE_REF}
     variable={ECMWF_SMOKE_VARIABLE}
     units={ECMWF_SMOKE_UNITS}
     timeIndex={ECMWF_SMOKE_TIME_INDEX}

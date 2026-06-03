@@ -8,7 +8,7 @@
   } from "./mainSideBarState";
 
   type Props = {
-    refPath: string
+    ref: string
     variable: string
     units: string
     timeIndex: number
@@ -22,7 +22,7 @@
   }
 
   let {
-    refPath,
+    ref,
     variable,
     units,
     timeIndex,
@@ -124,7 +124,7 @@
   <div class="sidebar-content" aria-hidden={collapsed}>
     <h1>ECMWF MapLibre smoke</h1>
     <div class="meta">
-      <span>ref: <code>{refPath}</code></span>
+      <span>ref: <code>{ref}</code></span>
       <span>variable: <code>{variable}</code></span>
       <span>units: <code>{units}</code></span>
       <span>timeIndex: <code>{timeIndex}</code></span>
