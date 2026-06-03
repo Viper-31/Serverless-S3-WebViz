@@ -1,6 +1,9 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import maplibregl from 'maplibre-gl'
+  import DevToolsMenu from './lib/components/DevToolsMenu.svelte'
+  import SliderSideBar from './lib/components/SliderSideBar.svelte'
+  import { SLIDER_SIDEBAR_DEFAULT_WIDTH_PX, type SidebarState } from './lib/components/sidebarState'
   import {
     createEcmwfSmokeLayer,
     ECMWF_SMOKE_LAYER_ID,
@@ -22,6 +25,11 @@
   let localRangeCoalescing = true
   let mapInstance: maplibregl.Map | undefined
   let reloadingLayer = false
+  let sliderSidebarState: SidebarState = {
+    collapsed: false,
+    widthPx: SLIDER_SIDEBAR_DEFAULT_WIDTH_PX,
+    previousWidthPx: SLIDER_SIDEBAR_DEFAULT_WIDTH_PX,
+  }
 
   async function loadLayer(map: maplibregl.Map, isCancelled: () => boolean) {
     reloadingLayer = true
@@ -56,6 +64,14 @@
       status = { loadingState: status.loadingState, error: error instanceof Error ? error.message : String(error) }
       reloadingLayer = false
     })
+  }
+
+  function updateSliderSidebarState(next: SidebarState) {
+    sliderSidebarState = next
+  }
+
+  function updateLocalRangeCoalescing(next: boolean) {
+    localRangeCoalescing = next
   }
 
   onMount(() => {
@@ -113,38 +129,29 @@
 <main class="shell">
   <div class="map" bind:this={mapNode}></div>
 
-  <aside class="overlay">
-    <h1>ECMWF MapLibre smoke</h1>
-    <div class="meta">
-      <span>ref: <code>{ECMWF_SMOKE_REF_PATH}</code></span>
-      <span>variable: <code>{ECMWF_SMOKE_VARIABLE}</code></span>
-      <span>units: <code>{ECMWF_SMOKE_UNITS}</code></span>
-      <span>timeIndex: <code>{ECMWF_SMOKE_TIME_INDEX}</code></span>
-      <span>stepIndex: <code>{ECMWF_SMOKE_STEP_INDEX}</code></span>
-      <span>local range coalescing: <code>{localRangeCoalescing ? 'on' : 'off'}</code></span>
-    </div>
-    <details class="dev-tools">
-      <summary>Dev tools</summary>
-      <label>
-        <input type="checkbox" bind:checked={localRangeCoalescing} disabled={reloadingLayer} />
-        local range coalescing
-      </label>
-      <button type="button" onclick={reloadLayer} disabled={reloadingLayer || !mapInstance}>
-        {reloadingLayer ? 'Reloading…' : 'Reload layer'}
-      </button>
-    </details>
-    <div class="legend" aria-hidden="true"></div>
-    <div class="legend-labels" aria-label="thermal color scale">
-      <span>{ECMWF_SMOKE_CLIM[0]} {ECMWF_SMOKE_UNITS}</span>
-      <span>{ECMWF_SMOKE_CLIM[1]} {ECMWF_SMOKE_UNITS}</span>
-    </div>
-    <p>loading: <code>{status.loadingState.loading ? 'true' : 'false'}</code></p>
-    <p>metadata: <code>{status.loadingState.metadata ? 'true' : 'false'}</code></p>
-    <p>chunks: <code>{status.loadingState.chunks ? 'true' : 'false'}</code></p>
-    <p>layerAdded: <code>{layerAdded ? 'true' : 'false'}</code></p>
-    <p class="hint">Toggle local range coalescing in Dev tools, then reload the layer to compare network behavior.</p>
-    {#if status.error}
-      <p class="error">{status.error}</p>
-    {/if}
-  </aside>
+  <SliderSideBar
+    refPath={ECMWF_SMOKE_REF_PATH}
+    variable={ECMWF_SMOKE_VARIABLE}
+    units={ECMWF_SMOKE_UNITS}
+    timeIndex={ECMWF_SMOKE_TIME_INDEX}
+    stepIndex={ECMWF_SMOKE_STEP_INDEX}
+    clim={ECMWF_SMOKE_CLIM}
+    collapsed={sliderSidebarState.collapsed}
+    widthPx={sliderSidebarState.widthPx}
+    previousWidthPx={sliderSidebarState.previousWidthPx}
+    error={status.error}
+    onSidebarStateChange={updateSliderSidebarState}
+  />
+
+  <DevToolsMenu
+    localRangeCoalescing={localRangeCoalescing}
+    reloadingLayer={reloadingLayer}
+    loading={status.loadingState.loading}
+    metadata={status.loadingState.metadata}
+    chunks={status.loadingState.chunks}
+    layerAdded={layerAdded}
+    mapReady={Boolean(mapInstance)}
+    onLocalRangeCoalescingChange={updateLocalRangeCoalescing}
+    onReloadLayer={reloadLayer}
+  />
 </main>
