@@ -1,6 +1,6 @@
 export const SLIDER_SIDEBAR_MIN_WIDTH_PX = 240;
-export const SLIDER_SIDEBAR_DEFAULT_WIDTH_PX = 320;
-export const SLIDER_SIDEBAR_MAX_VIEWPORT_FRACTION = 0.3;
+export const SLIDER_SIDEBAR_DEFAULT_VIEWPORT_FRACTION = 0.3;
+export const SLIDER_SIDEBAR_MAX_VIEWPORT_FRACTION = 0.35;
 
 export type SidebarState = {
   collapsed: boolean;
@@ -14,6 +14,15 @@ export function getMaxSidebarWidth(viewportWidth: number): number {
   );
 }
 
+export function getDefaultSidebarWidth(viewportWidth: number): number {
+  return clampSidebarWidth(
+    Math.floor(
+      Math.max(0, viewportWidth) * SLIDER_SIDEBAR_DEFAULT_VIEWPORT_FRACTION,
+    ),
+    viewportWidth,
+  );
+}
+
 export function clampSidebarWidth(
   widthPx: number,
   viewportWidth: number,
@@ -21,13 +30,6 @@ export function clampSidebarWidth(
   const maxWidthPx = getMaxSidebarWidth(viewportWidth);
   const minWidthPx = Math.min(SLIDER_SIDEBAR_MIN_WIDTH_PX, maxWidthPx);
   return Math.min(Math.max(widthPx, minWidthPx), maxWidthPx);
-}
-
-export function resizeSidebarWidth(
-  clientX: number,
-  viewportWidth: number,
-): number {
-  return clampSidebarWidth(clientX, viewportWidth);
 }
 
 export function collapseSidebar(state: SidebarState): SidebarState {

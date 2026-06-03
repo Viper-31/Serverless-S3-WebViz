@@ -3,13 +3,24 @@ import {
   clampSidebarWidth,
   collapseSidebar,
   expandSidebar,
-  resizeSidebarWidth,
+  getDefaultSidebarWidth,
+  getMaxSidebarWidth,
 } from "../../src/lib/components/sidebarState";
 
 describe("sidebar state", () => {
-  it("clamps sidebar width between the minimum and 30% of the viewport", () => {
+  it("derives the default width from 30% of the viewport", () => {
+    expect(getDefaultSidebarWidth(1200)).toBe(360);
+    expect(getDefaultSidebarWidth(800)).toBe(240);
+  });
+
+  it("derives the maximum width from 35% of the viewport", () => {
+    expect(getMaxSidebarWidth(1200)).toBe(420);
+    expect(getMaxSidebarWidth(800)).toBe(280);
+  });
+
+  it("clamps sidebar width between the minimum and 35% of the viewport", () => {
     expect(clampSidebarWidth(100, 1200)).toBe(240);
-    expect(clampSidebarWidth(500, 1200)).toBe(360);
+    expect(clampSidebarWidth(500, 1200)).toBe(420);
     expect(clampSidebarWidth(320, 1200)).toBe(320);
   });
 
@@ -30,11 +41,5 @@ describe("sidebar state", () => {
       widthPx: 320,
       previousWidthPx: 320,
     });
-  });
-
-  it("uses pointer x position as width for a flush-left sidebar resize", () => {
-    expect(resizeSidebarWidth(340, 1200)).toBe(340);
-    expect(resizeSidebarWidth(500, 1200)).toBe(360);
-    expect(resizeSidebarWidth(120, 1200)).toBe(240);
   });
 });

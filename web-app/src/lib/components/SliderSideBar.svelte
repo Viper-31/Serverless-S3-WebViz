@@ -4,7 +4,6 @@
     clampSidebarWidth,
     collapseSidebar,
     expandSidebar,
-    resizeSidebarWidth,
     type SidebarState,
   } from "./sidebarState";
 
@@ -53,7 +52,7 @@
     if (!isResizing) return;
 
     event.preventDefault();
-    const nextWidthPx = resizeSidebarWidth(
+    const nextWidthPx = clampSidebarWidth(
       event.clientX,
       window.innerWidth,
     );
@@ -161,8 +160,8 @@
     z-index: 2;
     width: var(--slider-sidebar-width);
     height: 100%;
-    max-width: 30vw;
-    min-width: min(240px, 30vw);
+    max-width: 35vw;
+    min-width: min(240px, 35vw);
     padding: 1rem 1.25rem 1rem 1rem;
     border: 0 solid var(--panel-border);
     border-right-width: 1px;

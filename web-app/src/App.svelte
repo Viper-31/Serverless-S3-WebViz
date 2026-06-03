@@ -3,7 +3,7 @@
   import maplibregl from 'maplibre-gl'
   import DevToolsMenu from './lib/components/DevToolsMenu.svelte'
   import SliderSideBar from './lib/components/SliderSideBar.svelte'
-  import { SLIDER_SIDEBAR_DEFAULT_WIDTH_PX, type SidebarState } from './lib/components/sidebarState'
+  import { getDefaultSidebarWidth, type SidebarState } from './lib/components/sidebarState'
   import {
     createEcmwfSmokeLayer,
     ECMWF_SMOKE_LAYER_ID,
@@ -25,10 +25,11 @@
   let localRangeCoalescing = true
   let mapInstance: maplibregl.Map | undefined
   let reloadingLayer = false
+  const initialSidebarWidthPx = getDefaultSidebarWidth(typeof window === 'undefined' ? 1024 : window.innerWidth)
   let sliderSidebarState: SidebarState = {
     collapsed: false,
-    widthPx: SLIDER_SIDEBAR_DEFAULT_WIDTH_PX,
-    previousWidthPx: SLIDER_SIDEBAR_DEFAULT_WIDTH_PX,
+    widthPx: initialSidebarWidthPx,
+    previousWidthPx: initialSidebarWidthPx,
   }
 
   async function loadLayer(map: maplibregl.Map, isCancelled: () => boolean) {
