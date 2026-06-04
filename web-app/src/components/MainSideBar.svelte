@@ -262,7 +262,7 @@
       </div>
 
       <div class="dropdown-row">
-        <Dropdown direction="down">
+        <Dropdown direction="down" autoClose="outside">
           <DropdownToggle caret class="sidebar-dropdown-toggle">
             Display
           </DropdownToggle>
@@ -270,10 +270,7 @@
             <div
               class="display-menu"
               role="group"
-              tabindex="0"
               aria-label="Display settings"
-              onclick={stopDropdownEventPropagation}
-              onkeydown={stopDropdownEventPropagation}
             >
               <label>
                 <span>Colour map</span>
@@ -292,7 +289,7 @@
               <label>
                 <span>clim max</span>
                 <input type="number" value={displayClim[1]} step="any" onchange={handleClimMaxChange} />
-              </label>
+              </label>        
             </div>
           </DropdownMenu>
         </Dropdown>
