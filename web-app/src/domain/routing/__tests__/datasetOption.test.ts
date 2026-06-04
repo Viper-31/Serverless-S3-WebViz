@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  ecmwfDatasetOptions,
-  dpirdDatasetOptions,
-} from "../../src/lib/catalog/datasetOptions";
+import { ecmwfDatasetOptions, dpirdDatasetOptions } from "../datasetOptions";
 
 describe("dataset option boundaries", () => {
   it("keeps DPIRD and ECMWF options stable with explicit metadata", () => {
