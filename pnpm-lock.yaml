@@ -25,6 +25,9 @@ importers:
       "@carbonplan/zarr-layer":
         specifier: ^0.5.0
         version: 0.5.0(maplibre-gl@5.24.0)
+      "@sveltestrap/sveltestrap":
+        specifier: ^7.1.0
+        version: 7.1.0(svelte@5.56.0)
       "@zarrita/storage":
         specifier: ^0.2.0
         version: 0.2.0
@@ -48,7 +51,7 @@ importers:
         specifier: ^10.1.0
         version: 10.1.0
       svelte:
-        specifier: ^5.55.5
+        specifier: ^5.56.0
         version: 5.56.0
       svelte-check:
         specifier: ^4.4.8
@@ -521,6 +524,12 @@ packages:
         integrity: sha512-KzkdCd6Uxqnf6l3HOw1xfatAlUURA0g14cvBYFyJ5SaNOQbOUvBr9PKArcPcrNIeRsBdgcUzOGrhKveVpvOIGA==,
       }
 
+  "@popperjs/core@2.11.8":
+    resolution:
+      {
+        integrity: sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==,
+      }
+
   "@rolldown/binding-android-arm64@1.0.3":
     resolution:
       {
@@ -897,6 +906,14 @@ packages:
     peerDependencies:
       svelte: ^5.46.4
       vite: ^8.0.0-beta.7 || ^8.0.0
+
+  "@sveltestrap/sveltestrap@7.1.0":
+    resolution:
+      {
+        integrity: sha512-TpIx25kqLV+z+VD3yfqYayOI1IaCeWFbT0uqM6NfA4vQgDs9PjFwmjkU4YEAlV/ngs9e7xPmaRWE7lkrg4Miow==,
+      }
+    peerDependencies:
+      svelte: ^4.0.0 || ^5.0.0 || ^5.0.0-next.0
 
   "@tsconfig/svelte@5.0.8":
     resolution:
@@ -2288,6 +2305,8 @@ snapshots:
 
   "@oxc-project/types@0.133.0": {}
 
+  "@popperjs/core@2.11.8": {}
+
   "@rolldown/binding-android-arm64@1.0.3":
     optional: true
 
@@ -2426,6 +2445,11 @@ snapshots:
       svelte: 5.56.0
       vite: 8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(yaml@2.9.0)
       vitefu: 1.1.3(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(yaml@2.9.0))
+
+  "@sveltestrap/sveltestrap@7.1.0(svelte@5.56.0)":
+    dependencies:
+      "@popperjs/core": 2.11.8
+      svelte: 5.56.0
 
   "@tsconfig/svelte@5.0.8": {}
 
