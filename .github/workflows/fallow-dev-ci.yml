@@ -1,0 +1,23 @@
+name: fallow-ci
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  fallow:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+
+      - name: Run Fallow analysis
+        uses: fallow-rs/fallow@v2
+        with:
+          workspace: serverless-s3-web-app
+          comment: true

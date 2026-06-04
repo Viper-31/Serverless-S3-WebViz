@@ -58,7 +58,7 @@ Interactive map, sliders, overlays, graph views
 
 1. As a weather portal user, I want to select DPIRD or ECMWF datasets or both at the same time with option to overlay 1 or dual datasets on the map render
 
-2. As a user, I want to choose a variable, so that I can inspect temperature, rainfall, wind, pressure, or other weather fields.  
+2. As a user, I want to choose a variable, so that I can inspect temperature, rainfall, wind, pressure, or other weather fields.
 
 3. As a user, I want a time slider seperate for DPIRD/ECMWF respectively, so that I can scrub through available forecast or observation times.
 
@@ -70,9 +70,9 @@ Interactive map, sliders, overlays, graph views
 
 7. As a user, I want a play button, that will increment DPIRD 'time' dimension by 1hr, and equivalent +1hr for ECMWF forecast 'step' dimension. Play until end of 'step' timedelta dimension.
 
-8.  As a user, I want wind speed and direction handled cleanly, so that wind arrows or vectors are meaningful.
+8. As a user, I want wind speed and direction handled cleanly, so that wind arrows or vectors are meaningful.
 
-9.  As a user, I want colorbars and units, so that rendered values are interpretable.
+9. As a user, I want colorbars and units, so that rendered values are interpretable.
 
 10. As a user, I want responsive loading states, so that I know when byte-range reads are in progress.
 
@@ -142,7 +142,7 @@ Interactive map, sliders, overlays, graph views
 
 - Use zarrita v0.7 APIs and extensions where appropriate: `zarr.open`, `zarr.select`, `withConsolidatedMetadata`, `withRangeCoalescing`, and `withByteCaching`.
 
-- Wrap remote reference/data access with a simple bounded LRU byte cache using zarrita's `withByteCaching` extension. The cache should cap entries or bytes rather than using an unbounded `Map`.
+- Wrap remote reference/data access with a simple bounded LRU byte cache using zarrita's `withByteCaching` extension. The cache should cap entries or raw bytes rather than using an unbounded `Map`.
 
 - Keep the `dwer-csi-streamer` flow as the reference pattern for gridded map layers: Kerchunk JSON spec, `s3://` URI rewrite, `ReferenceStore.fromSpec()`, Zarr array selection, `ZarrLayer`, and MapLibre custom layer integration.
 
@@ -181,8 +181,6 @@ Use Vitest at the Svelte-Vite level as the broad test runner for the offline lay
 - Use fake MapLibre map controllers in tests so layer lifecycle and update contracts stay isolated from the real map engine.
 
 - Treat `decodeBase64FixedUTFLE` as a strict boundary: exact strings, null padding, and malformed input should be verified for representative DPIRD station and code fields.
-
-- Treat `withByteCaching` as a memory-only LRU boundary: tests should confirm eviction until both entry-count and byte-budget limits pass, with the expected 96 MiB and 256-entry limits.
 
 - Validate codec metadata early, but leave actual zarrita decode behavior to later tests so shuffle/zlib support and data decoding are tested at the right boundary.
 
