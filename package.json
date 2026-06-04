@@ -1,6 +1,6 @@
 {
   "private": true,
-  "packageManager": "pnpm@11.0.0",
+  "packageManager": "pnpm@11.5.1",
   "scripts": {
     "prepare": "husky",
     "dev": "pnpm --dir web-app dev",
@@ -11,6 +11,7 @@
     "format": "prettier --write ."
   },
   "devDependencies": {
+    "fallow": "^2.86.0",
     "husky": "^9.1.7",
     "lint-staged": "^17.0.7",
     "prettier": "3.8.3"

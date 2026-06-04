@@ -70,3 +70,42 @@ code {
 .thermal-gradient {
   background: var(--thermal-gradient);
 }
+
+.valid-time-badge {
+  position: absolute;
+  top: 0.9rem;
+  left: 50%;
+  z-index: 3;
+  transform: translateX(-50%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  padding: 0.35rem 0.8rem;
+  color: var(--text);
+  background: rgba(29, 34, 42, 0.92);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  font-weight: 600;
+}
+
+.layer-status {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 4;
+  display: grid;
+  max-width: min(420px, calc(100vw - 2rem));
+  min-width: 4.5rem;
+  min-height: 4.5rem;
+  place-items: center;
+  transform: translate(-50%, -50%);
+  border: 1px solid var(--panel-border);
+  border-radius: 18px;
+  padding: 1rem;
+  color: var(--text);
+  background: rgba(29, 34, 42, 0.9);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+}
+
+.error-status {
+  color: var(--error);
+  text-align: center;
+}
