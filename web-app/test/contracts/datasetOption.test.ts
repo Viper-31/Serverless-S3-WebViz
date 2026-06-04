@@ -21,6 +21,11 @@ describe("dataset option boundaries", () => {
       sourceObject: expect.any(String),
       runDateIso: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
     });
+    expect(ecmwfDatasetOptions).toHaveLength(53);
+    expect(ecmwfDatasetOptions.at(-1)).toMatchObject({
+      ref: "/refs/ECMWF/2024/12/31.nc.json",
+      runDateIso: "2024-12-31",
+    });
     expect(typeof dpirdDatasetOptions[0].label).toBe("string");
     expect(typeof ecmwfDatasetOptions[0].runDateIso).toBe("string");
   });
