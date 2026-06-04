@@ -2,9 +2,9 @@
   import { onMount } from 'svelte'
   import maplibregl from 'maplibre-gl'
   import { Spinner, Styles } from '@sveltestrap/sveltestrap'
-  import DevToolsMenu from './lib/components/DevToolsMenu.svelte'
-  import MainSideBar from './lib/components/MainSideBar.svelte'
-  import { getDefaultMainSideBarWidth, type MainSideBarState } from './lib/components/mainSideBarState'
+  import DevToolsMenu from './components/DevToolsMenu.svelte'
+  import MainSideBar from './components/MainSideBar.svelte'
+  import { getDefaultMainSideBarWidth, type MainSideBarState } from './components/mainSideBarState'
   import {
     buildEcmwfRefCatalogFromInventoryLedger,
     ecmwfRefCatalog,
@@ -12,12 +12,12 @@
     mapEcmwfTimeToGlobalIndex,
     type EcmwfInventoryLedger,
     type EcmwfRefCatalogEntry,
-  } from './lib/datasets/ecmwfCatalog'
+  } from './domain/ecmwf/catalog'
   import {
     ecmwfColorMapStopsForZarrLayer,
     type EcmwfColorMapKey,
     type EcmwfVariableKey,
-  } from './lib/datasets/ecmwfDisplay'
+  } from './domain/ecmwf/display'
   import {
     createEcmwfState,
     ecmwfDisplaySettings,
@@ -27,7 +27,7 @@
     updateEcmwfStateForStepIndex,
     updateEcmwfStateForVariable,
     type EcmwfProviderState,
-  } from './lib/datasets/ecmwfState'
+  } from './domain/ecmwf/state'
   import {
     createEcmwfLayer,
     createEcmwfZarrSelector,
@@ -35,7 +35,7 @@
     ECMWF_STEP_INDEX_COUNT,
     type EcmwfLayerBundle,
     readEcmwfValidTimeLabel,
-  } from './lib/mapRendering/ecmwfLayer'
+  } from './map/ecmwf/createGridLayer'
   import type { LoadingState } from '@carbonplan/zarr-layer'
 
   type DatasetProvider = 'ECMWF'
