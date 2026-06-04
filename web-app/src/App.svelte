@@ -320,11 +320,11 @@
       attributionControl: { compact: true },
     })
     mapInstance = map
-    map.setProjection({ type: 'globe' } as maplibregl.ProjectionSpecification)
 
     map.on('load', () => {
       void (async () => {
         try {
+          map.setProjection({ type: 'globe' } as maplibregl.ProjectionSpecification)
           await loadInventoryCatalog()
           if (cancelled) return
           const current = datasetState.providerConfigs.ECMWF
