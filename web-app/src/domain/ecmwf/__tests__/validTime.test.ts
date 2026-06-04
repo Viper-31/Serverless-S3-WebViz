@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatEcmwfValidTimeNs } from "../../src/lib/datasets/ecmwfValidTime";
+import { formatEcmwfValidTimeNs } from "../validTime";
 
 describe("ecmwfValidTime contract", () => {
   it("formats valid_time epoch nanoseconds as UTC DD-MM-YYYY hh:mm AM/PM", () => {

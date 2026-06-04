@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  ecmwfExpectedDtypes,
-  validateEcmwfDtypes,
-} from "../../src/lib/datasets/ecmwfDtypes";
+import { ecmwfExpectedDtypes, validateEcmwfDtypes } from "../dtypes";
 
 const dtype = (ok: boolean) => ({ is: () => ok });
 

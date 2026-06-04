@@ -2,13 +2,13 @@ import {
   ecmwfDisplayConfigForVariable,
   type EcmwfColorMapKey,
   type EcmwfVariableKey,
-} from "./ecmwfDisplay";
+} from "./display";
 import {
   ecmwfDateToTimeIndex,
   findEcmwfRefForDate,
   mapEcmwfGlobalTimeIndex,
   type EcmwfRefCatalogEntry,
-} from "./ecmwfCatalog";
+} from "./catalog";
 
 export type EcmwfDisplayOverride = {
   clim: [number, number];
