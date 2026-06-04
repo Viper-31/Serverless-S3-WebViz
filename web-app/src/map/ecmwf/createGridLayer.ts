@@ -6,16 +6,16 @@ import {
 import { ReferenceStore } from "@zarrita/storage";
 import type { AsyncReadable } from "@zarrita/storage";
 import * as zarr from "zarrita";
-import { createByteCache } from "../byteCache";
+import { createByteCache } from "../../lib/byteCache";
 import {
   ecmwfColorMapStopsForZarrLayer,
   ecmwfDisplayVariableKeys,
   type EcmwfColorMapKey,
   type EcmwfVariableKey,
-} from "../datasets/ecmwfDisplay";
-import { validateEcmwfDtypes } from "../datasets/ecmwfDtypes";
-import { formatEcmwfValidTimeNs } from "../datasets/ecmwfValidTime";
-import { prepareRefSpec } from "../refRewrite";
+} from "../../domain/ecmwf/display";
+import { validateEcmwfDtypes } from "../../domain/ecmwf/dtypes";
+import { formatEcmwfValidTimeNs } from "../../domain/ecmwf/validTime";
+import { prepareRefSpec } from "../../lib/refRewrite";
 
 export const ECMWF_LAYER_ID = "ecmwf-raster";
 export const ECMWF_TIME_INDEX_COUNT_PER_REF = 14;
