@@ -1,3 +1,5 @@
+import { ecmwfRefCatalog } from "../datasets/ecmwfCatalog";
+
 export const dpirdDatasetOptions = [
   {
     id: "dpird-wa-stations",
@@ -9,12 +11,12 @@ export const dpirdDatasetOptions = [
 ];
 
 export const ecmwfDatasetOptions = [
-  {
-    id: "ecmwf-2024-01-02",
+  ...ecmwfRefCatalog.map((entry) => ({
+    id: `ecmwf-${entry.refStartDate}`,
     family: "ECMWF" as const,
-    label: "ECMWF 2024-01-02",
-    ref: "/refs/ECMWF/2024/01/02.nc.json",
-    sourceObject: "ECMWF/2024/01/02.nc",
-    runDateIso: "2024-01-02",
-  },
+    label: `ECMWF ${entry.refStartDate}`,
+    ref: entry.refPath,
+    sourceObject: entry.sourceObject,
+    runDateIso: entry.refStartDate,
+  })),
 ];
