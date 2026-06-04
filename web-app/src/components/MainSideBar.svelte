@@ -247,7 +247,7 @@
       </label>
 
       <div class="dropdown-row">
-        <Dropdown direction="end">
+        <Dropdown direction="down">
           <DropdownToggle caret class="sidebar-dropdown-toggle">
             Variable: {ecmwfDisplayVariables[variableKey].label}
           </DropdownToggle>
@@ -266,7 +266,7 @@
           <DropdownToggle caret class="sidebar-dropdown-toggle">
             Display
           </DropdownToggle>
-          <DropdownMenu>
+          <DropdownMenu end>
             <div
               class="display-menu"
               role="group"
