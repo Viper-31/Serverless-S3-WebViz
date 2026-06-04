@@ -49,7 +49,7 @@ export type EcmwfColorMap = { gradient: string; stops: EcmwfRgbStop[] };
 
 export const ecmwfColorMaps: Record<EcmwfColorMapKey, EcmwfColorMap> = {
   coolwarm: {
-    gradient: "linear-gradient(to top, #3b4cc0, #bcb8b7, #b40426)",
+    gradient: "linear-gradient(to right, #3b4cc0, #bcb8b7, #b40426)",
     stops: [
       { pos: 0.0, color: [59, 76, 192] },
       { pos: 0.5, color: [188, 184, 183] },
@@ -58,7 +58,7 @@ export const ecmwfColorMaps: Record<EcmwfColorMapKey, EcmwfColorMap> = {
   },
   thermal: {
     gradient:
-      "linear-gradient(to top, #053061, #2166ac, #4393c3, #92c5de, #f4a582, #d6604d, #b2182b, #67001f)",
+      "linear-gradient(to right, #053061, #2166ac, #4393c3, #92c5de, #f4a582, #d6604d, #b2182b, #67001f)",
     stops: [
       { pos: 0.0, color: [5, 48, 97] },
       { pos: 0.14, color: [33, 102, 172] },
@@ -71,7 +71,7 @@ export const ecmwfColorMaps: Record<EcmwfColorMapKey, EcmwfColorMap> = {
     ],
   },
   GnBu: {
-    gradient: "linear-gradient(to top, #f7fcf0, #7bccc4, #084081)",
+    gradient: "linear-gradient(to right, #f7fcf0, #7bccc4, #084081)",
     stops: [
       { pos: 0.0, color: [247, 252, 240] },
       { pos: 0.5, color: [123, 204, 196] },
@@ -79,7 +79,7 @@ export const ecmwfColorMaps: Record<EcmwfColorMapKey, EcmwfColorMap> = {
     ],
   },
   YlGnBu: {
-    gradient: "linear-gradient(to top, #ffffd9, #41b6c4, #081d58)",
+    gradient: "linear-gradient(to right, #ffffd9, #41b6c4, #081d58)",
     stops: [
       { pos: 0.0, color: [255, 255, 217] },
       { pos: 0.5, color: [65, 182, 196] },
@@ -87,7 +87,7 @@ export const ecmwfColorMaps: Record<EcmwfColorMapKey, EcmwfColorMap> = {
     ],
   },
   Purples: {
-    gradient: "linear-gradient(to top, #f2f0f7, #9e9ac8, #3f007d)",
+    gradient: "linear-gradient(to right, #f2f0f7, #9e9ac8, #3f007d)",
     stops: [
       { pos: 0.0, color: [242, 240, 247] },
       { pos: 0.5, color: [158, 154, 200] },
@@ -95,7 +95,7 @@ export const ecmwfColorMaps: Record<EcmwfColorMapKey, EcmwfColorMap> = {
     ],
   },
   Blues: {
-    gradient: "linear-gradient(to top, #eff3ff, #6baed6, #08519c)",
+    gradient: "linear-gradient(to right, #eff3ff, #6baed6, #08519c)",
     stops: [
       { pos: 0.0, color: [239, 243, 255] },
       { pos: 0.5, color: [107, 174, 214] },
@@ -103,7 +103,7 @@ export const ecmwfColorMaps: Record<EcmwfColorMapKey, EcmwfColorMap> = {
     ],
   },
   Reds: {
-    gradient: "linear-gradient(to top, #fee0d2, #fc9272, #cb181d)",
+    gradient: "linear-gradient(to right, #fee0d2, #fc9272, #cb181d)",
     stops: [
       { pos: 0.0, color: [254, 224, 210] },
       { pos: 0.5, color: [252, 146, 114] },
@@ -112,7 +112,7 @@ export const ecmwfColorMaps: Record<EcmwfColorMapKey, EcmwfColorMap> = {
   },
   RdBu_r: {
     gradient:
-      "linear-gradient(to top, #053061, #2166ac, #f7f7f7, #b2182b, #67001f)",
+      "linear-gradient(to right, #053061, #2166ac, #f7f7f7, #b2182b, #67001f)",
     stops: [
       { pos: 0.0, color: [5, 48, 97] },
       { pos: 0.5, color: [247, 247, 247] },
@@ -120,7 +120,7 @@ export const ecmwfColorMaps: Record<EcmwfColorMapKey, EcmwfColorMap> = {
     ],
   },
   Greys_trunc: {
-    gradient: "linear-gradient(to top, #f7f7f7, #bdbdbd, #636363)",
+    gradient: "linear-gradient(to right, #f7f7f7, #bdbdbd, #636363)",
     stops: [
       { pos: 0.0, color: [247, 247, 247] },
       { pos: 0.5, color: [189, 189, 189] },
@@ -128,7 +128,7 @@ export const ecmwfColorMaps: Record<EcmwfColorMapKey, EcmwfColorMap> = {
     ],
   },
   viridis: {
-    gradient: "linear-gradient(to top, #440154, #218f8d, #fde725)",
+    gradient: "linear-gradient(to right, #440154, #218f8d, #fde725)",
     stops: [
       { pos: 0.0, color: [68, 1, 84] },
       { pos: 0.5, color: [33, 143, 141] },
