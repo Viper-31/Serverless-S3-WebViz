@@ -14,7 +14,7 @@ import {
   type EcmwfVariableKey,
 } from "../../domain/ecmwf/display";
 import { validateEcmwfDtypes } from "../../domain/ecmwf/dtypes";
-import { formatEcmwfValidTimeNs } from "../../domain/ecmwf/validTime";
+import { formatEcmwfValidTimeSeconds } from "../../domain/ecmwf/validTime";
 import { prepareRefSpec } from "../../lib/refRewrite";
 
 export const ECMWF_LAYER_ID = "ecmwf-raster";
@@ -147,7 +147,7 @@ export async function readEcmwfValidTimeLabel(
     input.ecmwfTimeIndex,
     input.ecmwfStepIndex,
   ]);
-  return formatEcmwfValidTimeNs(value);
+  return formatEcmwfValidTimeSeconds(value);
 }
 
 export async function createEcmwfLayer(options: {

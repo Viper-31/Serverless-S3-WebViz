@@ -12,16 +12,12 @@ function utcAmPmHour(hour: number): { hour12: number; suffix: "AM" | "PM" } {
   return { hour12, suffix };
 }
 
-export function formatEcmwfValidTimeNs(value: unknown): string {
+export function formatEcmwfValidTimeSeconds(value: unknown): string {
   try {
-    const milliseconds =
-      typeof value === "bigint"
-        ? Number(value / 1_000_000n)
-        : Number(value) / 1_000_000;
+    const seconds = typeof value === "bigint" ? Number(value) : Number(value);
+    if (!Number.isFinite(seconds)) return rawValidTime(value);
 
-    if (!Number.isFinite(milliseconds)) return rawValidTime(value);
-
-    const date = new Date(milliseconds);
+    const date = new Date(seconds * 1000);
     if (Number.isNaN(date.getTime())) return rawValidTime(value);
 
     const { hour12, suffix } = utcAmPmHour(date.getUTCHours());

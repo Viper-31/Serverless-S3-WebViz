@@ -60,7 +60,7 @@ describe("ecmwfDisplay contract", () => {
       ].sort(),
     );
     expect(ecmwfColorMaps.thermal.gradient).toBe(
-      "linear-gradient(to top, #053061, #2166ac, #4393c3, #92c5de, #f4a582, #d6604d, #b2182b, #67001f)",
+      "linear-gradient(to right, #053061, #2166ac, #4393c3, #92c5de, #f4a582, #d6604d, #b2182b, #67001f)",
     );
     expect(ecmwfColorMaps.thermal.stops[0]).toEqual({
       pos: 0,
