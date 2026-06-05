@@ -17,8 +17,6 @@ import { validateEcmwfStoreDtypes } from "@/datasets/ecmwf/schema";
 import { formatEcmwfValidTimeSeconds } from "@/domain/ecmwf/validTime";
 
 export const ECMWF_LAYER_ID = "ecmwf-raster";
-export const ECMWF_TIME_INDEX_COUNT_PER_REF = 14;
-export const ECMWF_STEP_INDEX_COUNT = 113;
 export const ECMWF_DEFAULT_OPACITY = 0.75;
 
 export type EcmwfDisplaySettings = {
