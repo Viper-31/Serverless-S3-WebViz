@@ -28,12 +28,12 @@ function replaceJsonEntry(
 
 describe("ECMWF metadata schema", () => {
   it("accepts the fixture schema before any live range reads", async () => {
-    const spec = await loadEcmwfRefSpec();
+    const spec = await loadEcmwfSpec();
     expect(validateEcmwfRefSpecSchema(spec)).toBe(true);
   });
 
   it("raises SchemaError when display variable dtype drifts", async () => {
-    const spec = replaceJsonEntry(await loadEcmwfRefSpec(), "t2m/.zarray", {
+    const spec = replaceJsonEntry(await loadEcmwfSpec(), "t2m/.zarray", {
       dtype: "<f8",
     });
 
@@ -41,7 +41,7 @@ describe("ECMWF metadata schema", () => {
   });
 
   it("raises SchemaError when grid shape drifts", async () => {
-    const spec = replaceJsonEntry(await loadEcmwfRefSpec(), "t2m/.zarray", {
+    const spec = replaceJsonEntry(await loadEcmwfSpec(), "t2m/.zarray", {
       shape: [14, 113, 110, 151],
     });
 
@@ -49,37 +49,25 @@ describe("ECMWF metadata schema", () => {
   });
 
   it("raises SchemaError when valid_time semantics drift", async () => {
-    const spec = replaceJsonEntry(
-      await loadEcmwfRefSpec(),
-      "valid_time/.zattrs",
-      {
-        units: "nanoseconds since 1970-01-01",
-      },
-    );
+    const spec = replaceJsonEntry(await loadEcmwfSpec(), "valid_time/.zattrs", {
+      units: "nanoseconds since 1970-01-01",
+    });
 
     expect(() => validateEcmwfRefSpecSchema(spec)).toThrow(SchemaError);
   });
 
   it("raises SchemaError when dimension order drifts", async () => {
-    const spec = replaceJsonEntry(
-      await loadEcmwfRefSpec(),
-      "valid_time/.zattrs",
-      {
-        _ARRAY_DIMENSIONS: ["step", "time"],
-      },
-    );
+    const spec = replaceJsonEntry(await loadEcmwfSpec(), "valid_time/.zattrs", {
+      _ARRAY_DIMENSIONS: ["step", "time"],
+    });
 
     expect(() => validateEcmwfRefSpecSchema(spec)).toThrow(SchemaError);
   });
 
   it("raises SchemaError when dimension order drifts", async () => {
-    const spec = replaceJsonEntry(
-      await loadEcmwfRefSpec(),
-      "valid_time/.zattrs",
-      {
-        _ARRAY_DIMENSIONS: ["step", "time"],
-      },
-    );
+    const spec = replaceJsonEntry(await loadEcmwfSpec(), "valid_time/.zattrs", {
+      _ARRAY_DIMENSIONS: ["step", "time"],
+    });
 
     expect(() => validateEcmwfRefSpecSchema(spec)).toThrow(SchemaError);
   });
