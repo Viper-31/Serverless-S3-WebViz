@@ -151,10 +151,6 @@
     onDisplayOverrideChange({ clim: [displayClim[0], displayClim[1]], colormap: (event.currentTarget as HTMLSelectElement).value as EcmwfColorMapKey })
   }
 
-  function stopDropdownEventPropagation(event: Event) {
-    event.stopPropagation()
-  }
-
   onMount(() => {
     function clampToViewport() {
       if (collapsed) return

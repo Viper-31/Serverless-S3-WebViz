@@ -11,7 +11,15 @@
     "noEmit": true,
     "allowJs": true,
     "checkJs": true,
-    "moduleDetection": "force"
+    "moduleDetection": "force",
+
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "allowUnusedLabels": false,
+    "noUncheckedSideEffectImports": true,
+    "noFallthroughCasesInSwitch": true,
+    "allowUnreachableCode": false
   },
   "include": ["src/**/*.ts", "src/**/*.js", "src/**/*.svelte"]
 }
