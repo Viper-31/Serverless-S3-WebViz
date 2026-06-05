@@ -27,13 +27,19 @@ function parseJsonObject(value: unknown, key: string): JsonObject {
     throw new SchemaError(`${key} must be a JSON string`);
   }
 
+  let parsed: unknown;
+
   try {
-    const parsed = JSON.parse(value);
-    if (!isObject(parsed)) throw new Error("not object");
-    return parsed;
-  } catch {
-    throw new SchemaError(`${key} must contain a JSON object`);
+    parsed = JSON.parse(value);
+  } catch (error) {
+    throw new SchemaError(`${key} must contain a valid JSON`);
   }
+
+  if (!isObject(parsed)) {
+    throw new SchemaError(`${key} must be a JSON object`);
+  }
+
+  return parsed;
 }
 
 export function parseZarray(spec: RefSpec, path: string): JsonObject {
