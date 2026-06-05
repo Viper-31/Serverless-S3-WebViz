@@ -5,6 +5,7 @@
   import DevToolsMenu from './components/DevToolsMenu.svelte'
   import MainSideBar from './components/MainSideBar.svelte'
   import { getDefaultMainSideBarWidth, type MainSideBarState } from './components/mainSideBarState'
+  import { ECMWF_STEP_INDEX_COUNT } from './datasets/ecmwf/schema'
   import {
     buildEcmwfRefCatalogFromInventoryLedger,
     ecmwfRefCatalog,
@@ -32,7 +33,6 @@
     createEcmwfLayer,
     createEcmwfZarrSelector,
     ECMWF_LAYER_ID,
-    ECMWF_STEP_INDEX_COUNT,
     type EcmwfLayerBundle,
     readEcmwfValidTimeLabel,
   } from './map/ecmwf/createGridLayer'
