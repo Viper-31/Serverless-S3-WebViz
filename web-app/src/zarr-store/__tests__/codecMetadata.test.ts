@@ -4,6 +4,8 @@ import {
   validateZarrayCodecMetadata,
 } from "../codecMetadata";
 
+type CodecMetadataInput = Parameters<typeof validateZarrayCodecMetadata>[0];
+
 function validFilters(elementsize: number) {
   return [
     { id: "shuffle", elementsize },
@@ -41,12 +43,14 @@ describe("codec metadata", () => {
   });
 
   it("rejects non-array filters metadata", () => {
-    expect(() =>
-      validateZarrayCodecMetadata({
-        dtype: "<f4",
-        filters: "shuffle,zlib" as unknown as Array<unknown>,
-      }),
-    ).toThrow(/array or null/i);
+    const invalidMetadata = {
+      dtype: "<f4",
+      filters: "shuffle,zlib" as unknown,
+    } as CodecMetadataInput;
+
+    expect(() => validateZarrayCodecMetadata(invalidMetadata)).toThrow(
+      /array or null/i,
+    );
   });
 
   it("rejects invalid shuffle metadata", () => {
