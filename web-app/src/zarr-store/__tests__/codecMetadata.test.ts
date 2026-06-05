@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   validateRefSpecZarrayMetadata,
   validateZarrayCodecMetadata,
-} from "../codecMetadata";
+} from "@/zarr-store/codecMetadata";
 
 type CodecMetadataInput = Parameters<typeof validateZarrayCodecMetadata>[0];
 

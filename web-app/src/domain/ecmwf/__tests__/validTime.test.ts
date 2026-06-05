@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatEcmwfValidTimeSeconds } from "../validTime";
+import { formatEcmwfValidTimeSeconds } from "@/domain/ecmwf/validTime";
 
 describe("ecmwfValidTime contract", () => {
   it("formats valid_time epoch seconds as UTC DD-MM-YYYY hh:mm AM/PM", () => {

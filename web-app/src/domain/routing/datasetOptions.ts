@@ -1,4 +1,4 @@
-import { ecmwfRefCatalog } from "../ecmwf/catalog";
+import { ecmwfRefCatalog } from "@/domain/ecmwf/catalog";
 
 export const dpirdDatasetOptions = [
   {

@@ -1,4 +1,7 @@
-import type { ByteCacheOptions, ZarritaCompatibleByteCache } from "./types";
+import type {
+  ByteCacheOptions,
+  ZarritaCompatibleByteCache,
+} from "@/zarr-store/types";
 
 export function createByteCache({ maxBytes, maxEntries }: ByteCacheOptions) {
   const map = new Map<string, Uint8Array>();

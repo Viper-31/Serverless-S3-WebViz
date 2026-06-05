@@ -1,5 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
-import { loadRefSpec, openReferencedZarrStore } from "../referencedStore";
+import {
+  loadRefSpec,
+  openReferencedZarrStore,
+} from "@/zarr-store/referencedStore";
 
 const validZarrayMetadata = JSON.stringify({
   dtype: "<f4",

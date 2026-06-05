@@ -1,4 +1,4 @@
-import type { RefSpec } from "./types";
+import type { RefSpec } from "@/zarr-store/types";
 
 const S3_WEBVIZ_PREFIX = "s3://webviz/";
 const PUBLIC_HTTP_PREFIX = "https://projects.pawsey.org.au/webviz/";

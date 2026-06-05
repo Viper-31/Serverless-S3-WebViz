@@ -8,7 +8,6 @@ export {
 export { createByteCache, createZarritaByteCache } from "./byteCache";
 
 export {
-  ZARR_DTYPE_BYTE_WIDTH,
   validateZarrayCodecMetadata,
   validateRefSpecZarrayMetadata,
 } from "./codecMetadata";

@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { createByteCache, createZarritaByteCache } from "../byteCache";
+import {
+  createByteCache,
+  createZarritaByteCache,
+} from "@/zarr-store/byteCache";
 
 describe("byte cache", () => {
   it("rejects writes that exceed the memory budget", () => {

@@ -6,20 +6,17 @@ import {
 
 import * as zarr from "zarrita";
 
-import { openReferencedZarrStore } from "../../zarr-store";
+import { openReferencedZarrStore } from "@/zarr-store";
 
 import {
   ecmwfColorMapStopsForZarrLayer,
-  ecmwfDisplayVariableKeys,
   type EcmwfColorMapKey,
   type EcmwfVariableKey,
-} from "../../domain/ecmwf/display";
-import { validateEcmwfDtypes } from "../../domain/ecmwf/dtypes";
-import { formatEcmwfValidTimeSeconds } from "../../domain/ecmwf/validTime";
+} from "@/domain/ecmwf/display";
+import { validateEcmwfStoreDtypes } from "@/datasets/ecmwf/schema";
+import { formatEcmwfValidTimeSeconds } from "@/domain/ecmwf/validTime";
 
 export const ECMWF_LAYER_ID = "ecmwf-raster";
-export const ECMWF_TIME_INDEX_COUNT_PER_REF = 14;
-export const ECMWF_STEP_INDEX_COUNT = 113;
 export const ECMWF_DEFAULT_OPACITY = 0.75;
 
 export type EcmwfDisplaySettings = {
@@ -45,37 +42,6 @@ export function createEcmwfZarrSelector(input: {
 
 async function openEcmwfArray(store: zarr.Readable, path: string) {
   return zarr.open.v2(zarr.root(store).resolve(path), { kind: "array" });
-}
-
-export async function validateEcmwfStoreDtypes(
-  store: zarr.Readable,
-  variableKey: EcmwfVariableKey,
-): Promise<true> {
-  const [dataVariables, time, step, latitude, longitude, validTime] =
-    await Promise.all([
-      Promise.all(
-        ecmwfDisplayVariableKeys.map((key) => openEcmwfArray(store, key)),
-      ),
-      openEcmwfArray(store, "time"),
-      openEcmwfArray(store, "step"),
-      openEcmwfArray(store, "latitude"),
-      openEcmwfArray(store, "longitude"),
-      openEcmwfArray(store, "valid_time"),
-    ]);
-
-  for (const [index, array] of dataVariables.entries()) {
-    if (!array.is("float32"))
-      throw new Error(`dtype mismatch for ${ecmwfDisplayVariableKeys[index]}`);
-  }
-
-  return validateEcmwfDtypes({
-    display: dataVariables[ecmwfDisplayVariableKeys.indexOf(variableKey)],
-    time,
-    step,
-    latitude,
-    longitude,
-    valid_time: validTime,
-  });
 }
 
 export async function readEcmwfValidTimeLabel(
@@ -105,7 +71,7 @@ export async function createEcmwfLayer(options: {
   });
   const store = referencedStore.store as zarr.Readable;
 
-  await validateEcmwfStoreDtypes(store, options.variableKey);
+  await validateEcmwfStoreDtypes((path) => openEcmwfArray(store, path));
 
   const layer = new ZarrLayer({
     id: ECMWF_LAYER_ID,

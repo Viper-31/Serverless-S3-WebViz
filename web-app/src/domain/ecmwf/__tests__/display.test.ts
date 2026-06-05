@@ -6,7 +6,7 @@ import {
   ecmwfDisplayConfigForVariable,
   ecmwfDisplayVariables,
   ecmwfVarClim,
-} from "../display";
+} from "@/domain/ecmwf/display";
 
 describe("ecmwfDisplay contract", () => {
   it("curates display variables in UI-safe form", () => {

@@ -7,7 +7,7 @@ import {
   findEcmwfRefForDate,
   mapEcmwfGlobalTimeIndex,
   mapEcmwfTimeToGlobalIndex,
-} from "../catalog";
+} from "@/domain/ecmwf/catalog";
 
 describe("ecmwfCatalog contract", () => {
   it("catalogs weekly refs from inventory ledger and maps dates to covering refs", () => {
