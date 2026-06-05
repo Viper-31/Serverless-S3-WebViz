@@ -3,10 +3,11 @@ import {
   type LoadingState,
   type Selector,
 } from "@carbonplan/zarr-layer";
-import { ReferenceStore } from "@zarrita/storage";
-import type { AsyncReadable } from "@zarrita/storage";
+
 import * as zarr from "zarrita";
-import { createByteCache } from "../../lib/byteCache";
+
+import { openReferencedZarrStore } from "../../zarr-store";
+
 import {
   ecmwfColorMapStopsForZarrLayer,
   ecmwfDisplayVariableKeys,
@@ -15,23 +16,11 @@ import {
 } from "../../domain/ecmwf/display";
 import { validateEcmwfDtypes } from "../../domain/ecmwf/dtypes";
 import { formatEcmwfValidTimeSeconds } from "../../domain/ecmwf/validTime";
-import { prepareRefSpec } from "../../lib/refRewrite";
 
 export const ECMWF_LAYER_ID = "ecmwf-raster";
 export const ECMWF_TIME_INDEX_COUNT_PER_REF = 14;
 export const ECMWF_STEP_INDEX_COUNT = 113;
 export const ECMWF_DEFAULT_OPACITY = 0.75;
-
-type RefSpec = {
-  version?: number;
-  refs?: Record<string, unknown>;
-};
-
-type ZarritaByteCache = {
-  has(key: string): boolean;
-  get(key: string): Uint8Array | undefined;
-  set(key: string, value: Uint8Array | undefined): void;
-};
 
 export type EcmwfDisplaySettings = {
   clim: [number, number];
@@ -44,33 +33,6 @@ export type EcmwfLayerBundle = {
   refPath: string;
 };
 
-const rawBytesMaxCacheSize = 24 * 1024 * 1024;
-const rawBytesCacheMaxEntries = 128;
-const gapRangeToCoalesce = 32_768;
-
-function createZarritaByteCache(): ZarritaByteCache {
-  const cache = createByteCache({
-    maxBytes: rawBytesMaxCacheSize,
-    maxEntries: rawBytesCacheMaxEntries,
-  });
-
-  return {
-    has: (key) => cache.has(key),
-    get: (key) => cache.get(key),
-    set(key, value) {
-      if (value === undefined) return;
-      cache.set(key, value);
-    },
-  };
-}
-
-async function loadRefSpec(refPath: string): Promise<RefSpec> {
-  const response = await fetch(refPath, { credentials: "omit" });
-  if (!response.ok)
-    throw new Error(`Failed to load ${refPath}: HTTP ${response.status}`);
-  return response.json() as Promise<RefSpec>;
-}
-
 export function createEcmwfZarrSelector(input: {
   ecmwfTimeIndex: number;
   ecmwfStepIndex: number;
@@ -79,28 +41,6 @@ export function createEcmwfZarrSelector(input: {
     time: { selected: input.ecmwfTimeIndex, type: "index" },
     step: { selected: input.ecmwfStepIndex, type: "index" },
   };
-}
-
-export async function createEcmwfReadableStore(
-  refPath: string,
-  options: { localRangeCoalescing: boolean },
-): Promise<zarr.Readable> {
-  const refSpec = await loadRefSpec(refPath);
-  const preparedSpec = prepareRefSpec(refSpec);
-  const baseStore = ReferenceStore.fromSpec(preparedSpec) as AsyncReadable;
-
-  if (!options.localRangeCoalescing) {
-    return zarr.extendStore(baseStore, (store) =>
-      zarr.withByteCaching(store, { cache: createZarritaByteCache() }),
-    ) as zarr.Readable;
-  }
-
-  return zarr.extendStore(
-    baseStore,
-    (store) =>
-      zarr.withRangeCoalescing(store, { coalesceSize: gapRangeToCoalesce }),
-    (store) => zarr.withByteCaching(store, { cache: createZarritaByteCache() }),
-  ) as zarr.Readable;
 }
 
 async function openEcmwfArray(store: zarr.Readable, path: string) {
@@ -159,9 +99,12 @@ export async function createEcmwfLayer(options: {
   localRangeCoalescing: boolean;
   onLoadingStateChange?: (state: LoadingState) => void;
 }): Promise<EcmwfLayerBundle> {
-  const store = await createEcmwfReadableStore(options.refPath, {
-    localRangeCoalescing: options.localRangeCoalescing,
+  const referencedStore = await openReferencedZarrStore({
+    refUrl: options.refPath,
+    rangeCoalescing: options.localRangeCoalescing,
   });
+  const store = referencedStore.store as zarr.Readable;
+
   await validateEcmwfStoreDtypes(store, options.variableKey);
 
   const layer = new ZarrLayer({

@@ -1,31 +1,21 @@
 import { describe, expect, it } from "vitest";
+import * as zarr from "zarrita";
+import type { Array as ZarrArray, DataType, Readable } from "zarrita";
 
-const runOnline =
-  process.env.RUN_ONLINE_INTEGRATION === "1" ||
-  process.env.RUN_LIVE_PAWSEY_TESTS === "1";
-const onlineDescribe = runOnline ? describe : describe.skip;
+import { openReferencedZarrStore } from "../../src/zarr-store";
+
+const onlineDescribe =
+  process.env.RUN_ONLINE_INTEGRATION === "1" ? describe : describe.skip;
 
 type Region = { data: ArrayLike<number | bigint>; shape: number[] };
+
+function asZarrArray(value: unknown): ZarrArray<DataType, Readable> {
+  return value as ZarrArray<DataType, Readable>;
+}
 
 async function loadRefSpec(path: string) {
   const { readFile } = await import("node:fs/promises");
   return JSON.parse(await readFile(new URL(path, import.meta.url), "utf8"));
-}
-
-async function loadRealZarrStack() {
-  try {
-    const zarrPackage = "zarrita";
-    const storagePackage = "@zarrita/storage";
-    const [zarr, storage] = await Promise.all([
-      import(/* @vite-ignore */ zarrPackage),
-      import(/* @vite-ignore */ storagePackage),
-    ]);
-    return { zarr, ReferenceStore: storage.ReferenceStore };
-  } catch (error) {
-    throw new Error(
-      "Install zarrita and @zarrita/storage before enabling online integration tests.",
-    );
-  }
 }
 
 function values(region: Region) {
@@ -48,48 +38,37 @@ function expectDecodedRegion(region: Region, shape: number[]) {
   ).toBe(true);
 }
 
-onlineDescribe("virtualZarrDataset integration smoke", () => {
-  it("can be wired to the real zarrita stack when optional deps are available", async () => {
-    const { zarr, ReferenceStore } = await loadRealZarrStack();
-    const { createVirtualZarrDataset } =
-      await import("../src/lib/virtualZarrDataset");
-
-    const dataset = await createVirtualZarrDataset({
-      refSpec: {
-        version: 1,
-        refs: {
-          ".zgroup": '{"zarr_format":2}',
-          ".zattrs": "{}",
-        },
-      },
-      dependencies: { zarr, ReferenceStore },
-    });
-
-    expect(dataset.preparedRefSpec).toEqual({
-      version: 1,
-      refs: {
-        ".zgroup": '{"zarr_format":2}',
-        ".zattrs": "{}",
-      },
-    });
-    expect(dataset.store).toBeTruthy();
-    expect(dataset.root).toBeTruthy();
-  });
-
-  it("decodes DPIRD lat, lon, and time with select/get", async () => {
-    const { zarr, ReferenceStore } = await loadRealZarrStack();
-    const { createVirtualZarrDataset } =
-      await import("../src/lib/virtualZarrDataset");
+onlineDescribe("referencedZarrStore integration", () => {
+  it("opens a DPIRD ref spec and rewrites webviz chunk URLs", async () => {
     const refSpec = await loadRefSpec(
       "../../public/refs/DPIRD/dpird_wa_stations.nc.json",
     );
 
-    const dataset = await createVirtualZarrDataset({
+    const dataset = await openReferencedZarrStore({
       refSpec,
-      dependencies: { zarr, ReferenceStore },
+      arrayPath: "lat",
     });
+    const chunkRef = dataset.preparedRefSpec.refs?.["airTemperature/0.0"] as
+      | [string, number, number]
+      | undefined;
 
-    const lat = await dataset.getArray("lat");
+    expect(dataset.store).toBeTruthy();
+    expect(dataset.root).toBeTruthy();
+    expect(dataset.node).toBeTruthy();
+    expect(chunkRef?.[0]).toBe(
+      "https://projects.pawsey.org.au/webviz/DPIRD/dpird_wa_stations.nc",
+    );
+    await expect(dataset.openNode("lon", "array")).resolves.toBeTruthy();
+  });
+
+  it("decodes DPIRD lat, lon, and time with select/get", async () => {
+    const refSpec = await loadRefSpec(
+      "../../public/refs/DPIRD/dpird_wa_stations.nc.json",
+    );
+
+    const dataset = await openReferencedZarrStore({ refSpec });
+
+    const lat = asZarrArray(await dataset.getArray("lat"));
     const latSelection = zarr.select(lat, { station: zarr.slice(0, 3) });
     const latRegion = (await zarr.get(lat, latSelection)) as Region;
     expect(latSelection).toEqual([zarr.slice(0, 3)]);
@@ -100,7 +79,7 @@ onlineDescribe("virtualZarrDataset integration smoke", () => {
         .every((value) => value < 0 && value > -40),
     ).toBe(true);
 
-    const lon = await dataset.getArray("lon");
+    const lon = asZarrArray(await dataset.getArray("lon"));
     const lonSelection = zarr.select(lon, { station: zarr.slice(0, 3) });
     const lonRegion = (await zarr.get(lon, lonSelection)) as Region;
     expect(lonSelection).toEqual([zarr.slice(0, 3)]);
@@ -111,7 +90,7 @@ onlineDescribe("virtualZarrDataset integration smoke", () => {
         .every((value) => value > 110 && value < 130),
     ).toBe(true);
 
-    const time = await dataset.getArray("time");
+    const time = asZarrArray(await dataset.getArray("time"));
     const timeSelection = zarr.select(time, { time: zarr.slice(0, 3) });
     const timeRegion = (await zarr.get(time, timeSelection)) as Region;
     expect(timeSelection).toEqual([zarr.slice(0, 3)]);
@@ -121,22 +100,35 @@ onlineDescribe("virtualZarrDataset integration smoke", () => {
         .map(asNumber)
         .every((value) => value >= 0),
     ).toBe(true);
+
+    const airTemperature = asZarrArray(
+      await dataset.getArray("airTemperature"),
+    );
+    const airTemperatureSelection = zarr.select(airTemperature, {
+      station: zarr.slice(0, 3),
+      time: 0,
+    });
+    const airTemperatureRegion = (await zarr.get(
+      airTemperature,
+      airTemperatureSelection,
+    )) as Region;
+    expect(airTemperatureSelection).toEqual([zarr.slice(0, 3), 0]);
+    expectDecodedRegion(airTemperatureRegion, [3]);
+    expect(
+      values(airTemperatureRegion)
+        .map(asNumber)
+        .every((value) => Number.isFinite(value)),
+    ).toBe(true);
   });
 
   it("decodes ECMWF time, step, latitude, longitude, and valid_time with select/get", async () => {
-    const { zarr, ReferenceStore } = await loadRealZarrStack();
-    const { createVirtualZarrDataset } =
-      await import("../src/lib/virtualZarrDataset");
     const refSpec = await loadRefSpec(
       "../../public/refs/ECMWF/2024/01/02.nc.json",
     );
 
-    const dataset = await createVirtualZarrDataset({
-      refSpec,
-      dependencies: { zarr, ReferenceStore },
-    });
+    const dataset = await openReferencedZarrStore({ refSpec });
 
-    const time = await dataset.getArray("time");
+    const time = asZarrArray(await dataset.getArray("time"));
     const timeSelection = zarr.select(time, { time: zarr.slice(0, 3) });
     const timeRegion = (await zarr.get(time, timeSelection)) as Region;
     expect(timeSelection).toEqual([zarr.slice(0, 3)]);
@@ -147,7 +139,7 @@ onlineDescribe("virtualZarrDataset integration smoke", () => {
         .every((value) => value > 0),
     ).toBe(true);
 
-    const step = await dataset.getArray("step");
+    const step = asZarrArray(await dataset.getArray("step"));
     const stepSelection = zarr.select(step, { step: zarr.slice(0, 3) });
     const stepRegion = (await zarr.get(step, stepSelection)) as Region;
     expect(stepSelection).toEqual([zarr.slice(0, 3)]);
@@ -158,7 +150,7 @@ onlineDescribe("virtualZarrDataset integration smoke", () => {
         .every((value) => value >= 0),
     ).toBe(true);
 
-    const latitude = await dataset.getArray("latitude");
+    const latitude = asZarrArray(await dataset.getArray("latitude"));
     const latitudeSelection = zarr.select(latitude, {
       latitude: zarr.slice(0, 3),
     });
@@ -174,7 +166,7 @@ onlineDescribe("virtualZarrDataset integration smoke", () => {
         .every((value) => value < 0 && value > -40),
     ).toBe(true);
 
-    const longitude = await dataset.getArray("longitude");
+    const longitude = asZarrArray(await dataset.getArray("longitude"));
     const longitudeSelection = zarr.select(longitude, {
       longitude: zarr.slice(0, 3),
     });
@@ -190,7 +182,7 @@ onlineDescribe("virtualZarrDataset integration smoke", () => {
         .every((value) => value > 110 && value < 130),
     ).toBe(true);
 
-    const validTime = await dataset.getArray("valid_time");
+    const validTime = asZarrArray(await dataset.getArray("valid_time"));
     const validTimeSelection = zarr.select(validTime, {
       time: 0,
       step: zarr.slice(0, 3),
@@ -205,6 +197,22 @@ onlineDescribe("virtualZarrDataset integration smoke", () => {
       values(validTimeRegion)
         .map(asNumber)
         .every((value) => value > 0),
+    ).toBe(true);
+
+    const t2m = asZarrArray(await dataset.getArray("t2m"));
+    const t2mSelection = zarr.select(t2m, {
+      time: 0,
+      step: 0,
+      latitude: zarr.slice(0, 2),
+      longitude: zarr.slice(0, 2),
+    });
+    const t2mRegion = (await zarr.get(t2m, t2mSelection)) as Region;
+    expect(t2mSelection).toEqual([0, 0, zarr.slice(0, 2), zarr.slice(0, 2)]);
+    expectDecodedRegion(t2mRegion, [2, 2]);
+    expect(
+      values(t2mRegion)
+        .map(asNumber)
+        .every((value) => Number.isFinite(value)),
     ).toBe(true);
   });
 });

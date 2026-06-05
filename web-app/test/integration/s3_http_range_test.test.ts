@@ -1,8 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-const runOnline =
-  process.env.RUN_ONLINE_INTEGRATION === "1" ||
-  process.env.RUN_LIVE_PAWSEY_TESTS === "1";
+const runOnline = process.env.RUN_ONLINE_INTEGRATION === "1";
 const onlineDescribe = runOnline ? describe : describe.skip;
 
 onlineDescribe("s3_http_range_test", () => {
