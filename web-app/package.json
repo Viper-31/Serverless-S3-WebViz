@@ -8,13 +8,15 @@
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json",
-    "test": "vitest",
+    "test": "vitest run",
+    "test:cov": "vitest run --coverage",
     "test:online": "cross-env RUN_ONLINE_INTEGRATION=1 vitest run test/integration"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^7.1.2",
     "@tsconfig/svelte": "^5.0.8",
     "@types/node": "^24.12.3",
+    "@vitest/coverage-istanbul": "^4.1.8",
     "cross-env": "^10.1.0",
     "svelte": "^5.56.0",
     "svelte-check": "^4.4.8",
