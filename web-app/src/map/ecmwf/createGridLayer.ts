@@ -13,7 +13,6 @@ import {
   type EcmwfColorMapKey,
   type EcmwfVariableKey,
 } from "@/domain/ecmwf/display";
-import { validateEcmwfStoreDtypes } from "@/datasets/ecmwf/schema";
 import { formatEcmwfValidTimeSeconds } from "@/domain/ecmwf/validTime";
 
 export const ECMWF_LAYER_ID = "ecmwf-raster";
@@ -70,8 +69,6 @@ export async function createEcmwfLayer(options: {
     rangeCoalescing: options.localRangeCoalescing,
   });
   const store = referencedStore.store as zarr.Readable;
-
-  await validateEcmwfStoreDtypes((path) => openEcmwfArray(store, path));
 
   const layer = new ZarrLayer({
     id: ECMWF_LAYER_ID,

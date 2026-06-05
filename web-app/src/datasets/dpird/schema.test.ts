@@ -1,10 +1,18 @@
 import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
 import type { RefSpec } from "@/zarr-store";
-import { SchemaError } from "@/datasets/metadata";
+import { decodeBase64FixedUTFLE } from "@/domain/dpird/decodeBase64FixedUTFLE";
 import {
-  decodeDpirdInlineStringArray,
-  validateDpirdRefSpecSchema,
+  parseZarray,
+  parseZattrs,
+  SchemaError,
+  type DatasetArraySchema,
+} from "@/datasets/metadata";
+import {
+  DPIRD_ARRAYS,
+  dpirdDisplayVariableKeys,
+  type DpirdInlineNumericPath,
+  type DpirdStringPath,
 } from "@/datasets/dpird/schema";
 
 async function loadDpirdSpec(): Promise<RefSpec> {
@@ -30,6 +38,132 @@ function replaceJsonEntry(
     ...patch,
   });
   return { ...spec, refs };
+}
+
+function expectEqual(path: string, actual: unknown, expected: unknown) {
+  if (actual !== expected) {
+    throw new SchemaError(
+      `${path} expected ${String(expected)} but found ${String(actual)}`,
+    );
+  }
+}
+
+function expectArray<T>(path: string, actual: unknown, expected: readonly T[]) {
+  if (!Array.isArray(actual) || actual.length !== expected.length) {
+    throw new SchemaError(`${path} expected [${expected.join(",")}]`);
+  }
+
+  for (let index = 0; index < expected.length; index += 1) {
+    if (actual[index] !== expected[index]) {
+      throw new SchemaError(
+        `${path} expected [${expected.join(",")}] but found [${actual.join(",")}]`,
+      );
+    }
+  }
+}
+
+function expectArrayMetadata(
+  spec: RefSpec,
+  path: string,
+  schema: DatasetArraySchema,
+): true {
+  const zarray = parseZarray(spec, path);
+  const zattrs = parseZattrs(spec, path);
+
+  if (schema.zarrV2Dtype !== undefined) {
+    expectEqual(`${path}/.zarray dtype`, zarray.dtype, schema.zarrV2Dtype);
+  }
+
+  if (schema.zarrV2DtypePrefix !== undefined) {
+    if (
+      typeof zarray.dtype !== "string" ||
+      !zarray.dtype.startsWith(schema.zarrV2DtypePrefix)
+    ) {
+      throw new SchemaError(
+        `${path}/.zarray dtype expected prefix ${schema.zarrV2DtypePrefix}`,
+      );
+    }
+  }
+
+  expectArray(`${path}/.zarray shape`, zarray.shape, schema.shape);
+  expectArray(
+    `${path}/.zattrs _ARRAY_DIMENSIONS`,
+    zattrs._ARRAY_DIMENSIONS,
+    schema.dimensions,
+  );
+
+  if (schema.units !== undefined) {
+    expectEqual(`${path}/.zattrs units`, zattrs.units, schema.units);
+  }
+
+  return true;
+}
+
+function validateDpirdRefSpecSchema(spec: RefSpec): true {
+  for (const variableKey of dpirdDisplayVariableKeys) {
+    expectArrayMetadata(spec, variableKey, DPIRD_ARRAYS.display);
+  }
+
+  expectArrayMetadata(spec, "time", DPIRD_ARRAYS.time);
+  expectArrayMetadata(spec, "lat", DPIRD_ARRAYS.lat);
+  expectArrayMetadata(spec, "lon", DPIRD_ARRAYS.lon);
+  expectArrayMetadata(spec, "station", DPIRD_ARRAYS.station);
+  expectArrayMetadata(spec, "code", DPIRD_ARRAYS.code);
+
+  expectInlineBase64NumericArray(spec, "lat");
+  expectInlineBase64NumericArray(spec, "lon");
+  decodeDpirdInlineStringArray(spec, "station");
+  decodeDpirdInlineStringArray(spec, "code");
+
+  return true;
+}
+
+function decodeDpirdInlineStringArray(
+  spec: RefSpec,
+  path: DpirdStringPath,
+): string[] {
+  const schema = DPIRD_ARRAYS[path];
+  const zarray = parseZarray(spec, path);
+
+  if (zarray.dtype !== schema.zarrV2Dtype) {
+    throw new SchemaError(`${path}/.zarray dtype mismatch`);
+  }
+
+  const encoded = spec.refs?.[`${path}/0`];
+  if (typeof encoded !== "string") {
+    throw new SchemaError(`${path}/0 must be an inline base64 string`);
+  }
+
+  const values = decodeBase64FixedUTFLE(encoded, schema.fixedUtf32CodePoints);
+
+  if (values.length !== 192) {
+    throw new SchemaError(
+      `${path}/0 decoded ${values.length} strings, expected 192`,
+    );
+  }
+
+  return values;
+}
+
+function expectInlineBase64NumericArray(
+  spec: RefSpec,
+  path: DpirdInlineNumericPath,
+) {
+  const encoded = spec.refs?.[`${path}/0`];
+
+  if (typeof encoded !== "string" || !encoded.startsWith("base64:")) {
+    throw new SchemaError(`${path}/0 must be an inline base64 numeric payload`);
+  }
+
+  const binary = atob(encoded.slice("base64:".length));
+  const expectedBytes = 192 * 8; // 192 values * 8 bytes per float64
+
+  if (binary.length !== expectedBytes) {
+    throw new SchemaError(
+      `${path}/0 decoded ${binary.length} bytes, expected ${expectedBytes}`,
+    );
+  }
+  return true;
 }
 
 describe("DPIRD metadata schema", () => {
