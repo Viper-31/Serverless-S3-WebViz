@@ -1,7 +1,6 @@
 // Temporary dpird display list
 // Future: move this beside DPIRD display metadata, similar to ecmwfDisplayVariableKeys
 export const dpirdDisplayVariableKeys = ["airTemperature"] as const;
-export type DpirdDisplayVariableKey = (typeof dpirdDisplayVariableKeys)[number];
 
 export const DPIRD_ARRAYS = {
   display: {

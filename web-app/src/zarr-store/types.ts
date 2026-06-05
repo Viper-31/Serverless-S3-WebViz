@@ -5,12 +5,6 @@ export type RefSpec = {
   refs?: Record<string, unknown>;
 };
 
-export type ByteCache = {
-  has(key: string): boolean;
-  get(key: string): Uint8Array | undefined;
-  set(key: string, value: Uint8Array): boolean | unknown;
-};
-
 export type ByteCacheOptions = {
   maxBytes: number;
   maxEntries: number;
