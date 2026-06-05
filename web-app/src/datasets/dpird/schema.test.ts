@@ -81,4 +81,16 @@ describe("DPIRD metadata schema", () => {
       SchemaError,
     );
   });
+
+  it("raises SchemaError when display variable dtype drifts", async () => {
+    const spec = replaceJsonEntry(
+      await loadDpirdSpec(),
+      "airTemperature/.zarray",
+      {
+        dtype: "<f4",
+      },
+    );
+
+    expect(() => validateDpirdRefSpecSchema(spec)).toThrow(SchemaError);
+  });
 });

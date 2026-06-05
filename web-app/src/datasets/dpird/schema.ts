@@ -2,6 +2,11 @@ import { decodeBase64FixedUTFLE } from "../../domain/dpird/decodeBase64FixedUTFL
 import type { RefSpec } from "../../zarr-store";
 import { validateArrayMetadata, SchemaError, parseZarray } from "../metadata";
 
+// Temporary dpird display list
+// Future: move this beside DPIRD display metadata, similar to ecmwfDisplayVariableKeys
+export const dpirdDisplayVariableKeys = ["airTemperature"] as const;
+export type DpirdDisplayVariableKey = (typeof dpirdDisplayVariableKeys)[number];
+
 export const DPIRD_ARRAYS = {
   display: {
     zarrV2Dtype: "<f8",
@@ -51,14 +56,23 @@ export const DPIRD_ARRAYS = {
 } as const;
 
 type DpirdStringPath = "station" | "code";
+type DpirdInlineNumericPath = "lat" | "lon";
 
 export function validateDpirdRefSpecSchema(spec: RefSpec): true {
-  validateArrayMetadata(spec, "display", DPIRD_ARRAYS.display);
+  for (const variableKey of dpirdDisplayVariableKeys) {
+    validateArrayMetadata(spec, variableKey, DPIRD_ARRAYS.display);
+  }
+
   validateArrayMetadata(spec, "time", DPIRD_ARRAYS.time);
   validateArrayMetadata(spec, "lat", DPIRD_ARRAYS.lat);
   validateArrayMetadata(spec, "lon", DPIRD_ARRAYS.lon);
   validateArrayMetadata(spec, "station", DPIRD_ARRAYS.station);
   validateArrayMetadata(spec, "code", DPIRD_ARRAYS.code);
+
+  expectInlineBase64NumericArray(spec, "lat");
+  expectInlineBase64NumericArray(spec, "lon");
+  decodeDpirdInlineStringArray(spec, "station");
+  decodeDpirdInlineStringArray(spec, "code");
 
   return true;
 }
@@ -90,12 +104,23 @@ export function decodeDpirdInlineStringArray(
   return values;
 }
 
-function expectInlineBase64Payload(spec: RefSpec, path: "lat" | "lon"): true {
-  const value = spec.refs?.[`${path}/0`];
+function expectInlineBase64NumericArray(
+  spec: RefSpec,
+  path: DpirdInlineNumericPath,
+) {
+  const encoded = spec.refs?.[`${path}/0`];
 
-  if (typeof value !== "string" || !value.startsWith("base64:")) {
-    throw new SchemaError(`${path}/0 must be an inline base64 payload`);
+  if (typeof encoded !== "string" || !encoded.startsWith("base64:")) {
+    throw new SchemaError(`${path}/0 must be an inline base64 numeric payload`);
   }
 
+  const binary = atob(encoded.slice("base64:".length));
+  const expectedBytes = 192 * 8; // 192 values * 8 bytes per float64
+
+  if (binary.length !== expectedBytes) {
+    throw new SchemaError(
+      `${path}/0 decoded ${binary.length} bytes, expected ${expectedBytes}`,
+    );
+  }
   return true;
 }
