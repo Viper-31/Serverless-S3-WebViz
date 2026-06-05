@@ -9,7 +9,7 @@ export type EcmwfInventoryLedger = {
   objects: Record<string, unknown>;
 };
 
-export const ECMWF_REFERENCE_UNAVAILABLE_MESSAGE =
+const ECMWF_REFERENCE_UNAVAILABLE_MESSAGE =
   "No reference available: Selected calander date is outside of range of avaialble references.";
 
 const ECMWF_CATALOG_START = "2024-01-02";
@@ -52,7 +52,7 @@ function catalogEntryFromSourceObject(
   };
 }
 
-export function ecmwfRefPathFromSourceObject(sourceObject: string): string {
+function ecmwfRefPathFromSourceObject(sourceObject: string): string {
   return `/refs/${sourceObject}.json`;
 }
 
