@@ -102,7 +102,12 @@ export function validateArrayMetadata(
   const zarray = parseZarray(spec, path);
   const zattrs = parseZattrs(spec, path);
 
-  validateZarrayCodecMetadata(zarray);
+  try {
+    validateZarrayCodecMetadata(zarray);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new SchemaError(`${path}/.zarray codec metadata invalid: ${message}`);
+  }
 
   if (schema.zarrV2Dtype !== undefined) {
     expectEqual(`${path}/.zarray dtype`, zarray.dtype, schema.zarrV2Dtype);
