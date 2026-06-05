@@ -7,7 +7,7 @@ type CodecFilter = {
   [key: string]: unknown;
 };
 
-export const ZARR_DTYPE_BYTE_WIDTH: Record<string, number> = {
+const ZARR_DTYPE_BYTE_WIDTH: Record<string, number> = {
   "<f4": 4,
   "<f8": 8,
   "<i1": 1,
