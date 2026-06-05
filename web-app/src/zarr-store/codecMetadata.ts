@@ -25,8 +25,6 @@ export function validateZarrayCodecMetadata(metadata: {
   compressor?: unknown;
   filters?: CodecFilter[] | null;
 }): true {
-  if (metadata.compressor !== null) throw new Error("compressor must be null");
-
   const filters = metadata.filters ?? [];
   if (!Array.isArray(filters))
     throw new Error("filters must be an array or null");
