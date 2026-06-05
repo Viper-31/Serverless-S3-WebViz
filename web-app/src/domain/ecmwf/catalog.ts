@@ -52,7 +52,7 @@ function catalogEntryFromSourceObject(
   };
 }
 
-export function ecmwfRefPathFromSourceObject(sourceObject: string): string {
+function ecmwfRefPathFromSourceObject(sourceObject: string): string {
   return `/refs/${sourceObject}.json`;
 }
 

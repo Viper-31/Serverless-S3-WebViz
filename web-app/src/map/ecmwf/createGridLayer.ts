@@ -16,7 +16,7 @@ import {
 import { formatEcmwfValidTimeSeconds } from "@/domain/ecmwf/validTime";
 
 export const ECMWF_LAYER_ID = "ecmwf-raster";
-export const ECMWF_DEFAULT_OPACITY = 0.75;
+const ECMWF_DEFAULT_OPACITY = 0.75;
 
 export type EcmwfDisplaySettings = {
   clim: [number, number];
