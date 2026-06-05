@@ -7,13 +7,13 @@
     ecmwfDisplayVariables,
     type EcmwfColorMapKey,
     type EcmwfVariableKey,
-  } from '../domain/ecmwf/display'
+  } from '@/domain/ecmwf/display'
   import {
     clampMainSideBarWidth,
     collapseMainSideBar,
     expandMainSideBar,
     type MainSideBarState,
-  } from './mainSideBarState'
+  } from '@/components/mainSideBarState'
 
   type Props = {
     referencePath: string

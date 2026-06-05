@@ -1,6 +1,10 @@
-import { decodeBase64FixedUTFLE } from "../../domain/dpird/decodeBase64FixedUTFLE";
-import type { RefSpec } from "../../zarr-store";
-import { validateArrayMetadata, SchemaError, parseZarray } from "../metadata";
+import { decodeBase64FixedUTFLE } from "@/domain/dpird/decodeBase64FixedUTFLE";
+import type { RefSpec } from "@/zarr-store";
+import {
+  validateArrayMetadata,
+  SchemaError,
+  parseZarray,
+} from "@/datasets/metadata";
 
 // Temporary dpird display list
 // Future: move this beside DPIRD display metadata, similar to ecmwfDisplayVariableKeys

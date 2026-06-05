@@ -6,15 +6,15 @@ import {
 
 import * as zarr from "zarrita";
 
-import { openReferencedZarrStore } from "../../zarr-store";
+import { openReferencedZarrStore } from "@/zarr-store";
 
 import {
   ecmwfColorMapStopsForZarrLayer,
   type EcmwfColorMapKey,
   type EcmwfVariableKey,
-} from "../../domain/ecmwf/display";
-import { validateEcmwfStoreDtypes } from "../../datasets/ecmwf/schema";
-import { formatEcmwfValidTimeSeconds } from "../../domain/ecmwf/validTime";
+} from "@/domain/ecmwf/display";
+import { validateEcmwfStoreDtypes } from "@/datasets/ecmwf/schema";
+import { formatEcmwfValidTimeSeconds } from "@/domain/ecmwf/validTime";
 
 export const ECMWF_LAYER_ID = "ecmwf-raster";
 export const ECMWF_TIME_INDEX_COUNT_PER_REF = 14;

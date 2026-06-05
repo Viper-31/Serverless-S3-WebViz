@@ -5,7 +5,7 @@ import {
   updateEcmwfStateForDate,
   updateEcmwfStateForGlobalTimeIndex,
   updateEcmwfStateForVariable,
-} from "../state";
+} from "@/domain/ecmwf/state";
 
 describe("ecmwfState contract", () => {
   it("creates canonical ref-local state from selected dates", () => {

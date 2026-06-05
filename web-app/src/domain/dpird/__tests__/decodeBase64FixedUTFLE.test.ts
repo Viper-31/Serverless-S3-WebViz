@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { decodeBase64FixedUTFLE } from "../decodeBase64FixedUTFLE";
+import { decodeBase64FixedUTFLE } from "@/domain/dpird/decodeBase64FixedUTFLE";
 
 function encodeFixedUtf32LE(values: string[], width: number) {
   const bytes = new Uint8Array(values.length * width * 4);

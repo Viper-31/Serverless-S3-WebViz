@@ -1,15 +1,15 @@
 import { ReferenceStore } from "@zarrita/storage";
 import * as zarr from "zarrita";
-import { createZarritaByteCache } from "./byteCache";
-import { validateRefSpecZarrayMetadata } from "./codecMetadata";
-import { prepareWebvizRefSpec } from "./webvizRefs";
+import { createZarritaByteCache } from "@/zarr-store/byteCache";
+import { validateRefSpecZarrayMetadata } from "@/zarr-store/codecMetadata";
+import { prepareWebvizRefSpec } from "@/zarr-store/webvizRefs";
 import type {
   ByteCacheOptions,
   ReferencedZarrStore,
   ReferencedZarrStoreDependencies,
   RefSpec,
   ZarrKind,
-} from "./types";
+} from "@/zarr-store/types";
 
 const DEFAULT_BYTE_CACHE: ByteCacheOptions = {
   maxBytes: 24 * 1024 * 1024,

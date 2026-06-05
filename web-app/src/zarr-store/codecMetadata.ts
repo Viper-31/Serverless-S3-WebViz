@@ -1,4 +1,4 @@
-import type { RefSpec } from "./types";
+import type { RefSpec } from "@/zarr-store/types";
 
 type CodecFilter = {
   id?: string;

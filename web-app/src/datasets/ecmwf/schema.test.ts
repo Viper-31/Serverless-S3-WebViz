@@ -1,8 +1,8 @@
 import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
-import type { RefSpec } from "../../zarr-store";
-import { SchemaError } from "../metadata";
-import { validateEcmwfRefSpecSchema } from "./schema";
+import type { RefSpec } from "@/zarr-store";
+import { SchemaError } from "@/datasets/metadata";
+import { validateEcmwfRefSpecSchema } from "@/datasets/ecmwf/schema";
 
 async function loadEcmwfSpec(): Promise<RefSpec> {
   return JSON.parse(

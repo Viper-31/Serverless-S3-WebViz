@@ -1,11 +1,11 @@
 import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
-import type { RefSpec } from "../../zarr-store";
-import { SchemaError } from "../metadata";
+import type { RefSpec } from "@/zarr-store";
+import { SchemaError } from "@/datasets/metadata";
 import {
   decodeDpirdInlineStringArray,
   validateDpirdRefSpecSchema,
-} from "./schema";
+} from "@/datasets/dpird/schema";
 
 async function loadDpirdSpec(): Promise<RefSpec> {
   return JSON.parse(

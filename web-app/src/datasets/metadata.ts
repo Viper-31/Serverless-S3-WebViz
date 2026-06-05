@@ -1,4 +1,4 @@
-import { validateZarrayCodecMetadata, type RefSpec } from "../zarr-store";
+import { validateZarrayCodecMetadata, type RefSpec } from "@/zarr-store";
 
 export class SchemaError extends Error {
   constructor(message: string) {

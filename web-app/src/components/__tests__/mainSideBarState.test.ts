@@ -5,7 +5,7 @@ import {
   expandMainSideBar,
   getDefaultMainSideBarWidth,
   getMaxMainSideBarWidth,
-} from "../mainSideBarState";
+} from "@/components/mainSideBarState";
 
 describe("main sidebar state", () => {
   it("derives the default width from 30% of the viewport", () => {
