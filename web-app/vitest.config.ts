@@ -7,7 +7,7 @@ export default defineConfig({
     globals: false,
 
     coverage: {
-      provider: "istanbul",
+      provider: "v8",
       reporter: ["text", "lcov"],
       all: true,
       include: ["src/**/*.{ts,tsx}"],
