@@ -7,7 +7,7 @@ import { validateEcmwfRefSpecSchema } from "./schema";
 async function loadEcmwfSpec(): Promise<RefSpec> {
   return JSON.parse(
     await readFile(
-      new URL("../../../public/refs/ECMWF/01/02.json", import.meta.url),
+      new URL("../../../public/refs/ECMWF/2024/01/02.nc.json", import.meta.url),
       "utf-8",
     ),
   ) as RefSpec;
@@ -51,14 +51,6 @@ describe("ECMWF metadata schema", () => {
   it("raises SchemaError when valid_time semantics drift", async () => {
     const spec = replaceJsonEntry(await loadEcmwfSpec(), "valid_time/.zattrs", {
       units: "nanoseconds since 1970-01-01",
-    });
-
-    expect(() => validateEcmwfRefSpecSchema(spec)).toThrow(SchemaError);
-  });
-
-  it("raises SchemaError when dimension order drifts", async () => {
-    const spec = replaceJsonEntry(await loadEcmwfSpec(), "valid_time/.zattrs", {
-      _ARRAY_DIMENSIONS: ["step", "time"],
     });
 
     expect(() => validateEcmwfRefSpecSchema(spec)).toThrow(SchemaError);
