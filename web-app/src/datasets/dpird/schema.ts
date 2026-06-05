@@ -21,12 +21,14 @@ export const DPIRD_ARRAYS = {
     zarritaDtype: "float64",
     dimensions: ["station"],
     shape: [192],
+    inlineBase64Numeric: true,
   },
   lon: {
     zarrV2Dtype: "<f8",
     zarritaDtype: "float64",
     dimensions: ["station"],
     shape: [192],
+    inlineBase64Numeric: true,
   },
   // 'station' and 'code' are not safe to treat as normal S3-backed Zarr string array
   // Upstream enrichment by laoding real NetCDF coordinate
@@ -86,4 +88,14 @@ export function decodeDpirdInlineStringArray(
   }
 
   return values;
+}
+
+function expectInlineBase64Payload(spec: RefSpec, path: "lat" | "lon"): true {
+  const value = spec.refs?.[`${path}/0`];
+
+  if (typeof value !== "string" || !value.startsWith("base64:")) {
+    throw new SchemaError(`${path}/0 must be an inline base64 payload`);
+  }
+
+  return true;
 }

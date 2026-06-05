@@ -7,7 +7,7 @@ import {
   validateDpirdRefSpecSchema,
 } from "./schema";
 
-async function loadDpirdRefSpec(): Promise<RefSpec> {
+async function loadDpirdSpec(): Promise<RefSpec> {
   return JSON.parse(
     await readFile(
       new URL(
@@ -34,12 +34,12 @@ function replaceJsonEntry(
 
 describe("DPIRD metadata schema", () => {
   it("accepts the fixture schema before any live range reads", async () => {
-    const spec = await loadDpirdRefSpec();
+    const spec = await loadDpirdSpec();
     expect(validateDpirdRefSpecSchema(spec)).toBe(true);
   });
 
   it("decodes enriched inline station and code coordinates", async () => {
-    const spec = await loadDpirdRefSpec();
+    const spec = await loadDpirdSpec();
 
     const stations = decodeDpirdInlineStringArray(spec, "station");
     const codes = decodeDpirdInlineStringArray(spec, "code");
@@ -52,7 +52,7 @@ describe("DPIRD metadata schema", () => {
 
   it("raises SchemaError when measurement dimensions drift", async () => {
     const spec = replaceJsonEntry(
-      await loadDpirdRefSpec(),
+      await loadDpirdSpec(),
       "airTemperature/.zattrs",
       {
         _ARRAY_DIMENSIONS: ["time", "station"],
@@ -63,7 +63,7 @@ describe("DPIRD metadata schema", () => {
   });
 
   it("raises SchemaError when time units drift", async () => {
-    const spec = replaceJsonEntry(await loadDpirdRefSpec(), "time/.zattrs", {
+    const spec = replaceJsonEntry(await loadDpirdSpec(), "time/.zattrs", {
       units: "seconds since 1970-01-01",
     });
 
@@ -71,7 +71,7 @@ describe("DPIRD metadata schema", () => {
   });
 
   it("raises SchemaError when enriched string payload is not inline base64", async () => {
-    const spec = await loadDpirdRefSpec();
+    const spec = await loadDpirdSpec();
     const refs = {
       ...(spec.refs ?? {}),
       "code/0": ["s3://webviz/DPIRD/dpird_wa_stations.nc", 0, 10],

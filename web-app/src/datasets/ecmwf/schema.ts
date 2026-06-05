@@ -2,6 +2,9 @@ import { ecmwfDisplayVariableKeys } from "../../domain/ecmwf/display";
 import type { RefSpec } from "../../zarr-store";
 import { validateArrayMetadata, SchemaError } from "../metadata";
 
+export const ECMWF_TIME_INDEX_COUNT_PER_REF = 14;
+export const ECMWF_STEP_INDEX_COUNT = 113;
+
 export const ECMWF_ARRAYS = {
   display: {
     zarrV2Dtype: "<f4",
@@ -14,7 +17,7 @@ export const ECMWF_ARRAYS = {
     zarritaDtype: "int64",
     dimensions: ["time"],
     shape: [14],
-    units: "seconds since 1970-01-01T00:00:00Z",
+    units: "seconds since 1970-01-01",
   },
   step: {
     zarrV2Dtype: "<f8",
@@ -39,7 +42,7 @@ export const ECMWF_ARRAYS = {
     zarritaDtype: "float64",
     dimensions: ["time", "step"],
     shape: [14, 113],
-    units: "seconds since 1970-01-01T00:00:00Z",
+    units: "seconds since 1970-01-01",
   },
 } as const;
 
