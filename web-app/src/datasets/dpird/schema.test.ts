@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
 import type { RefSpec } from "@/zarr-store";
-import { decodeBase64FixedUTFLE } from "@/domain/dpird/decodeBase64FixedUTFLE";
+import { decodeBase64FixedUTFLE } from "@/datasets/dpird/decodeBase64";
 import {
   parseZarray,
   parseZattrs,
