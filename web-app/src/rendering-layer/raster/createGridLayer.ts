@@ -6,22 +6,17 @@ import {
 
 import * as zarr from "zarrita";
 
+import type { LayerSelector, RasterLayerRequest } from "@/lib/shared/contracts";
 import { openReferencedZarrStore } from "@/zarr-store";
-
-import {
-  ecmwfColorMapStopsForZarrLayer,
-  type EcmwfColorMapKey,
-  type EcmwfVariableKey,
-} from "@/domain/ecmwf/display";
-import { formatEcmwfValidTimeSeconds } from "@/domain/ecmwf/validTime";
 
 export const ECMWF_LAYER_ID = "ecmwf-raster";
 const ECMWF_DEFAULT_OPACITY = 0.75;
 
-export type EcmwfDisplaySettings = {
-  clim: [number, number];
-  colormap: EcmwfColorMapKey;
-};
+type SelectorKey = keyof LayerSelector;
+
+function selectedIndex(selector: LayerSelector, key: SelectorKey): number {
+  return selector[key].selected;
+}
 
 export type EcmwfLayerBundle = {
   layer: ZarrLayer;
@@ -29,41 +24,33 @@ export type EcmwfLayerBundle = {
   refPath: string;
 };
 
-export function createEcmwfZarrSelector(input: {
-  ecmwfTimeIndex: number;
-  ecmwfStepIndex: number;
-}): Selector {
-  return {
-    time: { selected: input.ecmwfTimeIndex, type: "index" },
-    step: { selected: input.ecmwfStepIndex, type: "index" },
-  };
+export function toZarrLayerSelector(selector: LayerSelector): Selector {
+  return selector as Selector;
 }
 
 async function openEcmwfArray(store: zarr.Readable, path: string) {
   return zarr.open.v2(zarr.root(store).resolve(path), { kind: "array" });
 }
 
-export async function readEcmwfValidTimeLabel(
+export async function readEcmwfValidTimeValue(
   store: zarr.Readable,
-  input: { ecmwfTimeIndex: number; ecmwfStepIndex: number },
-): Promise<string> {
+  selector: LayerSelector,
+): Promise<unknown> {
   const validTime = await openEcmwfArray(store, "valid_time");
-  const value = await zarr.get(validTime, [
-    input.ecmwfTimeIndex,
-    input.ecmwfStepIndex,
+  return zarr.get(validTime, [
+    selectedIndex(selector, "time"),
+    selectedIndex(selector, "step"),
   ]);
-  return formatEcmwfValidTimeSeconds(value);
 }
 
-export async function createEcmwfLayer(options: {
-  refPath: string;
-  variableKey: EcmwfVariableKey;
-  ecmwfTimeIndex: number;
-  ecmwfStepIndex: number;
-  display: EcmwfDisplaySettings;
+export type CreateEcmwfLayerOptions = RasterLayerRequest & {
   localRangeCoalescing: boolean;
   onLoadingStateChange?: (state: LoadingState) => void;
-}): Promise<EcmwfLayerBundle> {
+};
+
+export async function createEcmwfLayer(
+  options: CreateEcmwfLayerOptions,
+): Promise<EcmwfLayerBundle> {
   const referencedStore = await openReferencedZarrStore({
     refUrl: options.refPath,
     rangeCoalescing: options.localRangeCoalescing,
@@ -73,9 +60,9 @@ export async function createEcmwfLayer(options: {
   const layer = new ZarrLayer({
     id: ECMWF_LAYER_ID,
     store,
-    variable: options.variableKey,
-    selector: createEcmwfZarrSelector(options),
-    colormap: ecmwfColorMapStopsForZarrLayer(options.display.colormap),
+    variable: options.variableId,
+    selector: toZarrLayerSelector(options.selector),
+    colormap: options.display.rgbStops,
     clim: options.display.clim,
     opacity: ECMWF_DEFAULT_OPACITY,
     zarrVersion: 2,

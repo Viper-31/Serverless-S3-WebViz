@@ -1,13 +1,13 @@
 import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
 import type { RefSpec } from "@/zarr-store";
-import { decodeBase64FixedUTFLE } from "@/domain/dpird/decodeBase64FixedUTFLE";
+import { decodeBase64FixedUTFLE } from "@/datasets/dpird/decodeBase64";
 import {
   parseZarray,
   parseZattrs,
   SchemaError,
   type DatasetArraySchema,
-} from "@/datasets/metadata";
+} from "@/datasets/inventory_parser";
 import {
   DPIRD_ARRAYS,
   dpirdDisplayVariableKeys,
@@ -19,7 +19,7 @@ async function loadDpirdSpec(): Promise<RefSpec> {
   return JSON.parse(
     await readFile(
       new URL(
-        "../../../public/refs/DPIRD/dpird_wa_stations.nc.json",
+        "../../../../public/refs/DPIRD/dpird_wa_stations.nc.json",
         import.meta.url,
       ),
       "utf8",

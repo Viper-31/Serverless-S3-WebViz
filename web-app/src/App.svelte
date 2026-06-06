@@ -7,35 +7,37 @@
   import { getDefaultMainSideBarWidth, type MainSideBarState } from '@/components/mainSideBarState'
   import { ECMWF_STEP_INDEX_COUNT } from '@/datasets/ecmwf/schema'
   import {
-    buildEcmwfRefCatalogFromInventoryLedger,
     ecmwfRefCatalog,
-    ecmwfTimeIndexToDate,
-    mapEcmwfTimeToGlobalIndex,
-    type EcmwfInventoryLedger,
-    type EcmwfRefCatalogEntry,
-  } from '@/domain/ecmwf/catalog'
+    loadInventoryCatalog as loadParsedInventoryCatalog,
+    type EcmwfInventoryEntry,
+  } from '@/datasets/inventory_parser'
   import {
-    ecmwfColorMapStopsForZarrLayer,
+    ecmwfDisplayConfigForVariable,
     type EcmwfColorMapKey,
     type EcmwfVariableKey,
-  } from '@/domain/ecmwf/display'
+  } from '@/features/display'
   import {
     createEcmwfState,
-    ecmwfDisplaySettings,
+    createEcmwfRasterLayerRequest,
     updateEcmwfDisplayOverride,
     updateEcmwfStateForDate,
     updateEcmwfStateForGlobalTimeIndex,
     updateEcmwfStateForStepIndex,
     updateEcmwfStateForVariable,
     type EcmwfProviderState,
-  } from '@/domain/ecmwf/state'
+  } from '@/features/selection'
+  import {
+    ecmwfTimeIndexToDate,
+    mapEcmwfTimeToGlobalIndex,
+    formatEcmwfValidTimeSeconds,
+  } from '@/features/time_navigation'
   import {
     createEcmwfLayer,
-    createEcmwfZarrSelector,
     ECMWF_LAYER_ID,
     type EcmwfLayerBundle,
-    readEcmwfValidTimeLabel,
-  } from '@/map/ecmwf/createGridLayer'
+    readEcmwfValidTimeValue,
+    toZarrLayerSelector,
+  } from '@/rendering-layer/raster/createGridLayer'
   import type { LoadingState } from '@carbonplan/zarr-layer'
 
   type DatasetProvider = 'ECMWF'
@@ -58,7 +60,7 @@
   let layerLoadError = $state<string | null>(null)
   let displayValidTime = $state('Loading valid time…')
   let validTimeError = $state<string | null>(null)
-  let ecmwfCatalog = $state<EcmwfRefCatalogEntry[]>(ecmwfRefCatalog)
+  let ecmwfCatalog = $state<EcmwfInventoryEntry[]>(ecmwfRefCatalog)
   let layerLoadToken = 0
   let validTimeToken = 0
   let timeSliderActive = $state(false)
@@ -80,7 +82,7 @@
   })
 
   const ecmwfConfig = $derived(datasetState.providerConfigs.ECMWF)
-  const displaySettings = $derived(ecmwfDisplaySettings(ecmwfConfig))
+  const displaySettings = $derived(ecmwfDisplayConfigForVariable(ecmwfConfig.variableKey, ecmwfConfig.overrideByVar))
   const selectedDate = $derived(ecmwfTimeIndexToDate(ecmwfConfig.refStartDate, ecmwfConfig.ecmwfTimeIndex))
   const globalTimeIndex = $derived(mapEcmwfTimeToGlobalIndex(ecmwfConfig.refStartDate, ecmwfConfig.ecmwfTimeIndex, ecmwfCatalog))
   const maxGlobalTimeIndex = $derived(Math.max(0, ecmwfCatalog.length * 14 - 1))
@@ -113,11 +115,8 @@
   }
 
   async function loadInventoryCatalog() {
-    const response = await fetch('/_state/inventory_ledger.json', { credentials: 'omit' })
-    if (!response.ok) throw new Error(`Failed to load inventory ledger: HTTP ${response.status}`)
-    const ledger = await response.json() as EcmwfInventoryLedger
-    const nextCatalog = buildEcmwfRefCatalogFromInventoryLedger(ledger)
-    if (nextCatalog.length > 0) ecmwfCatalog = nextCatalog
+    const catalog = await loadParsedInventoryCatalog()
+    if (catalog.ecmwf.length > 0) ecmwfCatalog = catalog.ecmwf
   }
 
   async function refreshDisplayValidTime(state: EcmwfProviderState, bundle = ecmwfLayerBundle) {
@@ -127,9 +126,9 @@
     validTimeError = null
 
     try {
-      const label = await readEcmwfValidTimeLabel(bundle.store, state)
+      const value = await readEcmwfValidTimeValue(bundle.store, createEcmwfRasterLayerRequest(state).selector)
       if (token !== validTimeToken) return
-      displayValidTime = label
+      displayValidTime = formatEcmwfValidTimeSeconds(value)
       lastCommittedSelectionKey = selectionKey(state)
     } catch (error) {
       if (token !== validTimeToken) return
@@ -146,12 +145,9 @@
     status = { loadingState: { loading: true, metadata: true, chunks: true, error: null }, error: null }
 
     try {
+      const request = createEcmwfRasterLayerRequest(state)
       const nextBundle = await createEcmwfLayer({
-        refPath: state.refPath,
-        variableKey: state.variableKey,
-        ecmwfTimeIndex: state.ecmwfTimeIndex,
-        ecmwfStepIndex: state.ecmwfStepIndex,
-        display: ecmwfDisplaySettings(state),
+        ...request,
         localRangeCoalescing,
         onLoadingStateChange(next) {
           if (isCancelled() || token !== layerLoadToken) return
@@ -193,7 +189,7 @@
     try {
       layerLoadError = null
       validTimeError = null
-      await ecmwfLayerBundle.layer.setSelector(createEcmwfZarrSelector(state))
+      await ecmwfLayerBundle.layer.setSelector(toZarrLayerSelector(createEcmwfRasterLayerRequest(state).selector))
       await refreshDisplayValidTime(state)
     } catch (error) {
       layerLoadError = errorMessage(error)
@@ -260,7 +256,7 @@
   async function handleVariableChange(variableKey: EcmwfVariableKey) {
     const next = updateEcmwfStateForVariable(datasetState.providerConfigs.ECMWF, variableKey)
     setEcmwfConfig(next)
-    const nextDisplay = ecmwfDisplaySettings(next)
+    const nextLayerDisplay = createEcmwfRasterLayerRequest(next).display
     layerLoadError = null
     validTimeError = null
 
@@ -269,8 +265,8 @@
     reloadingLayer = true
     try {
       await ecmwfLayerBundle.layer.setVariable(variableKey)
-      ecmwfLayerBundle.layer.setClim(nextDisplay.clim)
-      ecmwfLayerBundle.layer.setColormap(ecmwfColorMapStopsForZarrLayer(nextDisplay.colormap))
+      ecmwfLayerBundle.layer.setClim(nextLayerDisplay.clim)
+      ecmwfLayerBundle.layer.setColormap(nextLayerDisplay.rgbStops)
       reloadingLayer = false
       await refreshDisplayValidTime(next)
     } catch (error) {
@@ -283,10 +279,11 @@
     const state = datasetState.providerConfigs.ECMWF
     const next = updateEcmwfDisplayOverride(state, state.variableKey, override)
     setEcmwfConfig(next)
+    const nextLayerDisplay = createEcmwfRasterLayerRequest(next).display
 
     if (!ecmwfLayerBundle) return
-    ecmwfLayerBundle.layer.setClim(override.clim)
-    ecmwfLayerBundle.layer.setColormap(ecmwfColorMapStopsForZarrLayer(override.colormap))
+    ecmwfLayerBundle.layer.setClim(nextLayerDisplay.clim)
+    ecmwfLayerBundle.layer.setColormap(nextLayerDisplay.rgbStops)
   }
 
   onMount(() => {

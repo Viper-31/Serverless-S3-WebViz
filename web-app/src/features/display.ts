@@ -1,4 +1,5 @@
-// Not present: cp, lsp, q*, t*, u*, v*, z*
+import { type LayerDisplay } from "@/lib/shared/contracts";
+
 export const ecmwfDisplayVariables = {
   d2m: { label: "Dewpoint temperature 2m" },
   i10fg: { label: "Wind gust 10m" },
@@ -51,88 +52,88 @@ export const ecmwfColorMaps: Record<EcmwfColorMapKey, EcmwfColorMap> = {
   coolwarm: {
     gradient: "linear-gradient(to right, #3b4cc0, #bcb8b7, #b40426)",
     stops: [
-      { pos: 0.0, color: [59, 76, 192] },
+      { pos: 0, color: [59, 76, 192] },
       { pos: 0.5, color: [188, 184, 183] },
-      { pos: 1.0, color: [180, 4, 38] },
+      { pos: 1, color: [180, 4, 38] },
     ],
   },
   thermal: {
     gradient:
       "linear-gradient(to right, #053061, #2166ac, #4393c3, #92c5de, #f4a582, #d6604d, #b2182b, #67001f)",
     stops: [
-      { pos: 0.0, color: [5, 48, 97] },
+      { pos: 0, color: [5, 48, 97] },
       { pos: 0.14, color: [33, 102, 172] },
       { pos: 0.29, color: [67, 147, 195] },
       { pos: 0.43, color: [146, 197, 222] },
       { pos: 0.57, color: [244, 165, 130] },
       { pos: 0.71, color: [214, 96, 77] },
       { pos: 0.86, color: [178, 24, 43] },
-      { pos: 1.0, color: [103, 0, 31] },
+      { pos: 1, color: [103, 0, 31] },
     ],
   },
   GnBu: {
     gradient: "linear-gradient(to right, #f7fcf0, #7bccc4, #084081)",
     stops: [
-      { pos: 0.0, color: [247, 252, 240] },
+      { pos: 0, color: [247, 252, 240] },
       { pos: 0.5, color: [123, 204, 196] },
-      { pos: 1.0, color: [8, 64, 129] },
+      { pos: 1, color: [8, 64, 129] },
     ],
   },
   YlGnBu: {
     gradient: "linear-gradient(to right, #ffffd9, #41b6c4, #081d58)",
     stops: [
-      { pos: 0.0, color: [255, 255, 217] },
+      { pos: 0, color: [255, 255, 217] },
       { pos: 0.5, color: [65, 182, 196] },
-      { pos: 1.0, color: [8, 29, 88] },
+      { pos: 1, color: [8, 29, 88] },
     ],
   },
   Purples: {
     gradient: "linear-gradient(to right, #f2f0f7, #9e9ac8, #3f007d)",
     stops: [
-      { pos: 0.0, color: [242, 240, 247] },
+      { pos: 0, color: [242, 240, 247] },
       { pos: 0.5, color: [158, 154, 200] },
-      { pos: 1.0, color: [63, 0, 125] },
+      { pos: 1, color: [63, 0, 125] },
     ],
   },
   Blues: {
     gradient: "linear-gradient(to right, #eff3ff, #6baed6, #08519c)",
     stops: [
-      { pos: 0.0, color: [239, 243, 255] },
+      { pos: 0, color: [239, 243, 255] },
       { pos: 0.5, color: [107, 174, 214] },
-      { pos: 1.0, color: [8, 81, 156] },
+      { pos: 1, color: [8, 81, 156] },
     ],
   },
   Reds: {
     gradient: "linear-gradient(to right, #fee0d2, #fc9272, #cb181d)",
     stops: [
-      { pos: 0.0, color: [254, 224, 210] },
+      { pos: 0, color: [254, 224, 210] },
       { pos: 0.5, color: [252, 146, 114] },
-      { pos: 1.0, color: [203, 24, 29] },
+      { pos: 1, color: [203, 24, 29] },
     ],
   },
   RdBu_r: {
     gradient:
       "linear-gradient(to right, #053061, #2166ac, #f7f7f7, #b2182b, #67001f)",
     stops: [
-      { pos: 0.0, color: [5, 48, 97] },
+      { pos: 0, color: [5, 48, 97] },
       { pos: 0.5, color: [247, 247, 247] },
-      { pos: 1.0, color: [103, 0, 31] },
+      { pos: 1, color: [103, 0, 31] },
     ],
   },
   Greys_trunc: {
     gradient: "linear-gradient(to right, #f7f7f7, #bdbdbd, #636363)",
     stops: [
-      { pos: 0.0, color: [247, 247, 247] },
+      { pos: 0, color: [247, 247, 247] },
       { pos: 0.5, color: [189, 189, 189] },
-      { pos: 1.0, color: [99, 99, 99] },
+      { pos: 1, color: [99, 99, 99] },
     ],
   },
   viridis: {
     gradient: "linear-gradient(to right, #440154, #218f8d, #fde725)",
     stops: [
-      { pos: 0.0, color: [68, 1, 84] },
+      { pos: 0, color: [68, 1, 84] },
       { pos: 0.5, color: [33, 143, 141] },
-      { pos: 1.0, color: [253, 231, 37] },
+      { pos: 1, color: [253, 231, 37] },
     ],
   },
 };
@@ -168,8 +169,18 @@ export function ecmwfDisplayConfigForVariable(
   );
 }
 
-export function ecmwfColorMapStopsForZarrLayer(
-  colormap: EcmwfColorMapKey,
-): Array<[number, number, number]> {
-  return ecmwfColorMaps[colormap].stops.map((stop) => stop.color);
+export function ecmwfLayerDisplayForVariable(
+  variableKey: EcmwfVariableKey,
+  overrideByVar: Partial<
+    Record<
+      EcmwfVariableKey,
+      { clim: [number, number]; colormap: EcmwfColorMapKey }
+    >
+  > = {},
+): LayerDisplay {
+  const display = ecmwfDisplayConfigForVariable(variableKey, overrideByVar);
+  return {
+    clim: display.clim,
+    rgbStops: ecmwfColorMaps[display.colormap].stops.map((stop) => stop.color),
+  };
 }
