@@ -7,7 +7,7 @@ import {
   parseZattrs,
   SchemaError,
   type DatasetArraySchema,
-} from "@/datasets/metadata";
+} from "@/datasets/parser";
 import {
   DPIRD_ARRAYS,
   dpirdDisplayVariableKeys,

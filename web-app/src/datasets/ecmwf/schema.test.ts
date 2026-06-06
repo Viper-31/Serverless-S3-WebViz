@@ -6,7 +6,7 @@ import {
   parseZattrs,
   SchemaError,
   type DatasetArraySchema,
-} from "@/datasets/metadata";
+} from "@/datasets/parser";
 import {
   ECMWF_ARRAYS,
   ecmwfDisplayVariableKeys,
