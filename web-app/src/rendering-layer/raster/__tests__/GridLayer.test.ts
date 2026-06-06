@@ -1,13 +1,18 @@
 import { describe, expect, it } from "vitest";
-import { createEcmwfZarrSelector } from "@/rendering-layer/raster/createGridLayer";
+import { toZarrLayerSelector } from "@/rendering-layer/raster/createGridLayer";
 
 describe("ecmwfLayer contract", () => {
-  it("passes ref-local time and step indexes to zarr-layer selectors", () => {
+  it("passes structural selector indexes to zarr-layer selectors", () => {
     expect(
-      createEcmwfZarrSelector({ ecmwfTimeIndex: 8, ecmwfStepIndex: 12 }),
+      toZarrLayerSelector({
+        time: { selected: 8, type: "index" },
+        step: { selected: 12, type: "index" },
+        ensemble: { selected: 2, type: "index" },
+      }),
     ).toEqual({
       time: { selected: 8, type: "index" },
       step: { selected: 12, type: "index" },
+      ensemble: { selected: 2, type: "index" },
     });
   });
 });
