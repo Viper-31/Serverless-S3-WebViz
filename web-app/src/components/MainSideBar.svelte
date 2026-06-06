@@ -7,13 +7,13 @@
     ecmwfDisplayVariables,
     type EcmwfColorMapKey,
     type EcmwfVariableKey,
-  } from '../domain/ecmwf/display'
+  } from '@/features/display'
   import {
     clampMainSideBarWidth,
     collapseMainSideBar,
     expandMainSideBar,
     type MainSideBarState,
-  } from './mainSideBarState'
+  } from '@/components/mainSideBarState'
 
   type Props = {
     referencePath: string
@@ -149,10 +149,6 @@
 
   function handleColormapChange(event: Event) {
     onDisplayOverrideChange({ clim: [displayClim[0], displayClim[1]], colormap: (event.currentTarget as HTMLSelectElement).value as EcmwfColorMapKey })
-  }
-
-  function stopDropdownEventPropagation(event: Event) {
-    event.stopPropagation()
   }
 
   onMount(() => {

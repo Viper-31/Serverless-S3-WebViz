@@ -7,8 +7,10 @@
     "build": "pnpm --dir web-app build",
     "check": "pnpm --dir web-app check",
     "test": "pnpm --dir web-app test",
+    "test:cov": "pnpm --dir web-app test:cov",
     "test:online": "pnpm --dir web-app test:online",
-    "format": "prettier --write ."
+    "format": "prettier --write . --ignore-unknown",
+    "format:check": "prettier . --check --ignore-unknown"
   },
   "devDependencies": {
     "fallow": "^2.86.0",
