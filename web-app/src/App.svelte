@@ -35,7 +35,7 @@
     ECMWF_LAYER_ID,
     type EcmwfLayerBundle,
     readEcmwfValidTimeLabel,
-  } from '@/map/ecmwf/createGridLayer'
+  } from '@/rendering-layer/raster/createGridLayer'
   import type { LoadingState } from '@carbonplan/zarr-layer'
 
   type DatasetProvider = 'ECMWF'

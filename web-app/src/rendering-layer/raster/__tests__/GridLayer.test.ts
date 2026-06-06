@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createEcmwfZarrSelector } from "@/map/ecmwf/createGridLayer";
+import { createEcmwfZarrSelector } from "@/rendering-layer/raster/createGridLayer";
 
 describe("ecmwfLayer contract", () => {
   it("passes ref-local time and step indexes to zarr-layer selectors", () => {

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   createDpirdMapController,
   createEcmwfMapController,
-} from "@/map/controllers/mapController";
+} from "@/rendering-layer/controllers/mapController";
 
 function createFakeMap() {
   const layers = new Set<string>();
