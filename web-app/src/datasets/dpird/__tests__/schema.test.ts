@@ -19,7 +19,7 @@ async function loadDpirdSpec(): Promise<RefSpec> {
   return JSON.parse(
     await readFile(
       new URL(
-        "../../../public/refs/DPIRD/dpird_wa_stations.nc.json",
+        "../../../../public/refs/DPIRD/dpird_wa_stations.nc.json",
         import.meta.url,
       ),
       "utf8",
