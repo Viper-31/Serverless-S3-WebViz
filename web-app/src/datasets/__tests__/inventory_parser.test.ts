@@ -1,13 +1,30 @@
 import { describe, expect, it } from "vitest";
+import type { RefSpec } from "@/zarr-store";
 import {
   buildEcmwfRefCatalog,
   buildEcmwfRefCatalogFromInventoryLedger,
   buildInventoryCatalog,
   ecmwfRefCatalog,
   findEcmwfRefForDate,
+  parseZarray,
+  parseZattrs,
+  SchemaError,
 } from "@/datasets/inventory_parser";
 
 describe("inventoryParser contract", () => {
+  it("parses JSON metadata refs and rejects invalid payloads", () => {
+    const spec: RefSpec = {
+      refs: {
+        "x/.zarray": JSON.stringify({ shape: [2], dtype: "<f4" }),
+        "x/.zattrs": JSON.stringify({ _ARRAY_DIMENSIONS: ["x"] }),
+      },
+    };
+
+    expect(parseZarray(spec, "x")).toEqual({ shape: [2], dtype: "<f4" });
+    expect(parseZattrs(spec, "x")).toEqual({ _ARRAY_DIMENSIONS: ["x"] });
+    expect(() => parseZarray({ refs: {} }, "x")).toThrow(SchemaError);
+  });
+
   it("catalogs weekly ECMWF refs and maps dates to covering refs", () => {
     expect(ecmwfRefCatalog[0]).toMatchObject({
       datasetKind: "ecmwf",

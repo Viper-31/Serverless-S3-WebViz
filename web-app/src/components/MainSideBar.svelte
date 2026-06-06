@@ -7,7 +7,7 @@
     ecmwfDisplayVariables,
     type EcmwfColorMapKey,
     type EcmwfVariableKey,
-  } from '@/domain/ecmwf/display'
+  } from '@/features/display'
   import {
     clampMainSideBarWidth,
     collapseMainSideBar,

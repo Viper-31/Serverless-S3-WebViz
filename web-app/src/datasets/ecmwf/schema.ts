@@ -1,5 +1,3 @@
-export { ecmwfDisplayVariableKeys } from "@/domain/ecmwf/display";
-
 export const ECMWF_TIME_INDEX_COUNT_PER_REF = 14;
 export const ECMWF_STEP_INDEX_COUNT = 113;
 

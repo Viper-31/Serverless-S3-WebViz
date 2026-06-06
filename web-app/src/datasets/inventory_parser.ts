@@ -1,4 +1,15 @@
+import type { RefSpec } from "@/zarr-store";
+
 type JsonObject = Record<string, unknown>;
+
+export type DatasetArraySchema = {
+  zarrV2Dtype?: string;
+  zarrV2DtypePrefix?: string;
+  zarritaDtype: string;
+  dimensions: readonly string[];
+  shape: readonly number[];
+  units?: string;
+};
 
 type InventoryLedgerObjectMap = Record<string, unknown>;
 
@@ -88,6 +99,41 @@ function dpirdEntryFromSourceObject(sourceObject: string): DpirdInventoryEntry {
 function parseInventoryLedger(input: unknown): InventoryLedger {
   if (!isObject(input)) return {};
   return { objects: isObject(input.objects) ? input.objects : undefined };
+}
+
+export class SchemaError extends Error {
+  override name = "SchemaError";
+}
+
+function parseJsonObjectRef(spec: RefSpec, key: string): JsonObject {
+  const value = spec.refs?.[key];
+  if (value === undefined) {
+    throw new SchemaError(`${key} is missing`);
+  }
+  if (typeof value !== "string") {
+    throw new SchemaError(`${key} must be a JSON string`);
+  }
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(value);
+  } catch {
+    throw new SchemaError(`${key} must contain a valid JSON`);
+  }
+
+  if (!isObject(parsed)) {
+    throw new SchemaError(`${key} must be a JSON object`);
+  }
+
+  return parsed;
+}
+
+export function parseZarray(spec: RefSpec, path: string): JsonObject {
+  return parseJsonObjectRef(spec, `${path}/.zarray`);
+}
+
+export function parseZattrs(spec: RefSpec, path: string): JsonObject {
+  return parseJsonObjectRef(spec, `${path}/.zattrs`);
 }
 
 export function buildEcmwfRefCatalog(

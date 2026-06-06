@@ -6,11 +6,9 @@ import {
   parseZattrs,
   SchemaError,
   type DatasetArraySchema,
-} from "@/datasets/parser";
-import {
-  ECMWF_ARRAYS,
-  ecmwfDisplayVariableKeys,
-} from "@/datasets/ecmwf/schema";
+} from "@/datasets/inventory_parser";
+import { ECMWF_ARRAYS } from "@/datasets/ecmwf/schema";
+import { ecmwfDisplayVariableKeys } from "@/features/display";
 
 async function loadEcmwfSpec(): Promise<RefSpec> {
   return JSON.parse(

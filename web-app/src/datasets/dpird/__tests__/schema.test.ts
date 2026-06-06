@@ -7,7 +7,7 @@ import {
   parseZattrs,
   SchemaError,
   type DatasetArraySchema,
-} from "@/datasets/parser";
+} from "@/datasets/inventory_parser";
 import {
   DPIRD_ARRAYS,
   dpirdDisplayVariableKeys,
