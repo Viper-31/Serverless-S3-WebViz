@@ -1,103 +1,149 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
-  import { Spinner, Styles } from '@sveltestrap/sveltestrap'
-  import DevToolsPanel from '@/features/dev-tools/DevToolsPanel.svelte'
-  import MainSideBar from '@/features/sidebar/MainSideBar.svelte'
-  import { getDefaultSideBarWidth, type SideBarState } from '@/components/sidebar/sideBarState'
-  import { ECMWF_STEP_INDEX_COUNT } from '@/datasets/ecmwf/schema'
-  import { createRendererForContainer, type RasterRenderer } from '@/rendering-layer/Renderer'
-  import { createAppController } from '@/app/appController'
-  import { type EcmwfColorMapKey, type EcmwfVariableKey } from '@/features/display-settings/display'
+  import { onMount } from "svelte";
+  import { Spinner, Styles } from "@sveltestrap/sveltestrap";
+  import DevToolsPanel from "@/features/dev-tools/DevToolsPanel.svelte";
+  import MainSideBar from "@/features/sidebar/MainSideBar.svelte";
+  import {
+    getDefaultSideBarWidth,
+    type SideBarState,
+  } from "@/components/sidebar/sideBarState";
+  import { ECMWF_STEP_INDEX_COUNT } from "@/datasets/ecmwf/schema";
+  import {
+    createRendererForContainer,
+    type RasterRenderer,
+  } from "@/rendering-layer/Renderer";
+  import { createAppController } from "@/app/appController";
+  import {
+    type EcmwfColorMapKey,
+    type EcmwfVariableKey,
+  } from "@/features/display-settings/display";
 
-  type AppControllerHandle = Omit<ReturnType<typeof createAppController>, 'init'> & {
-    init(isCancelled?: () => boolean): Promise<void>
-  }
+  type AppControllerHandle = Omit<
+    ReturnType<typeof createAppController>,
+    "init"
+  > & {
+    init(isCancelled?: () => boolean): Promise<void>;
+  };
 
-  let mapNode = $state.raw<HTMLDivElement | null>(null)
-  const controller: AppControllerHandle = createAppController({})
-  let appState = $state(controller.getState())
-  let rendererHandle: { renderer: RasterRenderer; whenReady: Promise<void>; remove(): void } | null = null
+  let mapNode = $state.raw<HTMLDivElement | null>(null);
+  const controller: AppControllerHandle = createAppController({});
+  let appState = $state(controller.getState());
+  let rendererHandle: {
+    renderer: RasterRenderer;
+    whenReady: Promise<void>;
+    remove(): void;
+  } | null = null;
 
   const unsubscribe = controller.subscribe((next: typeof appState) => {
-    appState = next
-  })
+    appState = next;
+  });
 
-  const initialMainSideBarWidthPx = getDefaultSideBarWidth(typeof window === 'undefined' ? 1024 : window.innerWidth)
+  const initialMainSideBarWidthPx = getDefaultSideBarWidth(
+    typeof window === "undefined" ? 1024 : window.innerWidth,
+  );
   let mainSideBarState = $state<SideBarState>({
     collapsed: false,
     widthPx: initialMainSideBarWidthPx,
     previousWidthPx: initialMainSideBarWidthPx,
-  })
+  });
 
   function updateMainSideBarState(next: SideBarState) {
-    mainSideBarState = next
+    mainSideBarState = next;
   }
 
   function errorMessage(error: unknown): string {
-    return error instanceof Error ? error.message : String(error)
+    return error instanceof Error ? error.message : String(error);
   }
 
-  const ecmwfConfig = $derived(appState.ecmwf)
-  const displaySettings = $derived(controller.getDisplaySettings())
-  const selectedDate = $derived(controller.getSelectedDate())
-  const globalTimeIndex = $derived(controller.getGlobalTimeIndex())
-  const maxGlobalTimeIndex = $derived(Math.max(0, appState.catalog.ecmwf.length * 14 - 1))
-  const sideBarError = $derived(appState.error ?? appState.validTimeError)
+  const ecmwfConfig = $derived(appState.ecmwf);
+  const displaySettings = $derived(controller.getDisplaySettings());
+  const selectedDate = $derived(controller.getSelectedDate());
+  const globalTimeIndex = $derived(controller.getGlobalTimeIndex());
+  const maxGlobalTimeIndex = $derived(
+    Math.max(0, appState.catalog.ecmwf.length * 14 - 1),
+  );
+  const sideBarError = $derived(appState.error ?? appState.validTimeError);
 
   function updateLocalRangeCoalescing(next: boolean) {
-    controller.setLocalRangeCoalescing(next)
+    controller.setLocalRangeCoalescing(next);
   }
 
-  async function initializeApp(container: HTMLDivElement, isCancelled: () => boolean) {
-    await controller.init(isCancelled)
-    if (isCancelled()) return
+  async function initializeApp(
+    container: HTMLDivElement,
+    isCancelled: () => boolean,
+  ) {
+    await controller.init(isCancelled);
+    if (isCancelled()) return;
     rendererHandle = createRendererForContainer({
       container,
       localRangeCoalescing: () => controller.getState().localRangeCoalescing,
       onLoadingStateChange(next) {
-        controller.setLoadingState({ ...next, error: next.error ?? null })
+        controller.setLoadingState({ ...next, error: next.error ?? null });
       },
-    })
-    await rendererHandle.whenReady
-    if (isCancelled()) return
-    await controller.attachRenderer(rendererHandle.renderer)
+    });
+    await rendererHandle.whenReady;
+    if (isCancelled()) return;
+    await controller.attachRenderer(rendererHandle.renderer);
   }
 
-  function handleDateChange(dateIso: string) { void controller.setDate(dateIso) }
-  function handleTimeSliderActiveChange(active: boolean) { controller.setTimeSliderActive(active) }
-  function handleGlobalTimeIndexInput(nextGlobalTimeIndex: number) { void controller.setGlobalTimeIndex(nextGlobalTimeIndex) }
-  function handleGlobalTimeIndexCommit() { void controller.commitGlobalTimeIndex() }
-  function handleStepSliderActiveChange(active: boolean) { controller.setStepSliderActive(active) }
-  function handleStepIndexInput(stepIndex: number) { controller.setStepIndex(stepIndex) }
-  function handleStepIndexCommit() { void controller.commitStepIndex() }
-  function handleVariableChange(variableKey: EcmwfVariableKey) { void controller.setVariable(variableKey) }
-  function handleDisplayOverrideChange(override: { clim: [number, number]; colormap: EcmwfColorMapKey }) { controller.setDisplayOverride(override) }
-  function reloadLayer() { void controller.reload() }
+  function handleDateChange(dateIso: string) {
+    void controller.setDate(dateIso);
+  }
+  function handleTimeSliderActiveChange(active: boolean) {
+    controller.setTimeSliderActive(active);
+  }
+  function handleGlobalTimeIndexInput(nextGlobalTimeIndex: number) {
+    void controller.setGlobalTimeIndex(nextGlobalTimeIndex);
+  }
+  function handleGlobalTimeIndexCommit() {
+    void controller.commitGlobalTimeIndex();
+  }
+  function handleStepSliderActiveChange(active: boolean) {
+    controller.setStepSliderActive(active);
+  }
+  function handleStepIndexInput(stepIndex: number) {
+    controller.setStepIndex(stepIndex);
+  }
+  function handleStepIndexCommit() {
+    void controller.commitStepIndex();
+  }
+  function handleVariableChange(variableKey: EcmwfVariableKey) {
+    void controller.setVariable(variableKey);
+  }
+  function handleDisplayOverrideChange(override: {
+    clim: [number, number];
+    colormap: EcmwfColorMapKey;
+  }) {
+    controller.setDisplayOverride(override);
+  }
+  function reloadLayer() {
+    void controller.reload();
+  }
 
   onMount(() => {
     if (!mapNode) {
-      appState = { ...appState, error: 'Map container is missing' }
-      return () => unsubscribe()
+      appState = { ...appState, error: "Map container is missing" };
+      return () => unsubscribe();
     }
 
-    let cancelled = false
+    let cancelled = false;
     void (async () => {
       try {
-        await initializeApp(mapNode, () => cancelled)
+        await initializeApp(mapNode, () => cancelled);
       } catch (error) {
-        if (cancelled) return
-        appState = { ...appState, error: errorMessage(error) }
+        if (cancelled) return;
+        appState = { ...appState, error: errorMessage(error) };
       }
-    })()
+    })();
 
     return () => {
-      cancelled = true
-      rendererHandle?.remove()
-      rendererHandle = null
-      unsubscribe()
-      controller.teardown()
-    }
-  })
+      cancelled = true;
+      rendererHandle?.remove();
+      rendererHandle = null;
+      unsubscribe();
+      controller.teardown();
+    };
+  });
 </script>
 
 <svelte:head>
@@ -114,7 +160,11 @@
   </div>
 
   {#if appState.reloadingLayer}
-    <div class="layer-status" aria-live="polite" aria-label="Loading ECMWF reference">
+    <div
+      class="layer-status"
+      aria-live="polite"
+      aria-label="Loading ECMWF reference"
+    >
       <Spinner color="light" />
     </div>
   {:else if appState.error}
@@ -125,9 +175,9 @@
 
   <MainSideBar
     referencePath={ecmwfConfig.refPath}
-    selectedDate={selectedDate}
-    globalTimeIndex={globalTimeIndex}
-    maxGlobalTimeIndex={maxGlobalTimeIndex}
+    {selectedDate}
+    {globalTimeIndex}
+    {maxGlobalTimeIndex}
     ecmwfTimeIndex={ecmwfConfig.ecmwfTimeIndex}
     ecmwfStepIndex={ecmwfConfig.ecmwfStepIndex}
     maxStepIndex={ECMWF_STEP_INDEX_COUNT - 1}

@@ -19,6 +19,9 @@ importers:
       prettier:
         specifier: 3.8.3
         version: 3.8.3
+      prettier-plugin-svelte:
+        specifier: ^4.1.0
+        version: 4.1.0(prettier@3.8.3)(svelte@5.56.0)
 
   web-app:
     dependencies:
@@ -1904,6 +1907,16 @@ packages:
         integrity: sha512-pcaShQc1Shq0y+E7GqJqvZj8DTthWV1KeHGdi0Z6IAin2Oi3JnLCOfwnCo84qc+HAp52wT9nK9H7FAJp5a44GQ==,
       }
 
+  prettier-plugin-svelte@4.1.0:
+    resolution:
+      {
+        integrity: sha512-YZkhA2Q9oOerFFG9tq+2f98WYT7Z2JgrybJrAyrB78jpsH9i/DdgplXemehuFPgsldetFNCcR/yCcYlDjPy94Q==,
+      }
+    engines: { node: ">=20" }
+    peerDependencies:
+      prettier: ^3.0.0
+      svelte: ^5.0.0
+
   prettier@3.8.3:
     resolution:
       {
@@ -3348,6 +3361,11 @@ snapshots:
       source-map-js: 1.2.1
 
   potpack@2.1.0: {}
+
+  prettier-plugin-svelte@4.1.0(prettier@3.8.3)(svelte@5.56.0):
+    dependencies:
+      prettier: 3.8.3
+      svelte: 5.56.0
 
   prettier@3.8.3: {}
 

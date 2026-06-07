@@ -1,15 +1,15 @@
 <script lang="ts">
   type Props = {
-    localRangeCoalescing: boolean
-    reloadingLayer: boolean
-    loading: boolean
-    metadata: boolean
-    chunks: boolean
-    layerAdded: boolean
-    mapReady: boolean
-    onLocalRangeCoalescingChange: (next: boolean) => void
-    onReloadLayer: () => void
-  }
+    localRangeCoalescing: boolean;
+    reloadingLayer: boolean;
+    loading: boolean;
+    metadata: boolean;
+    chunks: boolean;
+    layerAdded: boolean;
+    mapReady: boolean;
+    onLocalRangeCoalescingChange: (next: boolean) => void;
+    onReloadLayer: () => void;
+  };
 
   let {
     localRangeCoalescing,
@@ -21,16 +21,18 @@
     mapReady,
     onLocalRangeCoalescingChange,
     onReloadLayer,
-  }: Props = $props()
+  }: Props = $props();
 
-  let expanded = $state(false)
+  let expanded = $state(false);
 
   function toggleExpanded() {
-    expanded = !expanded
+    expanded = !expanded;
   }
 
   function handleLocalRangeCoalescingChange(event: Event) {
-    onLocalRangeCoalescingChange((event.currentTarget as HTMLInputElement).checked)
+    onLocalRangeCoalescingChange(
+      (event.currentTarget as HTMLInputElement).checked,
+    );
   }
 </script>
 
@@ -38,11 +40,11 @@
   <button
     class="dev-tools-toggle"
     type="button"
-    aria-label={expanded ? 'Collapse dev tools' : 'Expand dev tools'}
+    aria-label={expanded ? "Collapse dev tools" : "Expand dev tools"}
     aria-expanded={expanded}
     onclick={toggleExpanded}
   >
-    {expanded ? '›' : '‹'}
+    {expanded ? "›" : "‹"}
   </button>
 
   {#if expanded}
@@ -50,38 +52,51 @@
       <h2>Dev tools</h2>
 
       <label>
-        <input type="checkbox" checked={localRangeCoalescing} disabled={reloadingLayer} onchange={handleLocalRangeCoalescingChange} />
+        <input
+          type="checkbox"
+          checked={localRangeCoalescing}
+          disabled={reloadingLayer}
+          onchange={handleLocalRangeCoalescingChange}
+        />
         local range coalescing
       </label>
 
-      <button class="reload-button" type="button" onclick={onReloadLayer} disabled={reloadingLayer || !mapReady}>
-        {reloadingLayer ? 'Reloading…' : 'Reload layer'}
+      <button
+        class="reload-button"
+        type="button"
+        onclick={onReloadLayer}
+        disabled={reloadingLayer || !mapReady}
+      >
+        {reloadingLayer ? "Reloading…" : "Reload layer"}
       </button>
 
       <dl class="flags">
         <div>
           <dt>localRangeCoalescing</dt>
-          <dd><code>{localRangeCoalescing ? 'true' : 'false'}</code></dd>
+          <dd><code>{localRangeCoalescing ? "true" : "false"}</code></dd>
         </div>
         <div>
           <dt>loading</dt>
-          <dd><code>{loading ? 'true' : 'false'}</code></dd>
+          <dd><code>{loading ? "true" : "false"}</code></dd>
         </div>
         <div>
           <dt>metadata</dt>
-          <dd><code>{metadata ? 'true' : 'false'}</code></dd>
+          <dd><code>{metadata ? "true" : "false"}</code></dd>
         </div>
         <div>
           <dt>chunks</dt>
-          <dd><code>{chunks ? 'true' : 'false'}</code></dd>
+          <dd><code>{chunks ? "true" : "false"}</code></dd>
         </div>
         <div>
           <dt>layerAdded</dt>
-          <dd><code>{layerAdded ? 'true' : 'false'}</code></dd>
+          <dd><code>{layerAdded ? "true" : "false"}</code></dd>
         </div>
       </dl>
 
-      <p class="hint">Toggle local range coalescing, then reload the layer to compare network behavior.</p>
+      <p class="hint">
+        Toggle local range coalescing, then reload the layer to compare network
+        behavior.
+      </p>
     </div>
   {/if}
 </aside>
@@ -96,7 +111,19 @@
     justify-items: end;
   }
 
-  .dev-tools-toggle,
+  .dev-tools-toggle {
+    display: grid;
+    width: 2.5rem;
+    height: 2.5rem;
+    place-items: center;
+    border-radius: 999px;
+    background: #374151;
+    color: #ffffff;
+    border: 1px solid var(--panel-border);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+  }
+  
   .reload-button {
     border: 1px solid var(--panel-border);
     color: var(--text);

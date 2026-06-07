@@ -49,8 +49,8 @@ export function createMapView(options: MapViewOptions): MapViewHandle {
         },
       ],
     },
-    center: [121, -24],
-    zoom: 3,
+    center: [115, -31],
+    zoom: 4.7,
     pitch: 0,
     bearing: 0,
     attributionControl: {
@@ -61,7 +61,7 @@ export function createMapView(options: MapViewOptions): MapViewHandle {
   map.on("load", () => {
     if (removed) return;
     map.setProjection?.({
-      type: "globe",
+      type: "mercator",
     } as maplibregl.ProjectionSpecification);
     options.onReady?.();
     resolveReady();
