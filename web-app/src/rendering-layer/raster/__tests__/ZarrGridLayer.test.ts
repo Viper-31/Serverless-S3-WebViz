@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { toZarrLayerSelector } from "@/rendering-layer/raster/createGridLayer";
+import { toZarrLayerSelector } from "@/rendering-layer/raster/ZarrGridLayer";
 
 describe("ecmwfLayer contract", () => {
   it("passes structural selector indexes to zarr-layer selectors", () => {
