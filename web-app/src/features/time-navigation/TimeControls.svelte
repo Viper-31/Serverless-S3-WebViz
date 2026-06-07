@@ -82,8 +82,8 @@
     ><span
       >Time
       <strong class="value-highlight">
-      <!-- One globalTimeIndex increment is +12hr jump, and valid_time needs time to fetch. ecmwfTimeIndex is local to that ref-->
-        Time: global {globalTimeIndex} 
+        <!-- One globalTimeIndex increment is +12hr jump, and valid_time needs time to fetch. ecmwfTimeIndex is local to that ref-->
+        Time: global {globalTimeIndex}
       </strong></span
     ><input
       type="range"

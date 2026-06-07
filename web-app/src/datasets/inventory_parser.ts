@@ -61,6 +61,13 @@ function addDays(dateIso: string, days: number): string {
   return toIsoDate(date);
 }
 
+function publicAssetPath(path: string): string {
+  const base = import.meta.env.BASE_URL || "/";
+  const normalizedBase = base.endsWith("/") ? base : `${base}/`;
+  const normalizedPath = path.startsWith("/") ? path.slice(1) : path;
+  return `${normalizedBase}${normalizedPath}`;
+}
+
 function ecmwfDateFromSourceObject(sourceObject: string): string | null {
   const match = /^ECMWF\/(\d{4})\/(\d{2})\/(\d{2})\.nc$/.exec(sourceObject);
   if (!match) return null;
@@ -72,7 +79,7 @@ function sourceObjectFromDate(refStartDate: string): string {
 }
 
 function ecmwfRefPathFromSourceObject(sourceObject: string): string {
-  return `/refs/${sourceObject}.json`;
+  return publicAssetPath(`/refs/${sourceObject}.json`);
 }
 
 function catalogEntryFromSourceObject(
@@ -91,7 +98,7 @@ function catalogEntryFromSourceObject(
 function dpirdEntryFromSourceObject(sourceObject: string): DpirdInventoryEntry {
   return {
     datasetKind: "dpird",
-    refPath: `/refs/${sourceObject}.json`,
+    refPath: publicAssetPath(`/refs/${sourceObject}.json`),
     sourceObject,
   };
 }
@@ -216,9 +223,12 @@ export function buildInventoryCatalog(input: unknown): InventoryCatalog {
 export async function loadInventoryCatalog(
   fetchInventory: typeof fetch = fetch,
 ): Promise<InventoryCatalog> {
-  const response = await fetchInventory("/_state/inventory_ledger.json", {
-    credentials: "omit",
-  });
+  const response = await fetchInventory(
+    publicAssetPath("_state/inventory_ledger.json"),
+    {
+      credentials: "omit",
+    },
+  );
   if (!response.ok)
     throw new Error(`Failed to load inventory catalog: ${response.status}`);
   return buildInventoryCatalog(await response.json());

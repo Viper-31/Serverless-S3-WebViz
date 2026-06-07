@@ -1,9 +1,11 @@
 import { defineConfig, mergeConfig } from "vitest/config";
 import viteConfig from "./vite.config";
 
-export default mergeConfig(
-  viteConfig,
-  defineConfig({
+export default defineConfig(async (configEnv) => {
+  const loadedViteConfig = await (typeof viteConfig === "function"
+    ? viteConfig(configEnv)
+    : viteConfig);
+  return mergeConfig(loadedViteConfig, {
     test: {
       environment: "node",
       include: [
@@ -20,5 +22,5 @@ export default mergeConfig(
         include: ["src/**/*.{ts,tsx}"],
       },
     },
-  }),
-);
+  });
+});
