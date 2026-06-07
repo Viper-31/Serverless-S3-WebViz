@@ -58,7 +58,7 @@ function createFakeMap() {
   const layers = new Map<string, { id: string }>();
   const calls: string[] = [];
   return {
-    addLayer(layer: { id: string }) {
+    addDataLayer(layer: { id: string }) {
       calls.push(`add:${layer.id}`);
       layers.set(layer.id, layer);
     },

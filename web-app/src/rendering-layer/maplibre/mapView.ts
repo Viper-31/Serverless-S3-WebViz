@@ -1,9 +1,13 @@
 import maplibregl from "maplibre-gl";
 
-import type { MapLibreRasterMap } from "./types";
+import type {
+  MapLibreLayerHost,
+  MapLibreLayerId,
+  MapLibreRenderableLayer,
+} from "./types";
 
 export type MapViewHandle = {
-  map: MapLibreRasterMap;
+  map: MapLibreLayerHost;
   whenReady: Promise<void>;
   remove(): void;
 };
@@ -14,6 +18,47 @@ type MapViewOptions = {
 };
 
 const BASE_MAP_ID = "https://tiles.openfreemap.org/styles/dark";
+
+const DATA_LAYER_BEFORE_LAYER_IDS = [
+  "boundary_state",
+  "place_other",
+  "water_name",
+] as const;
+
+function findDataLayerInsertionPoint(
+  map: maplibregl.Map,
+): MapLibreLayerId | undefined {
+  const layers = map.getStyle().layers ?? [];
+
+  for (const layerId of DATA_LAYER_BEFORE_LAYER_IDS) {
+    if (layers.some((layer) => layer.id === layerId)) {
+      return layerId;
+    }
+  }
+
+  return layers.find((layer) => layer.type === "symbol")?.id;
+}
+
+function createLayerHost(map: maplibregl.Map): MapLibreLayerHost {
+  return {
+    addDataLayer(layer: MapLibreRenderableLayer) {
+      map.addLayer(
+        layer as
+          | maplibregl.LayerSpecification
+          | maplibregl.CustomLayerInterface,
+        findDataLayerInsertionPoint(map),
+      );
+    },
+
+    removeLayer(id: MapLibreLayerId) {
+      map.removeLayer(id);
+    },
+
+    getLayer(id: MapLibreLayerId) {
+      return map.getLayer(id);
+    },
+  };
+}
 
 export function createMapView(options: MapViewOptions): MapViewHandle {
   let removed = false;
@@ -45,7 +90,7 @@ export function createMapView(options: MapViewOptions): MapViewHandle {
   });
 
   return {
-    map,
+    map: createLayerHost(map),
     whenReady,
     remove() {
       removed = true;

@@ -5,8 +5,8 @@ export type MapLibreRenderableLayer = {
   id: MapLibreLayerId;
 };
 
-export type MapLibreRasterMap = {
-  addLayer(layer: MapLibreRenderableLayer): void;
+export type MapLibreLayerHost = {
+  addDataLayer(layer: MapLibreRenderableLayer): void;
   removeLayer(id: MapLibreLayerId): void;
   getLayer(id: MapLibreLayerId): unknown;
 };
