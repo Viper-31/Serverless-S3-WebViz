@@ -115,7 +115,7 @@
     height: 100%;
     max-width: 35vw;
     min-width: min(240px, 35vw);
-    padding: 1rem 1.25rem 1rem 1rem;
+    padding: 24px;
     border: 0 solid var(--panel-border);
     border-right-width: 1px;
     border-radius: 0 16px 16px 0;
@@ -142,7 +142,23 @@
   .collapsed .sidebar-content {
     display: none;
   }
-  .collapse-button,
+  .collapse-button {
+    position: absolute;
+    top: 50%;
+    right: -1.25rem;
+    z-index: 2;
+    display: grid;
+    width: 2.5rem;
+    height: 2.5rem;
+    place-items: center;
+    border-radius: 999px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    background: #374151;
+    color: #ffffff;
+    border: 1px solid var(--panel-border);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
   .resize-handle {
     border: 1px solid var(--panel-border);
     color: var(--text);

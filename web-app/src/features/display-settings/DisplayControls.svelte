@@ -48,9 +48,10 @@
 </script>
 
 <div class="dropdown-row">
+  <span class="section-label">Display overrides</span>
   <Dropdown direction="down">
     <DropdownToggle caret class="sidebar-dropdown-toggle"
-      >Display: {displayColormap}</DropdownToggle
+      >{displayColormap}</DropdownToggle
     >
     <DropdownMenu class="display-menu">
       <div role="group" aria-label="Display settings">
@@ -89,25 +90,10 @@
     margin: 0.25rem 0 0.5rem;
   }
 
-  .sidebar-dropdown-toggle {
-    width: 100%;
-    text-align: left;
-  }
-
-  .display-menu {
-    padding: 0.5rem;
-    min-width: 18rem;
-  }
-
-  .display-menu :global(label) {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .display-menu :global(input),
-  .display-menu :global(select) {
-    width: 100%;
+  .section-label {
+    color: #9ca3af;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 </style>

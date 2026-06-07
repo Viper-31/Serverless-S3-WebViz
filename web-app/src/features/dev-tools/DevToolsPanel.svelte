@@ -111,7 +111,19 @@
     justify-items: end;
   }
 
-  .dev-tools-toggle,
+  .dev-tools-toggle {
+    display: grid;
+    width: 2.5rem;
+    height: 2.5rem;
+    place-items: center;
+    border-radius: 999px;
+    background: #374151;
+    color: #ffffff;
+    border: 1px solid var(--panel-border);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+  }
+  
   .reload-button {
     border: 1px solid var(--panel-border);
     color: var(--text);

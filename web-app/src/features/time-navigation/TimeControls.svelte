@@ -82,7 +82,8 @@
     ><span
       >Time
       <strong class="value-highlight">
-        {String(ecmwfTimeIndex).padStart(2, "0")}:00 UTC
+      <!-- One globalTimeIndex increment is +12hr jump, and valid_time needs time to fetch. ecmwfTimeIndex is local to that ref-->
+        Time: global {globalTimeIndex} 
       </strong></span
     ><input
       type="range"
@@ -97,8 +98,9 @@
       oninput={handleTimeInput}
     />
   </label>
-  <label class="slider-field"
-    ><span>Step: {ecmwfStepIndex}</span><input
+  <label class="slider-field control-label"
+    ><span>Step <strong class="value-highlight">{ecmwfStepIndex}</strong></span
+    ><input
       type="range"
       min="0"
       max={maxStepIndex}
@@ -116,16 +118,61 @@
 <style>
   .field-group {
     display: grid;
+    gap: 1.25rem;
+  }
+
+  .control-label {
+    display: flex;
+    flex-direction: column;
     gap: 0.5rem;
   }
 
-  .field-group :global(label) {
+  .control-label span {
+    color: #9ca3af;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
     display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
+    justify-content: space-between;
+    align-items: center;
   }
 
-  .field-group :global(input) {
+  .value-highlight {
+    font-weight: 600;
+    color: #ffffff;
+    text-transform: none;
+    letter-spacing: normal;
+  }
+
+  .field-group :global(input[type="date"]) {
     width: 100%;
+    padding: 0.25rem;
+  }
+
+  .slider-field :global(input[type="range"]) {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    outline: none;
+    margin-top: 0.25rem;
+  }
+
+  .slider-field :global(input[type="range"]::-webkit-slider-thumb) {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: #ffffff;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    transition: box-shadow 0.2s ease;
+  }
+
+  .slider-field :global(input[type="range"]:focus::-webkit-slider-thumb) {
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.2);
   }
 </style>

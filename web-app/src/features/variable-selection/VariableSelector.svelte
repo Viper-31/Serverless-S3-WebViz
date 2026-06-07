@@ -19,9 +19,10 @@
 </script>
 
 <div class="dropdown-row">
+  <span class="section-label">Variable</span>
   <Dropdown direction="down">
     <DropdownToggle caret class="sidebar-dropdown-toggle"
-      >Variable: {ecmwfDisplayVariables[variableKey].label}</DropdownToggle
+      >{ecmwfDisplayVariables[variableKey].label}</DropdownToggle
     >
     <DropdownMenu>
       {#each ecmwfDisplayVariableKeys as key}
@@ -40,8 +41,10 @@
     margin: 0.25rem 0 0.5rem;
   }
 
-  .sidebar-dropdown-toggle {
-    width: 100%;
-    text-align: left;
+  .section-label {
+    color: #9ca3af;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 </style>
