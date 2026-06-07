@@ -3,7 +3,7 @@
   import { Spinner, Styles } from '@sveltestrap/sveltestrap'
   import DevToolsMenu from '@/components/DevToolsMenu.svelte'
   import MainSideBar from '@/components/MainSideBar.svelte'
-  import { getDefaultMainSideBarWidth, type MainSideBarState } from '@/components/mainSideBarState'
+  import { getDefaultSideBarWidth, type SideBarState } from '@/components/sidebar/sideBarState'
   import { ECMWF_STEP_INDEX_COUNT } from '@/datasets/ecmwf/schema'
   import { createRendererForContainer, type RasterRenderer } from '@/rendering-layer/Renderer'
   import { createAppController } from '@/app/appController'
@@ -22,14 +22,14 @@
     appState = next
   })
 
-  const initialMainSideBarWidthPx = getDefaultMainSideBarWidth(typeof window === 'undefined' ? 1024 : window.innerWidth)
-  let mainSideBarState = $state<MainSideBarState>({
+  const initialMainSideBarWidthPx = getDefaultSideBarWidth(typeof window === 'undefined' ? 1024 : window.innerWidth)
+  let mainSideBarState = $state<SideBarState>({
     collapsed: false,
     widthPx: initialMainSideBarWidthPx,
     previousWidthPx: initialMainSideBarWidthPx,
   })
 
-  function updateMainSideBarState(next: MainSideBarState) {
+  function updateMainSideBarState(next: SideBarState) {
     mainSideBarState = next
   }
 
