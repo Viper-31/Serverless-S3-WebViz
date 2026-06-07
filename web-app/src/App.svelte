@@ -1,13 +1,13 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import { Spinner, Styles } from '@sveltestrap/sveltestrap'
-  import DevToolsMenu from '@/components/DevToolsMenu.svelte'
-  import MainSideBar from '@/components/MainSideBar.svelte'
+  import DevToolsPanel from '@/features/dev-tools/DevToolsPanel.svelte'
+  import MainSideBar from '@/features/sidebar/MainSideBar.svelte'
   import { getDefaultSideBarWidth, type SideBarState } from '@/components/sidebar/sideBarState'
   import { ECMWF_STEP_INDEX_COUNT } from '@/datasets/ecmwf/schema'
   import { createRendererForContainer, type RasterRenderer } from '@/rendering-layer/Renderer'
   import { createAppController } from '@/app/appController'
-  import { type EcmwfColorMapKey, type EcmwfVariableKey } from '@/features/display'
+  import { type EcmwfColorMapKey, type EcmwfVariableKey } from '@/features/display-settings/display'
 
   type AppControllerHandle = Omit<ReturnType<typeof createAppController>, 'init'> & {
     init(isCancelled?: () => boolean): Promise<void>
@@ -150,7 +150,7 @@
     onDisplayOverrideChange={handleDisplayOverrideChange}
   />
 
-  <DevToolsMenu
+  <DevToolsPanel
     localRangeCoalescing={appState.localRangeCoalescing}
     reloadingLayer={appState.reloadingLayer}
     loading={appState.loadingState.loading}

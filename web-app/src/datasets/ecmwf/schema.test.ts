@@ -8,7 +8,7 @@ import {
   type DatasetArraySchema,
 } from "@/datasets/inventory_parser";
 import { ECMWF_ARRAYS } from "@/datasets/ecmwf/schema";
-import { ecmwfDisplayVariableKeys } from "@/features/display";
+import { ecmwfDisplayVariableKeys } from "@/features/display-settings/display";
 
 async function loadEcmwfSpec(): Promise<RefSpec> {
   return JSON.parse(

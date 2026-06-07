@@ -7,7 +7,7 @@ import {
   ecmwfDisplayConfigForVariable,
   type EcmwfColorMapKey,
   type EcmwfVariableKey,
-} from "@/features/display";
+} from "@/features/display-settings/display";
 import {
   createEcmwfState,
   createEcmwfRasterLayerRequest,
@@ -17,12 +17,12 @@ import {
   updateEcmwfStateForStepIndex,
   updateEcmwfStateForVariable,
   type EcmwfProviderState,
-} from "@/features/selection";
+} from "@/features/variable-selection/selection";
 import {
   ecmwfTimeIndexToDate,
   formatEcmwfValidTimeSeconds,
   mapEcmwfTimeToGlobalIndex,
-} from "@/features/time_navigation";
+} from "@/features/time-navigation/time_navigation";
 import type { RasterRenderer } from "@/rendering-layer/Renderer";
 
 export type LoadingState = {
