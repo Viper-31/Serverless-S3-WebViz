@@ -7,9 +7,11 @@ import { type LayerSelector } from "@/lib/shared/contracts";
 function rawValidTime(value: unknown): string {
   return String(value);
 }
+
 function twoDigits(value: number): string {
   return String(value).padStart(2, "0");
 }
+
 function utcAmPmHour(hour: number): { hour12: number; suffix: "AM" | "PM" } {
   const suffix = hour >= 12 ? "PM" : "AM";
   return { hour12: hour % 12 === 0 ? 12 : hour % 12, suffix };
@@ -19,9 +21,11 @@ function toUtcDate(dateIso: string): Date {
   const [y, m, d] = dateIso.split("-").map(Number);
   return new Date(Date.UTC(y, (m ?? 1) - 1, d ?? 1));
 }
+
 function toIsoDate(date: Date): string {
   return date.toISOString().slice(0, 10);
 }
+
 function addDays(dateIso: string, days: number): string {
   const date = toUtcDate(dateIso);
   date.setUTCDate(date.getUTCDate() + days);
@@ -52,12 +56,14 @@ export function ecmwfDateToTimeIndex(
     2
   );
 }
+
 export function ecmwfTimeIndexToDate(
   refStartDate: string,
   ecmwfTimeIndex: number,
 ): string {
   return addDays(refStartDate, Math.floor(ecmwfTimeIndex / 2));
 }
+
 export function mapEcmwfGlobalTimeIndex(
   globalTimeIndex: number,
   catalog: EcmwfInventoryEntry[] = ecmwfRefCatalog,
@@ -77,6 +83,7 @@ export function mapEcmwfGlobalTimeIndex(
     ecmwfTimeIndex,
   };
 }
+
 export function mapEcmwfTimeToGlobalIndex(
   refStartDate: string,
   ecmwfTimeIndex: number,
