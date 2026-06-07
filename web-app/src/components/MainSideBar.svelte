@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onDestroy, onMount } from 'svelte'
   import { Dropdown, DropdownItem, DropdownMenu, DropdownToggle } from '@sveltestrap/sveltestrap'
   import {
     ecmwfColorMaps,
@@ -8,12 +7,8 @@
     type EcmwfColorMapKey,
     type EcmwfVariableKey,
   } from '@/features/display'
-  import {
-    clampMainSideBarWidth,
-    collapseMainSideBar,
-    expandMainSideBar,
-    type MainSideBarState,
-  } from '@/components/mainSideBarState'
+  import SideBarShell from '@/components/sidebar/SideBarShell.svelte'
+  import type { SideBarState } from '@/components/sidebar/sideBarState'
 
   type Props = {
     referencePath: string
@@ -30,7 +25,7 @@
     widthPx: number
     previousWidthPx: number
     error?: string | null
-    onMainSideBarStateChange: (next: MainSideBarState) => void
+    onMainSideBarStateChange: (next: SideBarState) => void
     onDateChange: (dateIso: string) => void
     onTimeSliderActiveChange: (active: boolean) => void
     onGlobalTimeIndexInput: (globalTimeIndex: number) => void
@@ -69,47 +64,8 @@
     onDisplayOverrideChange,
   }: Props = $props()
 
-  let isResizing = $state(false)
-  let lastCommittedTimeIndex = $state<number | null>(null)
-  let lastCommittedStepIndex = $state<number | null>(null)
-
-  function currentState(): MainSideBarState {
-    return { collapsed, widthPx, previousWidthPx }
-  }
-
-  function toggleCollapsed() {
-    const next = collapsed
-      ? expandMainSideBar(currentState(), window.innerWidth)
-      : collapseMainSideBar(currentState())
-    onMainSideBarStateChange(next)
-  }
-
-  function handleMouseMove(event: MouseEvent) {
-    if (!isResizing) return
-
-    event.preventDefault()
-    const nextWidthPx = clampMainSideBarWidth(event.clientX, window.innerWidth)
-    onMainSideBarStateChange({
-      collapsed: false,
-      widthPx: nextWidthPx,
-      previousWidthPx: nextWidthPx,
-    })
-  }
-
-  function stopResize() {
-    isResizing = false
-    window.removeEventListener('mousemove', handleMouseMove)
-    window.removeEventListener('mouseup', stopResize)
-  }
-
-  function startResize(event: MouseEvent) {
-    if (collapsed) return
-
-    event.preventDefault()
-    isResizing = true
-    window.addEventListener('mousemove', handleMouseMove)
-    window.addEventListener('mouseup', stopResize)
-  }
+  let lastCommittedTimeIndex: number | null = null
+  let lastCommittedStepIndex: number | null = null
 
   function handleDateChange(event: Event) {
     onDateChange((event.currentTarget as HTMLInputElement).value)
@@ -132,7 +88,6 @@
 
   function handleTimeCommit() {
     if (lastCommittedTimeIndex === globalTimeIndex) return
-
     lastCommittedTimeIndex = globalTimeIndex
     onTimeSliderActiveChange(false)
     onGlobalTimeIndexCommit()
@@ -145,7 +100,6 @@
 
   function handleStepCommit() {
     if (lastCommittedStepIndex === ecmwfStepIndex) return
-
     lastCommittedStepIndex = ecmwfStepIndex
     onStepSliderActiveChange(false)
     onStepIndexCommit()
@@ -162,51 +116,10 @@
   function handleColormapChange(event: Event) {
     onDisplayOverrideChange({ clim: [displayClim[0], displayClim[1]], colormap: (event.currentTarget as HTMLSelectElement).value as EcmwfColorMapKey })
   }
-
-  onMount(() => {
-    function clampToViewport() {
-      if (collapsed) return
-      const nextWidthPx = clampMainSideBarWidth(widthPx, window.innerWidth)
-      if (nextWidthPx !== widthPx) {
-        onMainSideBarStateChange({
-          collapsed: false,
-          widthPx: nextWidthPx,
-          previousWidthPx: nextWidthPx,
-        })
-      }
-    }
-
-    clampToViewport()
-    window.addEventListener('resize', clampToViewport)
-
-    return () => {
-      window.removeEventListener('resize', clampToViewport)
-    }
-  })
-
-  onDestroy(() => {
-    stopResize()
-  })
 </script>
 
-<aside
-  class="mainSideBar"
-  class:collapsed
-  class:resizing={isResizing}
-  style={`--main-sidebar-width: ${widthPx}px; --ecmwf-legend-gradient: ${ecmwfColorMaps[displayColormap].gradient}`}
-  aria-label="Dataset main sidebar"
->
-  <button
-    class="collapse-button"
-    type="button"
-    aria-label={collapsed ? 'Expand main sidebar' : 'Collapse main sidebar'}
-    aria-expanded={!collapsed}
-    onclick={toggleCollapsed}
-  >
-    {collapsed ? '›' : '‹'}
-  </button>
-
-  <div class="sidebar-content" aria-hidden={collapsed}>
+<SideBarShell sideBarState={{ collapsed, widthPx, previousWidthPx }} onStateChange={onMainSideBarStateChange}>
+  <div class="sidebar-inner" style={`--ecmwf-legend-gradient: ${ecmwfColorMaps[displayColormap].gradient}`}>
     <h1>ECMWF configuration</h1>
 
     <section class="submenu" aria-label="ECMWF configuration">
@@ -224,46 +137,20 @@
 
       <label class="slider-field">
         <span>Time: global {globalTimeIndex}, ref-local {ecmwfTimeIndex}</span>
-        <input
-          type="range"
-          min="0"
-          max={maxGlobalTimeIndex}
-          step="1"
-          value={globalTimeIndex}
-          onpointerdown={handleTimePointerDown}
-          onpointerup={handleTimeCommit}
-          onblur={handleTimeCommit}
-          onchange={handleTimeCommit}
-          oninput={handleTimeInput}
-        />
+        <input type="range" min="0" max={maxGlobalTimeIndex} step="1" value={globalTimeIndex} onpointerdown={handleTimePointerDown} onpointerup={handleTimeCommit} onblur={handleTimeCommit} onchange={handleTimeCommit} oninput={handleTimeInput} />
       </label>
 
       <label class="slider-field">
         <span>Step: {ecmwfStepIndex}</span>
-        <input
-          type="range"
-          min="0"
-          max={maxStepIndex}
-          step="1"
-          value={ecmwfStepIndex}
-          onpointerdown={handleStepPointerDown}
-          onpointerup={handleStepCommit}
-          onblur={handleStepCommit}
-          onchange={handleStepCommit}
-          oninput={handleStepInput}
-        />
+        <input type="range" min="0" max={maxStepIndex} step="1" value={ecmwfStepIndex} onpointerdown={handleStepPointerDown} onpointerup={handleStepCommit} onblur={handleStepCommit} onchange={handleStepCommit} oninput={handleStepInput} />
       </label>
 
       <div class="dropdown-row">
         <Dropdown direction="down">
-          <DropdownToggle caret class="sidebar-dropdown-toggle">
-            Variable: {ecmwfDisplayVariables[variableKey].label}
-          </DropdownToggle>
+          <DropdownToggle caret class="sidebar-dropdown-toggle">Variable: {ecmwfDisplayVariables[variableKey].label}</DropdownToggle>
           <DropdownMenu>
             {#each ecmwfDisplayVariableKeys as key}
-              <DropdownItem active={key === variableKey} onclick={() => onVariableChange(key)}>
-                {ecmwfDisplayVariables[key].label}
-              </DropdownItem>
+              <DropdownItem active={key === variableKey} onclick={() => onVariableChange(key)}>{ecmwfDisplayVariables[key].label}</DropdownItem>
             {/each}
           </DropdownMenu>
         </Dropdown>
@@ -271,15 +158,9 @@
 
       <div class="dropdown-row">
         <Dropdown direction="down" autoClose="outside">
-          <DropdownToggle caret class="sidebar-dropdown-toggle">
-            Display
-          </DropdownToggle>
+          <DropdownToggle caret class="sidebar-dropdown-toggle">Display</DropdownToggle>
           <DropdownMenu end>
-            <div
-              class="display-menu"
-              role="group"
-              aria-label="Display settings"
-            >
+            <div class="display-menu" role="group" aria-label="Display settings">
               <label>
                 <span>Colour map</span>
                 <select value={displayColormap} onchange={handleColormapChange}>
@@ -288,16 +169,14 @@
                   {/each}
                 </select>
               </label>
-
               <label>
                 <span>clim min</span>
                 <input type="number" value={displayClim[0]} step="any" onchange={handleClimMinChange} />
               </label>
-
               <label>
                 <span>clim max</span>
                 <input type="number" value={displayClim[1]} step="any" onchange={handleClimMaxChange} />
-              </label>        
+              </label>
             </div>
           </DropdownMenu>
         </Dropdown>
@@ -311,204 +190,30 @@
     </div>
 
     <div class="legend" aria-hidden="true"></div>
-    <div class="legend-labels" aria-label="ECMWF color scale">
-      <span>{displayClim[0]}</span>
-      <span>{displayClim[1]}</span>
-    </div>
+    <div class="legend-labels" aria-label="ECMWF color scale"><span>{displayClim[0]}</span><span>{displayClim[1]}</span></div>
 
     {#if error}
       <p class="error-text">{error}</p>
     {/if}
   </div>
-
-  <button
-    class="resize-handle"
-    class:active={isResizing}
-    type="button"
-    aria-label="Resize main sidebar"
-    title="Drag to resize"
-    onmousedown={startResize}
-  ></button>
-</aside>
+</SideBarShell>
 
 <style>
-  .mainSideBar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 2;
-    width: var(--main-sidebar-width);
-    height: 100%;
-    max-width: 35vw;
-    min-width: min(240px, 35vw);
-    padding: 1rem 1.25rem 1rem 1rem;
-    border: 0 solid var(--panel-border);
-    border-right-width: 1px;
-    border-radius: 0 16px 16px 0;
-    background: var(--panel);
-    backdrop-filter: blur(14px);
-    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
-    transition: width 140ms ease, min-width 140ms ease, padding 140ms ease;
-  }
-
-  .mainSideBar.resizing {
-    transition: none;
-  }
-
-  .mainSideBar.collapsed {
-    width: 2.75rem;
-    min-width: 2.75rem;
-    padding: 0.5rem;
-  }
-
-  .sidebar-content {
-    height: 100%;
-    overflow: auto;
-  }
-
-  .collapsed .sidebar-content {
-    display: none;
-  }
-
-  h1 {
-    margin: 0 0 0.75rem;
-    font-size: 1.2rem;
-  }
-
-  .submenu,
-  .field-group,
-  .meta,
-  .display-menu {
-    display: grid;
-    gap: 0.65rem;
-  }
-
-  .submenu {
-    margin-bottom: 0.9rem;
-  }
-
-  label {
-    display: grid;
-    gap: 0.25rem;
-    color: var(--muted);
-    font-size: 0.85rem;
-  }
-
-  input,
-  select {
-    min-width: 0;
-    border: 1px solid var(--panel-border);
-    border-radius: 8px;
-    padding: 0.35rem 0.45rem;
-    color: var(--text);
-    background: rgba(255, 255, 255, 0.08);
-  }
-
-  input[type='range'] {
-    padding: 0;
-  }
-
-  .year-lock {
-    color: var(--muted);
-    opacity: 0.65;
-  }
-
-  .dropdown-row :global(.dropdown-menu) {
-    max-height: min(60vh, 420px);
-    overflow: auto;
-    border: 1px solid var(--panel-border);
-    background: rgba(7, 17, 31, 0.96);
-    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
-  }
-
-  .dropdown-row :global(.dropdown-item) {
-    color: var(--text);
-  }
-
-  .dropdown-row :global(.dropdown-item:hover),
-  .dropdown-row :global(.dropdown-item:focus),
-  .dropdown-row :global(.dropdown-item.active) {
-    color: var(--text);
-    background: rgba(255, 255, 255, 0.12);
-  }
-
-  .dropdown-row :global(.sidebar-dropdown-toggle) {
-    width: 100%;
-    border: 1px solid var(--panel-border);
-    color: var(--text);
-    background: rgba(255, 255, 255, 0.08);
-    text-align: left;
-  }
-
-  .display-menu {
-    width: 220px;
-    padding: 0.75rem;
-  }
-
-  .meta {
-    margin-bottom: 0.75rem;
-    color: var(--muted);
-    font-size: 0.82rem;
-  }
-
-  .legend {
-    height: 12px;
-    border-radius: 999px;
-    background: var(--ecmwf-legend-gradient);
-    margin: 0.75rem 0 0.3rem;
-  }
-
-  .legend-labels {
-    display: flex;
-    justify-content: space-between;
-    color: var(--muted);
-    font-size: 0.8rem;
-    margin-bottom: 0.75rem;
-  }
-
-  .error-text {
-    color: var(--error);
-  }
-
-  .collapse-button,
-  .resize-handle {
-    border: 1px solid var(--panel-border);
-    color: var(--text);
-    background: rgba(255, 255, 255, 0.08);
-  }
-
-  .collapse-button {
-    position: absolute;
-    top: 50%;
-    right: -0.9rem;
-    z-index: 2;
-    display: grid;
-    width: 1.8rem;
-    height: 1.8rem;
-    place-items: center;
-    border-radius: 999px;
-    transform: translateY(-50%);
-    cursor: pointer;
-  }
-
-  .resize-handle {
-    position: absolute;
-    top: 0;
-    right: -0.25rem;
-    bottom: 0;
-    width: 0.5rem;
-    padding: 0;
-    border: 0;
-    border-radius: 0;
-    background: transparent;
-    cursor: ew-resize;
-  }
-
-  .resize-handle.active {
-    background: rgba(255, 255, 255, 0.08);
-  }
-
-  .collapsed .resize-handle {
-    display: none;
-  }
+  .sidebar-inner { height: 100%; }
+  h1 { margin: 0 0 0.75rem; font-size: 1.2rem; }
+  .submenu, .field-group, .meta, .display-menu { display: grid; gap: 0.65rem; }
+  .submenu { margin-bottom: 0.9rem; }
+  label { display: grid; gap: 0.25rem; color: var(--muted); font-size: 0.85rem; }
+  input, select { min-width: 0; border: 1px solid var(--panel-border); border-radius: 8px; padding: 0.35rem 0.45rem; color: var(--text); background: rgba(255, 255, 255, 0.08); }
+  input[type='range'] { padding: 0; }
+  .year-lock { color: var(--muted); opacity: 0.65; }
+  .dropdown-row :global(.dropdown-menu) { max-height: min(60vh, 420px); overflow: auto; border: 1px solid var(--panel-border); background: rgba(7, 17, 31, 0.96); box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35); }
+  .dropdown-row :global(.dropdown-item) { color: var(--text); }
+  .dropdown-row :global(.dropdown-item:hover), .dropdown-row :global(.dropdown-item:focus), .dropdown-row :global(.dropdown-item.active) { color: var(--text); background: rgba(255, 255, 255, 0.12); }
+  .dropdown-row :global(.sidebar-dropdown-toggle) { width: 100%; border: 1px solid var(--panel-border); color: var(--text); background: rgba(255, 255, 255, 0.08); text-align: left; }
+  .display-menu { width: 220px; padding: 0.75rem; }
+  .meta { margin-bottom: 0.75rem; color: var(--muted); font-size: 0.82rem; }
+  .legend { height: 12px; border-radius: 999px; background: var(--ecmwf-legend-gradient); margin: 0.75rem 0 0.3rem; }
+  .legend-labels { display: flex; justify-content: space-between; color: var(--muted); font-size: 0.8rem; margin-bottom: 0.75rem; }
+  .error-text { color: var(--error); }
 </style>
