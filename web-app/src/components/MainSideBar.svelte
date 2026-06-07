@@ -70,6 +70,8 @@
   }: Props = $props()
 
   let isResizing = $state(false)
+  let lastCommittedTimeIndex = $state<number | null>(null)
+  let lastCommittedStepIndex = $state<number | null>(null)
 
   function currentState(): MainSideBarState {
     return { collapsed, widthPx, previousWidthPx }
@@ -114,27 +116,37 @@
   }
 
   function handleTimeInput(event: Event) {
+    lastCommittedTimeIndex = null
     onGlobalTimeIndexInput(Number((event.currentTarget as HTMLInputElement).value))
   }
 
   function handleStepInput(event: Event) {
+    lastCommittedStepIndex = null
     onStepIndexInput(Number((event.currentTarget as HTMLInputElement).value))
   }
 
   function handleTimePointerDown() {
+    lastCommittedTimeIndex = null
     onTimeSliderActiveChange(true)
   }
 
   function handleTimeCommit() {
+    if (lastCommittedTimeIndex === globalTimeIndex) return
+
+    lastCommittedTimeIndex = globalTimeIndex
     onTimeSliderActiveChange(false)
     onGlobalTimeIndexCommit()
   }
 
   function handleStepPointerDown() {
+    lastCommittedStepIndex = null
     onStepSliderActiveChange(true)
   }
 
   function handleStepCommit() {
+    if (lastCommittedStepIndex === ecmwfStepIndex) return
+
+    lastCommittedStepIndex = ecmwfStepIndex
     onStepSliderActiveChange(false)
     onStepIndexCommit()
   }

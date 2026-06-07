@@ -148,17 +148,21 @@ async function commitSelection(
 ) {
   if (!ctx.renderer || ctx.state.timeSliderActive || ctx.state.stepSliderActive)
     return;
+
   const { nextEcmwf, forceReplace } = options;
   const nextRequest = createEcmwfRasterLayerRequest(nextEcmwf);
   const key = selectionKey(nextEcmwf);
+
   if (
     !forceReplace &&
     key === ctx.lastCommittedSelectionKey &&
     ctx.state.validTimeLabel !== "valid_time unavailable"
   )
     return;
+
   ctx.setState({ reloadingLayer: true, error: null, validTimeError: null });
   const token = ++ctx.layerToken;
+
   try {
     if (
       !forceReplace &&
@@ -168,13 +172,18 @@ async function commitSelection(
       await ctx.renderer.updateSelector(nextRequest.selector);
     } else {
       await ctx.renderer.replace(nextRequest);
+
+      if (token !== ctx.layerToken) return;
       ctx.lastRenderedRefPath = nextRequest.refPath;
     }
+
     if (token !== ctx.layerToken) return;
+
     ctx.setState({ layerAdded: true, reloadingLayer: false });
     await refreshValidTime(ctx, nextEcmwf);
   } catch (error) {
     if (token !== ctx.layerToken) return;
+
     ctx.setState({
       reloadingLayer: false,
       error: error instanceof Error ? error.message : String(error),
