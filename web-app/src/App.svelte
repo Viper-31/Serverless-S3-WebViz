@@ -1,348 +1,149 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
-  import maplibregl from 'maplibre-gl'
-  import { Spinner, Styles } from '@sveltestrap/sveltestrap'
-  import DevToolsMenu from '@/components/DevToolsMenu.svelte'
-  import MainSideBar from '@/components/MainSideBar.svelte'
-  import { getDefaultMainSideBarWidth, type MainSideBarState } from '@/components/mainSideBarState'
-  import { ECMWF_STEP_INDEX_COUNT } from '@/datasets/ecmwf/schema'
+  import { onMount } from "svelte";
+  import { Spinner, Styles } from "@sveltestrap/sveltestrap";
+  import DevToolsPanel from "@/features/dev-tools/DevToolsPanel.svelte";
+  import MainSideBar from "@/features/sidebar/MainSideBar.svelte";
   import {
-    ecmwfRefCatalog,
-    loadInventoryCatalog as loadParsedInventoryCatalog,
-    type EcmwfInventoryEntry,
-  } from '@/datasets/inventory_parser'
+    getDefaultSideBarWidth,
+    type SideBarState,
+  } from "@/components/sidebar/sideBarState";
+  import { ECMWF_STEP_INDEX_COUNT } from "@/datasets/ecmwf/schema";
   import {
-    ecmwfDisplayConfigForVariable,
+    createRendererForContainer,
+    type RasterRenderer,
+  } from "@/rendering-layer/Renderer";
+  import { createAppController } from "@/app/appController";
+  import {
     type EcmwfColorMapKey,
     type EcmwfVariableKey,
-  } from '@/features/display'
-  import {
-    createEcmwfState,
-    createEcmwfRasterLayerRequest,
-    updateEcmwfDisplayOverride,
-    updateEcmwfStateForDate,
-    updateEcmwfStateForGlobalTimeIndex,
-    updateEcmwfStateForStepIndex,
-    updateEcmwfStateForVariable,
-    type EcmwfProviderState,
-  } from '@/features/selection'
-  import {
-    ecmwfTimeIndexToDate,
-    mapEcmwfTimeToGlobalIndex,
-    formatEcmwfValidTimeSeconds,
-  } from '@/features/time_navigation'
-  import {
-    createEcmwfLayer,
-    ECMWF_LAYER_ID,
-    type EcmwfLayerBundle,
-    readEcmwfValidTimeValue,
-    toZarrLayerSelector,
-  } from '@/rendering-layer/raster/createGridLayer'
-  import type { LoadingState } from '@carbonplan/zarr-layer'
+  } from "@/features/display-settings/display";
 
-  type DatasetProvider = 'ECMWF'
-  type DatasetState = {
-    activeDatasets: DatasetProvider[]
-    providerConfigs: {
-      ECMWF: EcmwfProviderState
-    }
-  }
+  type AppControllerHandle = Omit<
+    ReturnType<typeof createAppController>,
+    "init"
+  > & {
+    init(isCancelled?: () => boolean): Promise<void>;
+  };
 
-  type Status = { loadingState: LoadingState; error: string | null }
+  let mapNode = $state.raw<HTMLDivElement | null>(null);
+  const controller: AppControllerHandle = createAppController({});
+  let appState = $state(controller.getState());
+  let rendererHandle: {
+    renderer: RasterRenderer;
+    whenReady: Promise<void>;
+    remove(): void;
+  } | null = null;
 
-  let mapNode = $state.raw<HTMLDivElement | undefined>(undefined)
-  let status = $state<Status>({ loadingState: { loading: true, metadata: true, chunks: true, error: null }, error: null })
-  let layerAdded = $state(false)
-  let localRangeCoalescing = $state(true)
-  let mapInstance = $state.raw<maplibregl.Map | undefined>(undefined)
-  let ecmwfLayerBundle = $state.raw<EcmwfLayerBundle | undefined>(undefined)
-  let reloadingLayer = $state(false)
-  let layerLoadError = $state<string | null>(null)
-  let displayValidTime = $state('Loading valid time…')
-  let validTimeError = $state<string | null>(null)
-  let ecmwfCatalog = $state<EcmwfInventoryEntry[]>(ecmwfRefCatalog)
-  let layerLoadToken = 0
-  let validTimeToken = 0
-  let timeSliderActive = $state(false)
-  let stepSliderActive = $state(false)
-  let lastCommittedSelectionKey = ''
+  const unsubscribe = controller.subscribe((next: typeof appState) => {
+    appState = next;
+  });
 
-  const initialMainSideBarWidthPx = getDefaultMainSideBarWidth(typeof window === 'undefined' ? 1024 : window.innerWidth)
-  let mainSideBarState = $state<MainSideBarState>({
+  const initialMainSideBarWidthPx = getDefaultSideBarWidth(
+    typeof window === "undefined" ? 1024 : window.innerWidth,
+  );
+  let mainSideBarState = $state<SideBarState>({
     collapsed: false,
     widthPx: initialMainSideBarWidthPx,
     previousWidthPx: initialMainSideBarWidthPx,
-  })
+  });
 
-  let datasetState = $state<DatasetState>({
-    activeDatasets: ['ECMWF'],
-    providerConfigs: {
-      ECMWF: createEcmwfState('t2m', '2024-01-02'),
-    },
-  })
-
-  const ecmwfConfig = $derived(datasetState.providerConfigs.ECMWF)
-  const displaySettings = $derived(ecmwfDisplayConfigForVariable(ecmwfConfig.variableKey, ecmwfConfig.overrideByVar))
-  const selectedDate = $derived(ecmwfTimeIndexToDate(ecmwfConfig.refStartDate, ecmwfConfig.ecmwfTimeIndex))
-  const globalTimeIndex = $derived(mapEcmwfTimeToGlobalIndex(ecmwfConfig.refStartDate, ecmwfConfig.ecmwfTimeIndex, ecmwfCatalog))
-  const maxGlobalTimeIndex = $derived(Math.max(0, ecmwfCatalog.length * 14 - 1))
-  const sideBarError = $derived(layerLoadError ?? validTimeError ?? status.error)
+  function updateMainSideBarState(next: SideBarState) {
+    mainSideBarState = next;
+  }
 
   function errorMessage(error: unknown): string {
-    return error instanceof Error ? error.message : String(error)
+    return error instanceof Error ? error.message : String(error);
   }
 
-  function selectionKey(state: EcmwfProviderState) {
-    return `${state.refPath}|${state.ecmwfTimeIndex}|${state.ecmwfStepIndex}`
-  }
-
-  function setEcmwfConfig(next: EcmwfProviderState) {
-    datasetState = {
-      ...datasetState,
-      providerConfigs: {
-        ...datasetState.providerConfigs,
-        ECMWF: next,
-      },
-    }
-  }
-
-  function updateMainSideBarState(next: MainSideBarState) {
-    mainSideBarState = next
-  }
+  const ecmwfConfig = $derived(appState.ecmwf);
+  const displaySettings = $derived(controller.getDisplaySettings());
+  const selectedDate = $derived(controller.getSelectedDate());
+  const globalTimeIndex = $derived(controller.getGlobalTimeIndex());
+  const maxGlobalTimeIndex = $derived(
+    Math.max(0, appState.catalog.ecmwf.length * 14 - 1),
+  );
+  const sideBarError = $derived(appState.error ?? appState.validTimeError);
 
   function updateLocalRangeCoalescing(next: boolean) {
-    localRangeCoalescing = next
+    controller.setLocalRangeCoalescing(next);
   }
 
-  async function loadInventoryCatalog() {
-    const catalog = await loadParsedInventoryCatalog()
-    if (catalog.ecmwf.length > 0) ecmwfCatalog = catalog.ecmwf
-  }
-
-  async function refreshDisplayValidTime(state: EcmwfProviderState, bundle = ecmwfLayerBundle) {
-    if (!bundle || timeSliderActive || stepSliderActive) return
-
-    const token = ++validTimeToken
-    validTimeError = null
-
-    try {
-      const value = await readEcmwfValidTimeValue(bundle.store, createEcmwfRasterLayerRequest(state).selector)
-      if (token !== validTimeToken) return
-      displayValidTime = formatEcmwfValidTimeSeconds(value)
-      lastCommittedSelectionKey = selectionKey(state)
-    } catch (error) {
-      if (token !== validTimeToken) return
-      validTimeError = errorMessage(error)
-      displayValidTime = 'valid_time unavailable'
-    }
-  }
-
-  async function loadLayer(map: maplibregl.Map, state: EcmwfProviderState, isCancelled: () => boolean) {
-    const token = ++layerLoadToken
-    reloadingLayer = true
-    layerLoadError = null
-    validTimeError = null
-    status = { loadingState: { loading: true, metadata: true, chunks: true, error: null }, error: null }
-
-    try {
-      const request = createEcmwfRasterLayerRequest(state)
-      const nextBundle = await createEcmwfLayer({
-        ...request,
-        localRangeCoalescing,
-        onLoadingStateChange(next) {
-          if (isCancelled() || token !== layerLoadToken) return
-          status = { loadingState: next, error: next.error?.message ?? null }
-        },
-      })
-
-      if (isCancelled() || token !== layerLoadToken) return
-
-      if (map.getLayer(ECMWF_LAYER_ID)) {
-        map.removeLayer(ECMWF_LAYER_ID)
-      }
-
-      map.addLayer(nextBundle.layer as maplibregl.CustomLayerInterface)
-      ecmwfLayerBundle = nextBundle
-      layerAdded = true
-      reloadingLayer = false
-      await refreshDisplayValidTime(state, nextBundle)
-    } catch (error) {
-      if (isCancelled() || token !== layerLoadToken) return
-      layerLoadError = errorMessage(error)
-      status = { loadingState: status.loadingState, error: layerLoadError }
-      reloadingLayer = false
-      layerAdded = Boolean(ecmwfLayerBundle)
-    }
-  }
-
-  async function commitEcmwfSelection() {
-    if (timeSliderActive || stepSliderActive) return
-    const state = datasetState.providerConfigs.ECMWF
-    const key = selectionKey(state)
-    if (key === lastCommittedSelectionKey && displayValidTime !== 'valid_time unavailable') return
-
-    if (!mapInstance || !ecmwfLayerBundle || ecmwfLayerBundle.refPath !== state.refPath) {
-      if (mapInstance) await loadLayer(mapInstance, state, () => false)
-      return
-    }
-
-    try {
-      layerLoadError = null
-      validTimeError = null
-      await ecmwfLayerBundle.layer.setSelector(toZarrLayerSelector(createEcmwfRasterLayerRequest(state).selector))
-      await refreshDisplayValidTime(state)
-    } catch (error) {
-      layerLoadError = errorMessage(error)
-    }
-  }
-
-  function reloadLayer() {
-    if (!mapInstance) return
-    void loadLayer(mapInstance, datasetState.providerConfigs.ECMWF, () => false)
+  async function initializeApp(
+    container: HTMLDivElement,
+    isCancelled: () => boolean,
+  ) {
+    await controller.init(isCancelled);
+    if (isCancelled()) return;
+    rendererHandle = createRendererForContainer({
+      container,
+      localRangeCoalescing: () => controller.getState().localRangeCoalescing,
+      onLoadingStateChange(next) {
+        controller.setLoadingState({ ...next, error: next.error ?? null });
+      },
+    });
+    await rendererHandle.whenReady;
+    if (isCancelled()) return;
+    await controller.attachRenderer(rendererHandle.renderer);
   }
 
   function handleDateChange(dateIso: string) {
-    try {
-      const next = updateEcmwfStateForDate(datasetState.providerConfigs.ECMWF, dateIso, ecmwfCatalog)
-      setEcmwfConfig(next)
-      displayValidTime = 'Loading valid time…'
-      void loadLayerIfReady(next)
-    } catch (error) {
-      layerLoadError = errorMessage(error)
-    }
+    void controller.setDate(dateIso);
   }
-
-  async function loadLayerIfReady(state: EcmwfProviderState) {
-    if (!mapInstance) return
-    await loadLayer(mapInstance, state, () => false)
-  }
-
   function handleTimeSliderActiveChange(active: boolean) {
-    timeSliderActive = active
+    controller.setTimeSliderActive(active);
   }
-
   function handleGlobalTimeIndexInput(nextGlobalTimeIndex: number) {
-    try {
-      const next = updateEcmwfStateForGlobalTimeIndex(datasetState.providerConfigs.ECMWF, nextGlobalTimeIndex, ecmwfCatalog)
-      setEcmwfConfig(next)
-      displayValidTime = 'Release slider to update valid time…'
-      layerLoadError = null
-    } catch (error) {
-      layerLoadError = errorMessage(error)
-    }
+    void controller.setGlobalTimeIndex(nextGlobalTimeIndex);
   }
-
   function handleGlobalTimeIndexCommit() {
-    timeSliderActive = false
-    void commitEcmwfSelection()
+    void controller.commitGlobalTimeIndex();
   }
-
   function handleStepSliderActiveChange(active: boolean) {
-    stepSliderActive = active
+    controller.setStepSliderActive(active);
   }
-
   function handleStepIndexInput(stepIndex: number) {
-    const next = updateEcmwfStateForStepIndex(datasetState.providerConfigs.ECMWF, stepIndex)
-    setEcmwfConfig(next)
-    displayValidTime = 'Release slider to update valid time…'
-    layerLoadError = null
+    controller.setStepIndex(stepIndex);
   }
-
   function handleStepIndexCommit() {
-    stepSliderActive = false
-    void commitEcmwfSelection()
+    void controller.commitStepIndex();
   }
-
-  async function handleVariableChange(variableKey: EcmwfVariableKey) {
-    const next = updateEcmwfStateForVariable(datasetState.providerConfigs.ECMWF, variableKey)
-    setEcmwfConfig(next)
-    const nextLayerDisplay = createEcmwfRasterLayerRequest(next).display
-    layerLoadError = null
-    validTimeError = null
-
-    if (!ecmwfLayerBundle) return
-
-    reloadingLayer = true
-    try {
-      await ecmwfLayerBundle.layer.setVariable(variableKey)
-      ecmwfLayerBundle.layer.setClim(nextLayerDisplay.clim)
-      ecmwfLayerBundle.layer.setColormap(nextLayerDisplay.rgbStops)
-      reloadingLayer = false
-      await refreshDisplayValidTime(next)
-    } catch (error) {
-      reloadingLayer = false
-      layerLoadError = errorMessage(error)
-    }
+  function handleVariableChange(variableKey: EcmwfVariableKey) {
+    void controller.setVariable(variableKey);
   }
-
-  function handleDisplayOverrideChange(override: { clim: [number, number]; colormap: EcmwfColorMapKey }) {
-    const state = datasetState.providerConfigs.ECMWF
-    const next = updateEcmwfDisplayOverride(state, state.variableKey, override)
-    setEcmwfConfig(next)
-    const nextLayerDisplay = createEcmwfRasterLayerRequest(next).display
-
-    if (!ecmwfLayerBundle) return
-    ecmwfLayerBundle.layer.setClim(nextLayerDisplay.clim)
-    ecmwfLayerBundle.layer.setColormap(nextLayerDisplay.rgbStops)
+  function handleDisplayOverrideChange(override: {
+    clim: [number, number];
+    colormap: EcmwfColorMapKey;
+  }) {
+    controller.setDisplayOverride(override);
+  }
+  function reloadLayer() {
+    void controller.reload();
   }
 
   onMount(() => {
     if (!mapNode) {
-      status = { loadingState: status.loadingState, error: 'Map container was not mounted.' }
-      return
+      appState = { ...appState, error: "Map container is missing" };
+      return () => unsubscribe();
     }
 
-    let cancelled = false
-    const map = new maplibregl.Map({
-      container: mapNode,
-      style: {
-        version: 8,
-        sources: {
-          osm: {
-            type: 'raster',
-            tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
-            tileSize: 256,
-            attribution: '© OpenStreetMap contributors',
-          },
-        },
-        layers: [
-          { id: 'bg', type: 'background', paint: { 'background-color': '#07111f' } },
-          { id: 'osm-boundaries', type: 'raster', source: 'osm', paint: { 'raster-opacity': 0.82 } },
-        ],
-      },
-      center: [121, -24],
-      zoom: 3,
-      pitch: 0,
-      bearing: 0,
-      attributionControl: { compact: true },
-    })
-    mapInstance = map
-
-    map.on('load', () => {
-      void (async () => {
-        try {
-          map.setProjection({ type: 'globe' } as maplibregl.ProjectionSpecification)
-          await loadInventoryCatalog()
-          if (cancelled) return
-          const current = datasetState.providerConfigs.ECMWF
-          const next = createEcmwfState(current.variableKey, selectedDate, ecmwfCatalog)
-          setEcmwfConfig({ ...next, overrideByVar: current.overrideByVar })
-          await loadLayer(map, { ...next, overrideByVar: current.overrideByVar }, () => cancelled)
-        } catch (error) {
-          if (cancelled) return
-          layerLoadError = errorMessage(error)
-          status = { loadingState: status.loadingState, error: layerLoadError }
-          reloadingLayer = false
-        }
-      })()
-    })
+    let cancelled = false;
+    void (async () => {
+      try {
+        await initializeApp(mapNode, () => cancelled);
+      } catch (error) {
+        if (cancelled) return;
+        appState = { ...appState, error: errorMessage(error) };
+      }
+    })();
 
     return () => {
-      cancelled = true
-      mapInstance = undefined
-      map.remove()
-    }
-  })
+      cancelled = true;
+      rendererHandle?.remove();
+      rendererHandle = null;
+      unsubscribe();
+      controller.teardown();
+    };
+  });
 </script>
 
 <svelte:head>
@@ -355,24 +156,28 @@
   <div class="map" bind:this={mapNode}></div>
 
   <div class="valid-time-badge" aria-live="polite">
-    {displayValidTime}
+    {appState.validTimeLabel}
   </div>
 
-  {#if reloadingLayer}
-    <div class="layer-status" aria-live="polite" aria-label="Loading ECMWF reference">
+  {#if appState.reloadingLayer}
+    <div
+      class="layer-status"
+      aria-live="polite"
+      aria-label="Loading ECMWF reference"
+    >
       <Spinner color="light" />
     </div>
-  {:else if layerLoadError}
+  {:else if appState.error}
     <div class="layer-status error-status" aria-live="polite">
-      {layerLoadError}
+      {appState.error}
     </div>
   {/if}
 
   <MainSideBar
     referencePath={ecmwfConfig.refPath}
-    selectedDate={selectedDate}
-    globalTimeIndex={globalTimeIndex}
-    maxGlobalTimeIndex={maxGlobalTimeIndex}
+    {selectedDate}
+    {globalTimeIndex}
+    {maxGlobalTimeIndex}
     ecmwfTimeIndex={ecmwfConfig.ecmwfTimeIndex}
     ecmwfStepIndex={ecmwfConfig.ecmwfStepIndex}
     maxStepIndex={ECMWF_STEP_INDEX_COUNT - 1}
@@ -395,14 +200,14 @@
     onDisplayOverrideChange={handleDisplayOverrideChange}
   />
 
-  <DevToolsMenu
-    localRangeCoalescing={localRangeCoalescing}
-    reloadingLayer={reloadingLayer}
-    loading={status.loadingState.loading}
-    metadata={status.loadingState.metadata}
-    chunks={status.loadingState.chunks}
-    layerAdded={layerAdded}
-    mapReady={Boolean(mapInstance)}
+  <DevToolsPanel
+    localRangeCoalescing={appState.localRangeCoalescing}
+    reloadingLayer={appState.reloadingLayer}
+    loading={appState.loadingState.loading}
+    metadata={appState.loadingState.metadata}
+    chunks={appState.loadingState.chunks}
+    layerAdded={appState.layerAdded}
+    mapReady={appState.mapReady}
     onLocalRangeCoalescingChange={updateLocalRangeCoalescing}
     onReloadLayer={reloadLayer}
   />

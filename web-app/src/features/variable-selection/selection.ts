@@ -7,12 +7,12 @@ import {
   ecmwfLayerDisplayForVariable,
   type EcmwfColorMapKey,
   type EcmwfVariableKey,
-} from "@/features/display";
+} from "@/features/display-settings/display";
 import {
   createEcmwfLayerSelector,
   ecmwfDateToTimeIndex,
   mapEcmwfGlobalTimeIndex,
-} from "@/features/time_navigation";
+} from "@/features/time-navigation/time_navigation";
 
 export type EcmwfDisplayOverride = {
   clim: [number, number];
@@ -41,6 +41,7 @@ export function createEcmwfState(
     variableKey,
   };
 }
+
 export function updateEcmwfStateForDate(
   state: EcmwfProviderState,
   dateIso: string,
@@ -55,12 +56,14 @@ export function updateEcmwfStateForDate(
     ecmwfStepIndex: 0,
   };
 }
+
 export function updateEcmwfStateForVariable(
   state: EcmwfProviderState,
   variableKey: EcmwfVariableKey,
 ): EcmwfProviderState {
   return { ...state, variableKey };
 }
+
 export function updateEcmwfStateForGlobalTimeIndex(
   state: EcmwfProviderState,
   globalTimeIndex: number,
@@ -74,12 +77,14 @@ export function updateEcmwfStateForGlobalTimeIndex(
     ecmwfStepIndex: refChanged ? 0 : state.ecmwfStepIndex,
   };
 }
+
 export function updateEcmwfStateForStepIndex(
   state: EcmwfProviderState,
   ecmwfStepIndex: number,
 ): EcmwfProviderState {
   return { ...state, ecmwfStepIndex };
 }
+
 export function updateEcmwfDisplayOverride(
   state: EcmwfProviderState,
   variableKey: EcmwfVariableKey,
@@ -90,11 +95,11 @@ export function updateEcmwfDisplayOverride(
     overrideByVar: { ...state.overrideByVar, [variableKey]: override },
   };
 }
+
 export function ecmwfDisplaySettings(state: EcmwfProviderState) {
   return ecmwfLayerDisplayForVariable(state.variableKey, state.overrideByVar);
 }
 
-// May move to future orchestration layer.
 export function createEcmwfRasterLayerRequest(
   state: EcmwfProviderState,
 ): RasterLayerRequest {
