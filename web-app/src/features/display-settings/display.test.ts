@@ -6,9 +6,9 @@ import {
   ecmwfDisplayVariables,
   ecmwfLayerDisplayForVariable,
   ecmwfVarClim,
-} from "@/features/display";
+} from "@/features/display-settings/display";
 
-describe("features/display", () => {
+describe("features/display-settings/display", () => {
   it("curates display variables in UI-safe form", () => {
     expect(Object.keys(ecmwfDisplayVariables)).toEqual([
       "d2m",

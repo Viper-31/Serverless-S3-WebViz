@@ -50,12 +50,7 @@
       <h2>Dev tools</h2>
 
       <label>
-        <input
-          type="checkbox"
-          checked={localRangeCoalescing}
-          disabled={reloadingLayer}
-          onchange={handleLocalRangeCoalescingChange}
-        />
+        <input type="checkbox" checked={localRangeCoalescing} disabled={reloadingLayer} onchange={handleLocalRangeCoalescingChange} />
         local range coalescing
       </label>
 

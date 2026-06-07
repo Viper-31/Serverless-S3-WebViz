@@ -13,13 +13,10 @@ export const ecmwfDisplayVariables = {
   u10: { label: "u wind 10m" },
   v10: { label: "v wind 10m" },
 } as const;
-
 export type EcmwfVariableKey = keyof typeof ecmwfDisplayVariables;
-
 export const ecmwfDisplayVariableKeys = Object.keys(
   ecmwfDisplayVariables,
 ) as EcmwfVariableKey[];
-
 export const ecmwfVarClim: Record<EcmwfVariableKey, [number, number]> = {
   d2m: [-40, 40],
   i10fg: [0, 150],
@@ -33,7 +30,6 @@ export const ecmwfVarClim: Record<EcmwfVariableKey, [number, number]> = {
   u10: [-100, 100],
   v10: [-100, 100],
 };
-
 export type EcmwfColorMapKey =
   | "coolwarm"
   | "thermal"
@@ -47,7 +43,6 @@ export type EcmwfColorMapKey =
   | "viridis";
 export type EcmwfRgbStop = { pos: number; color: [number, number, number] };
 export type EcmwfColorMap = { gradient: string; stops: EcmwfRgbStop[] };
-
 export const ecmwfColorMaps: Record<EcmwfColorMapKey, EcmwfColorMap> = {
   coolwarm: {
     gradient: "linear-gradient(to right, #3b4cc0, #bcb8b7, #b40426)",
@@ -137,7 +132,6 @@ export const ecmwfColorMaps: Record<EcmwfColorMapKey, EcmwfColorMap> = {
     ],
   },
 };
-
 export const ecmwfDefaultVar_CMAPS: Partial<
   Record<EcmwfVariableKey, EcmwfColorMapKey>
 > = {
@@ -151,7 +145,6 @@ export const ecmwfDefaultVar_CMAPS: Partial<
   tcc: "Greys_trunc",
   tp: "Blues",
 };
-
 export function ecmwfDisplayConfigForVariable(
   variableKey: EcmwfVariableKey,
   overrideByVar: Partial<
@@ -168,7 +161,6 @@ export function ecmwfDisplayConfigForVariable(
     }
   );
 }
-
 export function ecmwfLayerDisplayForVariable(
   variableKey: EcmwfVariableKey,
   overrideByVar: Partial<

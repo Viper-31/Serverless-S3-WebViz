@@ -6,9 +6,9 @@ import {
   updateEcmwfStateForDate,
   updateEcmwfStateForGlobalTimeIndex,
   updateEcmwfStateForVariable,
-} from "@/features/selection";
+} from "@/features/variable-selection/selection";
 
-describe("features/selection", () => {
+describe("features/variable-selection/selection", () => {
   it("creates and updates provider state", () => {
     const state = createEcmwfState("t2m", "2024-01-06");
     expect(state).toMatchObject({
@@ -33,6 +33,7 @@ describe("features/selection", () => {
       ecmwfStepIndex: 7,
     });
   });
+
   it("uses overrides for display settings and request building", () => {
     const state = createEcmwfState("t2m", "2024-01-06");
     state.overrideByVar = { t2m: { clim: [-1, 1], colormap: "coolwarm" } };

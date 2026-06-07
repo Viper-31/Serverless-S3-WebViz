@@ -6,7 +6,11 @@ import {
 
 import * as zarr from "zarrita";
 
-import type { LayerSelector, RasterLayerRequest } from "@/lib/shared/contracts";
+import type {
+  LayerDisplay,
+  LayerSelector,
+  RasterLayerRequest,
+} from "@/lib/shared/contracts";
 import { openReferencedZarrStore } from "@/zarr-store";
 
 export const ECMWF_LAYER_ID = "ecmwf-raster";
@@ -23,6 +27,11 @@ export type EcmwfLayerBundle = {
   store: zarr.Readable;
   refPath: string;
 };
+
+type ZarrLayerLike = Pick<
+  ZarrLayer,
+  "setSelector" | "setVariable" | "setClim" | "setColormap"
+>;
 
 export function toZarrLayerSelector(selector: LayerSelector): Selector {
   return selector as Selector;
@@ -71,4 +80,20 @@ export async function createEcmwfLayer(
   });
 
   return { layer, store, refPath: options.refPath };
+}
+
+export async function updateEcmwfLayerSelector(
+  layer: ZarrLayerLike,
+  selector: LayerSelector,
+) {
+  await layer.setSelector?.(toZarrLayerSelector(selector));
+}
+
+export async function updateEcmwfLayerDisplay(
+  layer: ZarrLayerLike,
+  input: { variableId: string; display: LayerDisplay },
+) {
+  await layer.setVariable?.(input.variableId);
+  await layer.setClim?.(input.display.clim);
+  await layer.setColormap?.(input.display.rgbStops);
 }
