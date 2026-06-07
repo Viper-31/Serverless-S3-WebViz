@@ -209,10 +209,6 @@ describe("RasterRenderer", () => {
     };
 
     expect(mapOptions.container).toBe(container);
-    expect(mapOptions.style?.layers?.map((layer) => layer.id)).toEqual([
-      "bg",
-      "osm-boundaries",
-    ]);
 
     const loadHandler = mapOn.mock.calls.find(
       ([event]) => event === "load",

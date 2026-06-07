@@ -13,7 +13,7 @@ type MapViewOptions = {
   onReady?: () => void;
 };
 
-const BASE_SOURCE_ID = "osm";
+const BASE_MAP_ID = "https://tiles.openfreemap.org/styles/dark";
 
 export function createMapView(options: MapViewOptions): MapViewHandle {
   let removed = false;
@@ -25,30 +25,7 @@ export function createMapView(options: MapViewOptions): MapViewHandle {
 
   const map = new maplibregl.Map({
     container: options.container,
-    style: {
-      version: 8,
-      sources: {
-        [BASE_SOURCE_ID]: {
-          type: "raster",
-          tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
-          tileSize: 256,
-          attribution: "© OpenStreetMap contributors",
-        },
-      },
-      layers: [
-        {
-          id: "bg",
-          type: "background",
-          paint: { "background-color": "#07111f" },
-        },
-        {
-          id: "osm-boundaries",
-          type: "raster",
-          source: BASE_SOURCE_ID,
-          paint: { "raster-opacity": 0.82 },
-        },
-      ],
-    },
+    style: BASE_MAP_ID,
     center: [115, -31],
     zoom: 4.7,
     pitch: 0,
