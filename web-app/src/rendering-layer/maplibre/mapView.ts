@@ -21,8 +21,32 @@ const BASE_MAP_ID = "https://tiles.openfreemap.org/styles/dark";
 
 const DATA_LAYER_BEFORE_LAYER_IDS = [
   "boundary_state",
+  "boundary_country_z0-4",
+  "boundary_country_z5-",
   "place_other",
   "water_name",
+] as const;
+
+const READABLE_LABEL_LAYER_IDS = [
+  "water_name",
+  "highway_name_other",
+  "highway_name_motorway",
+  "place_other",
+  "place_suburb",
+  "place_village",
+  "place_town",
+  "place_city",
+  "place_city_large",
+  "place_state",
+  "place_country_other",
+  "place_country_minor",
+  "place_country_major",
+] as const;
+
+const READABLE_BOUNDARY_LAYER_IDS = [
+  "boundary_state",
+  "boundary_country_z0-4",
+  "boundary_country_z5-",
 ] as const;
 
 function findDataLayerInsertionPoint(
@@ -60,6 +84,30 @@ function createLayerHost(map: maplibregl.Map): MapLibreLayerHost {
   };
 }
 
+function setPaintPropertyIfLayerExists(
+  map: maplibregl.Map,
+  layerId: string,
+  property: string,
+  value: unknown,
+) {
+  if (!map.getLayer(layerId)) return;
+  map.setPaintProperty(layerId, property, value as any);
+}
+
+function improveDarkMapReadability(map: maplibregl.Map) {
+  for (const layerId of READABLE_LABEL_LAYER_IDS) {
+    setPaintPropertyIfLayerExists(map, layerId, "text-color", "#d1d5db");
+    setPaintPropertyIfLayerExists(map, layerId, "text-halo-color", "#020617");
+    setPaintPropertyIfLayerExists(map, layerId, "text-halo-width", 1.6);
+    setPaintPropertyIfLayerExists(map, layerId, "text-halo-blur", 0.25);
+  }
+
+  for (const layerId of READABLE_BOUNDARY_LAYER_IDS) {
+    setPaintPropertyIfLayerExists(map, layerId, "line-color", "#64748b");
+    setPaintPropertyIfLayerExists(map, layerId, "line-opacity", 0.92);
+  }
+}
+
 export function createMapView(options: MapViewOptions): MapViewHandle {
   let removed = false;
   let resolveReady!: () => void;
@@ -85,6 +133,7 @@ export function createMapView(options: MapViewOptions): MapViewHandle {
     map.setProjection?.({
       type: "mercator",
     } as maplibregl.ProjectionSpecification);
+    improveDarkMapReadability(map);
     options.onReady?.();
     resolveReady();
   });
