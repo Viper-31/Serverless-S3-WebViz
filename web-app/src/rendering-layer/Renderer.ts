@@ -7,7 +7,7 @@ import type {
 } from "@/lib/shared/contracts";
 import { createMapView } from "@/rendering-layer/maplibre/mapView";
 import { createMapLibreRasterLayer } from "@/rendering-layer/maplibre/rasterLayer";
-import type { MapLibreRasterMap } from "@/rendering-layer/maplibre/types";
+import type { MapLibreLayerHost } from "@/rendering-layer/maplibre/types";
 
 export type RasterRenderer = {
   replace(request: RasterLayerRequest): Promise<void>;
@@ -22,7 +22,7 @@ export type RasterRenderer = {
 };
 
 export function createRasterRenderer(options: {
-  map: MapLibreRasterMap;
+  map: MapLibreLayerHost;
   localRangeCoalescing: () => boolean;
   onLoadingStateChange?: (state: LoadingState) => void;
 }): RasterRenderer {

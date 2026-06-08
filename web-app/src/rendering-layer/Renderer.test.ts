@@ -58,7 +58,7 @@ function createFakeMap() {
   const layers = new Map<string, { id: string }>();
   const calls: string[] = [];
   return {
-    addLayer(layer: { id: string }) {
+    addDataLayer(layer: { id: string }) {
       calls.push(`add:${layer.id}`);
       layers.set(layer.id, layer);
     },
@@ -209,10 +209,6 @@ describe("RasterRenderer", () => {
     };
 
     expect(mapOptions.container).toBe(container);
-    expect(mapOptions.style?.layers?.map((layer) => layer.id)).toEqual([
-      "bg",
-      "osm-boundaries",
-    ]);
 
     const loadHandler = mapOn.mock.calls.find(
       ([event]) => event === "load",

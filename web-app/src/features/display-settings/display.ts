@@ -40,79 +40,81 @@ export type EcmwfColorMapKey =
   | "Reds"
   | "RdBu_r"
   | "Greys_trunc"
+  | "Clouds_dark"
   | "viridis";
 export type EcmwfRgbStop = { pos: number; color: [number, number, number] };
 export type EcmwfColorMap = { gradient: string; stops: EcmwfRgbStop[] };
 export const ecmwfColorMaps: Record<EcmwfColorMapKey, EcmwfColorMap> = {
   coolwarm: {
-    gradient: "linear-gradient(to right, #3b4cc0, #bcb8b7, #b40426)",
+    gradient: "linear-gradient(to right, #1d4ed8, #f8e58c, #dc2626)",
     stops: [
-      { pos: 0, color: [59, 76, 192] },
-      { pos: 0.5, color: [188, 184, 183] },
-      { pos: 1, color: [180, 4, 38] },
+      { pos: 0, color: [29, 78, 216] },
+      { pos: 0.5, color: [248, 229, 140] },
+      { pos: 1, color: [220, 38, 38] },
     ],
   },
   thermal: {
     gradient:
-      "linear-gradient(to right, #053061, #2166ac, #4393c3, #92c5de, #f4a582, #d6604d, #b2182b, #67001f)",
+      "linear-gradient(to right, #082f49, #0369a1, #38bdf8, #facc15, #f97316, #dc2626, #7f1d1d)",
     stops: [
-      { pos: 0, color: [5, 48, 97] },
-      { pos: 0.14, color: [33, 102, 172] },
-      { pos: 0.29, color: [67, 147, 195] },
-      { pos: 0.43, color: [146, 197, 222] },
-      { pos: 0.57, color: [244, 165, 130] },
-      { pos: 0.71, color: [214, 96, 77] },
-      { pos: 0.86, color: [178, 24, 43] },
-      { pos: 1, color: [103, 0, 31] },
+      { pos: 0, color: [8, 47, 73] },
+      { pos: 0.18, color: [3, 105, 161] },
+      { pos: 0.36, color: [56, 189, 248] },
+      { pos: 0.54, color: [250, 204, 21] },
+      { pos: 0.72, color: [249, 115, 22] },
+      { pos: 0.9, color: [220, 38, 38] },
+      { pos: 1, color: [127, 29, 29] },
     ],
   },
   GnBu: {
-    gradient: "linear-gradient(to right, #f7fcf0, #7bccc4, #084081)",
+    gradient: "linear-gradient(to right, #0f172a, #16a34a, #bae6fd)",
     stops: [
-      { pos: 0, color: [247, 252, 240] },
-      { pos: 0.5, color: [123, 204, 196] },
-      { pos: 1, color: [8, 64, 129] },
+      { pos: 0, color: [15, 23, 42] },
+      { pos: 0.5, color: [22, 163, 74] },
+      { pos: 1, color: [186, 230, 253] },
     ],
   },
   YlGnBu: {
-    gradient: "linear-gradient(to right, #ffffd9, #41b6c4, #081d58)",
+    gradient: "linear-gradient(to right, #1e1b4b, #15803d, #facc15)",
     stops: [
-      { pos: 0, color: [255, 255, 217] },
-      { pos: 0.5, color: [65, 182, 196] },
-      { pos: 1, color: [8, 29, 88] },
+      { pos: 0, color: [30, 27, 75] },
+      { pos: 0.5, color: [21, 128, 61] },
+      { pos: 1, color: [250, 204, 21] },
     ],
   },
   Purples: {
-    gradient: "linear-gradient(to right, #f2f0f7, #9e9ac8, #3f007d)",
+    gradient: "linear-gradient(to right, #111827, #7c3aed, #e9d5ff)",
     stops: [
-      { pos: 0, color: [242, 240, 247] },
-      { pos: 0.5, color: [158, 154, 200] },
-      { pos: 1, color: [63, 0, 125] },
+      { pos: 0, color: [17, 24, 39] },
+      { pos: 0.5, color: [124, 58, 237] },
+      { pos: 1, color: [233, 213, 255] },
     ],
   },
   Blues: {
-    gradient: "linear-gradient(to right, #eff3ff, #6baed6, #08519c)",
+    gradient: "linear-gradient(to right, #0f172a, #2563eb, #bfdbfe)",
     stops: [
-      { pos: 0, color: [239, 243, 255] },
-      { pos: 0.5, color: [107, 174, 214] },
-      { pos: 1, color: [8, 81, 156] },
+      { pos: 0, color: [15, 23, 42] },
+      { pos: 0.5, color: [37, 99, 235] },
+      { pos: 1, color: [191, 219, 254] },
     ],
   },
   Reds: {
-    gradient: "linear-gradient(to right, #fee0d2, #fc9272, #cb181d)",
+    gradient: "linear-gradient(to right, #1f0a0a, #ea580c, #fde047)",
     stops: [
-      { pos: 0, color: [254, 224, 210] },
-      { pos: 0.5, color: [252, 146, 114] },
-      { pos: 1, color: [203, 24, 29] },
+      { pos: 0, color: [31, 10, 10] },
+      { pos: 0.5, color: [234, 88, 12] },
+      { pos: 1, color: [253, 224, 71] },
     ],
   },
   RdBu_r: {
     gradient:
-      "linear-gradient(to right, #053061, #2166ac, #f7f7f7, #b2182b, #67001f)",
+      "linear-gradient(to right, #082f49, #2563eb, #f8e58c, #dc2626, #7f1d1d)",
     stops: [
-      { pos: 0, color: [5, 48, 97] },
-      { pos: 0.5, color: [247, 247, 247] },
-      { pos: 1, color: [103, 0, 31] },
+      { pos: 0, color: [8, 47, 73] },
+      { pos: 0.25, color: [37, 99, 235] },
+      { pos: 0.5, color: [248, 229, 140] },
+      { pos: 0.75, color: [220, 38, 38] },
+      { pos: 1, color: [127, 29, 29] },
     ],
   },
   Greys_trunc: {
@@ -121,6 +123,14 @@ export const ecmwfColorMaps: Record<EcmwfColorMapKey, EcmwfColorMap> = {
       { pos: 0, color: [247, 247, 247] },
       { pos: 0.5, color: [189, 189, 189] },
       { pos: 1, color: [99, 99, 99] },
+    ],
+  },
+  Clouds_dark: {
+    gradient: "linear-gradient(to right, #111827, #6366f1, #f8fafc)",
+    stops: [
+      { pos: 0, color: [17, 24, 39] },
+      { pos: 0.5, color: [99, 102, 241] },
+      { pos: 1, color: [248, 250, 252] },
     ],
   },
   viridis: {
@@ -137,12 +147,12 @@ export const ecmwfDefaultVar_CMAPS: Partial<
 > = {
   d2m: "coolwarm",
   i10fg: "Reds",
-  lcc: "Greys_trunc",
+  lcc: "Clouds_dark",
   msl: "viridis",
   sh2: "GnBu",
   swvl1: "YlGnBu",
   t2m: "thermal",
-  tcc: "Greys_trunc",
+  tcc: "Clouds_dark",
   tp: "Blues",
 };
 export function ecmwfDisplayConfigForVariable(

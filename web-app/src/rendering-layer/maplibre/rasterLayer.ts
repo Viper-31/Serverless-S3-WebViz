@@ -9,7 +9,7 @@ import {
   readEcmwfValidTimeValue,
 } from "@/rendering-layer/raster/ZarrGridLayer";
 
-import type { MapLibreRasterMap } from "./types";
+import type { MapLibreLayerHost } from "./types";
 
 export type RasterLayerHandle = {
   replace(request: RasterLayerRequest): Promise<void>;
@@ -24,7 +24,7 @@ export type RasterLayerHandle = {
 };
 
 export function createMapLibreRasterLayer(options: {
-  map: MapLibreRasterMap;
+  map: MapLibreLayerHost;
   localRangeCoalescing: () => boolean;
   onLoadingStateChange?: (state: LoadingState) => void;
 }): RasterLayerHandle {
@@ -73,7 +73,7 @@ export function createMapLibreRasterLayer(options: {
           options.map.removeLayer(ECMWF_LAYER_ID);
         }
 
-        options.map.addLayer(next.layer as { id: string });
+        options.map.addDataLayer(next.layer as { id: string });
         active = next;
       });
     },

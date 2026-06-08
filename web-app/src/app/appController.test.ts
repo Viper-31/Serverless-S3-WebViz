@@ -81,6 +81,29 @@ describe("createAppController", () => {
     );
   });
 
+  it("keeps display overrides attached to each variable", async () => {
+    const renderer = makeRenderer();
+    const controller = createAppController({
+      loadInventoryCatalog: async () => ({ ecmwf: [], dpird: [] }),
+    });
+    await controller.init();
+    await controller.attachRenderer(renderer);
+
+    controller.setDisplayOverride({ clim: [5, 45], colormap: "thermal" });
+    await controller.setVariable("i10fg");
+    expect(controller.getDisplaySettings()).toEqual({
+      clim: [0, 150],
+      colormap: "Reds",
+    });
+
+    controller.setDisplayOverride({ clim: [20, 120], colormap: "Reds" });
+    await controller.setVariable("t2m");
+    expect(controller.getDisplaySettings()).toEqual({
+      clim: [5, 45],
+      colormap: "thermal",
+    });
+  });
+
   it("setDate seeds loading label and captures selection errors", async () => {
     const renderer = makeRenderer();
     const controller = createAppController({

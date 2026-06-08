@@ -40,6 +40,47 @@ code {
   font: inherit;
 }
 
+.sidebar-dropdown-toggle,
+.sidebar-dropdown-toggle.btn,
+.sidebar-dropdown-toggle.btn-secondary {
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  border-radius: 8px;
+  color: var(--text);
+  background: rgba(51, 65, 85, 0.82);
+  box-shadow: none;
+}
+
+.sidebar-dropdown-toggle:hover,
+.sidebar-dropdown-toggle:focus,
+.sidebar-dropdown-toggle.btn:hover,
+.sidebar-dropdown-toggle.btn:focus,
+.sidebar-dropdown-toggle.btn-secondary:hover,
+.sidebar-dropdown-toggle.btn-secondary:focus {
+  border-color: rgba(125, 211, 252, 0.55);
+  color: #ffffff;
+  background: rgba(71, 85, 105, 0.95);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.14);
+}
+
+.dropdown-menu {
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  color: var(--text);
+  background: rgba(15, 23, 42, 0.98);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.36);
+}
+
+.dropdown-item {
+  color: var(--text);
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus,
+.dropdown-item.active,
+.dropdown-item:active {
+  color: #ffffff;
+  background: rgba(14, 165, 233, 0.22);
+}
+
 code {
   background: rgba(255, 255, 255, 0.08);
   padding: 0.1rem 0.35rem;
