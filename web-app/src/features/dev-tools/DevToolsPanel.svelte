@@ -1,5 +1,9 @@
 <script lang="ts">
+  import type { EcmwfVariableKey } from "@/features/display-settings/display";
+
   type Props = {
+    referencePath: string;
+    variableKey: EcmwfVariableKey;
     localRangeCoalescing: boolean;
     reloadingLayer: boolean;
     loading: boolean;
@@ -12,6 +16,8 @@
   };
 
   let {
+    referencePath,
+    variableKey,
     localRangeCoalescing,
     reloadingLayer,
     loading,
@@ -71,6 +77,14 @@
       </button>
 
       <dl class="flags">
+        <div>
+          <dt>reference</dt>
+          <dd><code>{referencePath}</code></dd>
+        </div>
+        <div>
+          <dt>variable</dt>
+          <dd><code>{variableKey}</code></dd>
+        </div>
         <div>
           <dt>localRangeCoalescing</dt>
           <dd><code>{localRangeCoalescing ? "true" : "false"}</code></dd>
@@ -185,6 +199,24 @@
     display: flex;
     justify-content: space-between;
     gap: 1rem;
+  }
+
+  .flags dt {
+    flex: 0 0 auto;
+  }
+
+  .flags dd {
+    min-width: 0;
+    text-align: right;
+  }
+
+  .flags code {
+    display: inline-block;
+    max-width: 190px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: bottom;
+    white-space: nowrap;
   }
 
   dt,

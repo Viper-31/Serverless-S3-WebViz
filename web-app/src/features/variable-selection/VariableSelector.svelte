@@ -38,6 +38,8 @@
 
 <style>
   .dropdown-row {
+    display: grid;
+    gap: 0.45rem;
     margin: 0.25rem 0 0.5rem;
   }
 
