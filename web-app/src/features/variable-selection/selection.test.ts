@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { ecmwfColorMaps } from "@/features/display-settings/display";
 import {
   createEcmwfRasterLayerRequest,
   createEcmwfState,
@@ -39,11 +40,7 @@ describe("features/variable-selection/selection", () => {
     state.overrideByVar = { t2m: { clim: [-1, 1], colormap: "coolwarm" } };
     expect(ecmwfDisplaySettings(state)).toEqual({
       clim: [-1, 1],
-      rgbStops: [
-        [59, 76, 192],
-        [188, 184, 183],
-        [180, 4, 38],
-      ],
+      rgbStops: ecmwfColorMaps.coolwarm.stops.map((stop) => stop.color),
     });
     expect(createEcmwfRasterLayerRequest(state)).toEqual({
       kind: "raster",
@@ -56,11 +53,7 @@ describe("features/variable-selection/selection", () => {
       },
       display: {
         clim: [-1, 1],
-        rgbStops: [
-          [59, 76, 192],
-          [188, 184, 183],
-          [180, 4, 38],
-        ],
+        rgbStops: ecmwfColorMaps.coolwarm.stops.map((stop) => stop.color),
       },
     });
   });

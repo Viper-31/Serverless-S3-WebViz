@@ -82,8 +82,7 @@
     ><span
       >Time
       <strong class="value-highlight">
-        <!-- One globalTimeIndex increment is +12hr jump, and valid_time needs time to fetch. ecmwfTimeIndex is local to that ref-->
-        Time: global {globalTimeIndex}
+        Global {globalTimeIndex} | Per reference {ecmwfTimeIndex}
       </strong></span
     ><input
       type="range"
@@ -146,7 +145,19 @@
 
   .field-group :global(input[type="date"]) {
     width: 100%;
-    padding: 0.25rem;
+    min-height: 2.35rem;
+    padding: 0.45rem 0.65rem;
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    border-radius: 8px;
+    color: var(--text);
+    color-scheme: dark;
+    background: rgba(15, 23, 42, 0.92);
+    outline: none;
+  }
+
+  .field-group :global(input[type="date"]:focus) {
+    border-color: rgba(125, 211, 252, 0.72);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.18);
   }
 
   .slider-field :global(input[type="range"]) {
@@ -154,7 +165,7 @@
     appearance: none;
     width: 100%;
     height: 4px;
-    background: rgba(255, 255, 255, 0.2);
+    background: linear-gradient(90deg, #38bdf8, rgba(255, 255, 255, 0.22));
     border-radius: 2px;
     outline: none;
     margin-top: 0.25rem;

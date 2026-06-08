@@ -14,7 +14,7 @@ import type {
 import { openReferencedZarrStore } from "@/zarr-store";
 
 export const ECMWF_LAYER_ID = "ecmwf-raster";
-const ECMWF_DEFAULT_OPACITY = 0.75;
+const ECMWF_DEFAULT_OPACITY = 0.6;
 
 type SelectorKey = keyof LayerSelector;
 

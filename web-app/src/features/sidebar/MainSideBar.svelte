@@ -11,7 +11,6 @@
   import VariableSelector from "@/features/variable-selection/VariableSelector.svelte";
 
   type Props = {
-    referencePath: string;
     selectedDate: string;
     globalTimeIndex: number;
     maxGlobalTimeIndex: number;
@@ -41,7 +40,6 @@
   };
 
   let {
-    referencePath,
     selectedDate,
     globalTimeIndex,
     maxGlobalTimeIndex,
@@ -76,7 +74,7 @@
     class="sidebar-inner"
     style={`--ecmwf-legend-gradient: ${ecmwfColorMaps[displayColormap].gradient}`}
   >
-    <h1>ECMWF configuration</h1>
+    <h1>Configuration</h1>
 
     <section class="submenu" aria-label="ECMWF configuration">
       <TimeControls
@@ -101,12 +99,6 @@
         {onDisplayOverrideChange}
       />
     </section>
-
-    <div class="meta">
-      <span>reference: <code>{referencePath}</code></span>
-      <span>variable: <code>{variableKey}</code></span>
-      <span>clim: <code>{displayClim[0]} – {displayClim[1]}</code></span>
-    </div>
 
     <div class="legend" aria-hidden="true"></div>
     <div class="legend-labels" aria-label="ECMWF color scale">
@@ -139,16 +131,6 @@
     display: grid;
     gap: 1.25rem;
     margin-bottom: 1.25rem;
-  }
-
-  .meta {
-    display: grid;
-    gap: 0.5rem;
-    padding-left: 1rem;
-    margin-bottom: 0.75rem;
-    color: #6b7280;
-    font-family: monospace;
-    font-size: 12px;
   }
 
   .legend {
