@@ -147,7 +147,7 @@
 </script>
 
 <svelte:head>
-  <title>ECMWF WebViz</title>
+  <title>Geospatial web visualisation</title>
 </svelte:head>
 
 <Styles icons={false} />

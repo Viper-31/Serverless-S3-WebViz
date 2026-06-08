@@ -76,7 +76,7 @@
     class="sidebar-inner"
     style={`--ecmwf-legend-gradient: ${ecmwfColorMaps[displayColormap].gradient}`}
   >
-    <h1>ECMWF configuration</h1>
+    <h1>Configuration</h1>
 
     <section class="submenu" aria-label="ECMWF configuration">
       <TimeControls
