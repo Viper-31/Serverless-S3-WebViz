@@ -56,9 +56,22 @@
   }
 
   const ecmwfConfig = $derived(appState.ecmwf);
-  const displaySettings = $derived(controller.getDisplaySettings());
-  const selectedDate = $derived(controller.getSelectedDate());
-  const globalTimeIndex = $derived(controller.getGlobalTimeIndex());
+  const displaySettings = $derived.by(() => {
+    void appState.ecmwf.variableKey;
+    void appState.ecmwf.overrideByVar;
+    return controller.getDisplaySettings();
+  });
+  const selectedDate = $derived.by(() => {
+    void appState.ecmwf.refStartDate;
+    void appState.ecmwf.ecmwfTimeIndex;
+    return controller.getSelectedDate();
+  });
+  const globalTimeIndex = $derived.by(() => {
+    void appState.ecmwf.refStartDate;
+    void appState.ecmwf.ecmwfTimeIndex;
+    void appState.catalog.ecmwf;
+    return controller.getGlobalTimeIndex();
+  });
   const maxGlobalTimeIndex = $derived(
     Math.max(0, appState.catalog.ecmwf.length * 14 - 1),
   );
@@ -174,7 +187,6 @@
   {/if}
 
   <MainSideBar
-    referencePath={ecmwfConfig.refPath}
     {selectedDate}
     {globalTimeIndex}
     {maxGlobalTimeIndex}
@@ -201,6 +213,8 @@
   />
 
   <DevToolsPanel
+    referencePath={ecmwfConfig.refPath}
+    variableKey={ecmwfConfig.variableKey}
     localRangeCoalescing={appState.localRangeCoalescing}
     reloadingLayer={appState.reloadingLayer}
     loading={appState.loadingState.loading}
