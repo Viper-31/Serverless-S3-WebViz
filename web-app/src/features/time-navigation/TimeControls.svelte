@@ -98,7 +98,9 @@
     />
   </label>
   <label class="slider-field control-label"
-    ><span>Hours ahead <strong class="value-highlight">{ecmwfStepIndex}</strong></span
+    ><span
+      >Hours ahead <strong class="value-highlight">{ecmwfStepIndex}</strong
+      ></span
     ><input
       type="range"
       min="0"
