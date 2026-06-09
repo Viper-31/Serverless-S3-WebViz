@@ -90,19 +90,19 @@
           <dd><code>{localRangeCoalescing ? "true" : "false"}</code></dd>
         </div>
         <div>
-          <dt>loading</dt>
+          <dt>zarrMetadataloading</dt>
           <dd><code>{loading ? "true" : "false"}</code></dd>
         </div>
         <div>
-          <dt>metadata</dt>
+          <dt>zarrMetadataInit</dt>
           <dd><code>{metadata ? "true" : "false"}</code></dd>
         </div>
         <div>
-          <dt>chunks</dt>
+          <dt>zarrChunksFetching</dt>
           <dd><code>{chunks ? "true" : "false"}</code></dd>
         </div>
         <div>
-          <dt>layerAdded</dt>
+          <dt>rasterLayerAttachedToMap</dt>
           <dd><code>{layerAdded ? "true" : "false"}</code></dd>
         </div>
       </dl>

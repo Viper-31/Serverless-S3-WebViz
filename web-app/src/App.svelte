@@ -79,9 +79,7 @@
 
   const showLoadingSpinner = $derived(
     !appState.error &&
-      (appState.loadingState.loading ||
-        appState.loadingState.metadata ||
-        appState.loadingState.chunks),
+      (appState.loadingState.loading || appState.loadingState.metadata),
   );
 
   function updateLocalRangeCoalescing(next: boolean) {
