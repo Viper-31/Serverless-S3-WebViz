@@ -77,6 +77,11 @@
   );
   const sideBarError = $derived(appState.error ?? appState.validTimeError);
 
+  const showLoadingSpinner = $derived(
+    !appState.error &&
+      (appState.loadingState.loading || appState.loadingState.metadata),
+  );
+
   function updateLocalRangeCoalescing(next: boolean) {
     controller.setLocalRangeCoalescing(next);
   }
@@ -172,7 +177,7 @@
     {appState.validTimeLabel}
   </div>
 
-  {#if appState.reloadingLayer}
+  {#if showLoadingSpinner}
     <div
       class="layer-status"
       aria-live="polite"

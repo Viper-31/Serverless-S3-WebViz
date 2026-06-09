@@ -80,7 +80,7 @@
   >
   <label class="slider-field control-label"
     ><span
-      >Time
+      >Forecast start time
       <strong class="value-highlight">
         Global {globalTimeIndex} | Per reference {ecmwfTimeIndex}
       </strong></span
@@ -98,7 +98,9 @@
     />
   </label>
   <label class="slider-field control-label"
-    ><span>Step <strong class="value-highlight">{ecmwfStepIndex}</strong></span
+    ><span
+      >Hours ahead <strong class="value-highlight">{ecmwfStepIndex}</strong
+      ></span
     ><input
       type="range"
       min="0"
