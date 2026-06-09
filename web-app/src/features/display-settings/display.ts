@@ -75,11 +75,11 @@ export const ecmwfColorMaps: Record<EcmwfColorMapKey, EcmwfColorMap> = {
     ],
   },
   YlGnBu: {
-    gradient: "linear-gradient(to right, #1e1b4b, #15803d, #facc15)",
+    gradient: "linear-gradient(to right, #facc15, #15803d, #1e1b4b)",
     stops: [
-      { pos: 0, color: [30, 27, 75] },
+      { pos: 0, color: [250, 204, 21] },
       { pos: 0.5, color: [21, 128, 61] },
-      { pos: 1, color: [250, 204, 21] },
+      { pos: 1, color: [30, 27, 75] },
     ],
   },
   Purples: {
@@ -149,8 +149,8 @@ export const ecmwfDefaultVar_CMAPS: Partial<
   i10fg: "Reds",
   lcc: "Clouds_dark",
   msl: "viridis",
-  sh2: "GnBu",
-  swvl1: "YlGnBu",
+  sh2: "YlGnBu",
+  swvl1: "GnBu",
   t2m: "thermal",
   tcc: "Clouds_dark",
   tp: "Blues",
