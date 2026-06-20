@@ -7,6 +7,7 @@ import {
   updateEcmwfLayerDisplay,
   updateEcmwfLayerSelector,
   readEcmwfValidTimeValue,
+  type EcmwfLayerBundle,
 } from "@/rendering-layer/raster/ZarrGridLayer";
 
 import type { MapLibreLayerHost } from "./types";
@@ -23,99 +24,155 @@ export type RasterLayerHandle = {
   hasLayer(): boolean;
 };
 
-export function createMapLibreRasterLayer(options: {
+type RasterLayerState = {
+  active: EcmwfLayerBundle | undefined;
+  currentSelector: RasterLayerRequest["selector"] | undefined;
+  disposed: boolean;
+};
+
+type RasterLayerOptions = {
   map: MapLibreLayerHost;
   localRangeCoalescing: () => boolean;
   onLoadingStateChange?: (state: LoadingState) => void;
-}): RasterLayerHandle {
-  let active: Awaited<ReturnType<typeof createEcmwfLayer>> | undefined;
-  let currentSelector: RasterLayerRequest["selector"] | undefined;
-  let disposed = false;
-  let operationQueue: Promise<void> = Promise.resolve();
+};
 
-  function mapHasRasterLayer() {
-    return Boolean(options.map.getLayer(ECMWF_LAYER_ID));
-  }
+type OperationQueue = {
+  enqueue<T>(operation: () => Promise<T>): Promise<T>;
+  drain(): Promise<void>;
+};
 
-  function removeActive() {
-    if (mapHasRasterLayer()) {
-      options.map.removeLayer(ECMWF_LAYER_ID);
-    }
-    active = undefined;
-  }
-
-  function enqueue<T>(operation: () => Promise<T>): Promise<T> {
-    const run = operationQueue.then(operation, operation);
-    operationQueue = run.then(
-      () => undefined,
-      () => undefined,
-    );
-    return run;
-  }
+function createOperationQueue(): OperationQueue {
+  let tail: Promise<void> = Promise.resolve();
 
   return {
-    replace(request) {
-      return enqueue(async () => {
-        if (disposed) return;
-
-        removeActive();
-        currentSelector = request.selector;
-
-        const next = await createEcmwfLayer({
-          ...request,
-          localRangeCoalescing: options.localRangeCoalescing(),
-          onLoadingStateChange: options.onLoadingStateChange,
-        });
-
-        if (disposed) return;
-
-        if (mapHasRasterLayer()) {
-          options.map.removeLayer(ECMWF_LAYER_ID);
-        }
-
-        options.map.addDataLayer(next.layer as { id: string });
-        active = next;
-      });
+    enqueue<T>(operation: () => Promise<T>): Promise<T> {
+      const run = tail.then(operation, operation);
+      tail = run.then(
+        () => undefined,
+        () => undefined,
+      );
+      return run;
     },
-
-    updateSelector(selector) {
-      return enqueue(async () => {
-        if (disposed) return;
-
-        currentSelector = selector;
-
-        if (active && mapHasRasterLayer()) {
-          await updateEcmwfLayerSelector(active.layer, selector);
-        }
-      });
+    drain() {
+      return tail;
     },
+  };
+}
 
-    updateVariableDisplay(input) {
-      return enqueue(async () => {
-        if (disposed) return;
+function hasMapLayer(map: MapLibreLayerHost): boolean {
+  return Boolean(map.getLayer(ECMWF_LAYER_ID));
+}
 
-        if (active && mapHasRasterLayer()) {
-          await updateEcmwfLayerDisplay(active.layer, input);
-        }
-      });
-    },
+function removeMapLayer(state: RasterLayerState, map: MapLibreLayerHost) {
+  if (hasMapLayer(map)) {
+    map.removeLayer(ECMWF_LAYER_ID);
+  }
+  state.active = undefined;
+}
 
-    async readValidTime(selector) {
-      await operationQueue;
+async function createRasterMap(
+  state: RasterLayerState,
+  options: RasterLayerOptions,
+  request: RasterLayerRequest,
+): Promise<void> {
+  if (state.disposed) return;
 
-      const selected = selector ?? currentSelector;
-      if (!active || !selected || !mapHasRasterLayer()) return undefined;
+  removeMapLayer(state, options.map);
+  state.currentSelector = request.selector;
 
-      return readEcmwfValidTimeValue(active.store, selected);
-    },
+  const next = await createEcmwfLayer({
+    ...request,
+    localRangeCoalescing: options.localRangeCoalescing(),
+    onLoadingStateChange: options.onLoadingStateChange,
+  });
 
-    remove() {
-      disposed = true;
-      removeActive();
-    },
+  if (state.disposed) return;
 
-    hasLayer() {
-      return Boolean(active && mapHasRasterLayer());
-    },
+  // Clear any layer that appeared during async create
+  if (hasMapLayer(options.map)) {
+    options.map.removeLayer(ECMWF_LAYER_ID);
+  }
+  options.map.addDataLayer(next.layer);
+  state.active = next;
+}
+
+async function updateRasterMapSelector(
+  state: RasterLayerState,
+  map: MapLibreLayerHost,
+  selector: RasterLayerRequest["selector"],
+): Promise<void> {
+  if (state.disposed) return;
+
+  state.currentSelector = selector;
+
+  if (state.active && hasMapLayer(map)) {
+    await updateEcmwfLayerSelector(state.active.layer, selector);
+  }
+}
+
+async function updateRasterMapDisplay(
+  state: RasterLayerState,
+  map: MapLibreLayerHost,
+  input: { variableId: string; display: RasterLayerRequest["display"] },
+): Promise<void> {
+  if (state.disposed) return;
+
+  if (state.active && hasMapLayer(map)) {
+    await updateEcmwfLayerDisplay(state.active.layer, input);
+  }
+}
+
+async function readRasterMapValidTime(
+  state: RasterLayerState,
+  map: MapLibreLayerHost,
+  queue: OperationQueue,
+  selector: RasterLayerRequest["selector"] | undefined,
+): Promise<unknown> {
+  await queue.drain();
+
+  const selected = selector ?? state.currentSelector;
+  if (!state.active || !selected || !hasMapLayer(map)) return undefined;
+
+  return readEcmwfValidTimeValue(state.active.store, selected);
+}
+
+function disposeRasterMap(
+  state: RasterLayerState,
+  map: MapLibreLayerHost,
+): void {
+  state.disposed = true;
+  removeMapLayer(state, map);
+}
+
+function hasActiveRasterMap(
+  state: RasterLayerState,
+  map: MapLibreLayerHost,
+): boolean {
+  return Boolean(state.active && hasMapLayer(map));
+}
+
+export function createMapLibreRasterLayer(
+  options: RasterLayerOptions,
+): RasterLayerHandle {
+  const state: RasterLayerState = {
+    active: undefined,
+    currentSelector: undefined,
+    disposed: false,
+  };
+  const queue = createOperationQueue();
+
+  return {
+    replace: (request) =>
+      queue.enqueue(() => createRasterMap(state, options, request)),
+    updateSelector: (selector) =>
+      queue.enqueue(() =>
+        updateRasterMapSelector(state, options.map, selector),
+      ),
+    updateVariableDisplay: (input) =>
+      queue.enqueue(() => updateRasterMapDisplay(state, options.map, input)),
+    readValidTime: (selector) =>
+      readRasterMapValidTime(state, options.map, queue, selector),
+    remove: () => disposeRasterMap(state, options.map),
+    hasLayer: () => hasActiveRasterMap(state, options.map),
   };
 }
