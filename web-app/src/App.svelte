@@ -51,6 +51,33 @@
     mainSideBarState = next;
   }
 
+  function isCorsLikeNetworkError(error: unknown): error is TypeError {
+    if (!(error instanceof TypeError)) return false;
+    const msg = error.message.toLowerCase();
+    // The exact message can differ across browsers, but they generally include one of the following phrases
+    return (
+      msg.includes("networkerror") ||
+      msg.includes("failed to fetch") ||
+      msg.includes("load failed")
+    );
+  }
+
+  function describeLoadingError(state: { error?: Error | null }): Error | null {
+    const error = state.error ?? null;
+    if (!error) return null;
+    if (isCorsLikeNetworkError(error)) {
+      return new Error(
+        `Network error fetching zarr chunks: ${error.message}\n\n` +
+          `The browser could not reach the cross-origin S3 endpoint at ` +
+          `projects.pawsey.org.au. Check the DevTools Network tab for the ` +
+          `failing request's status code (408 = upstream timeout) and ` +
+          `verify the bucket CORS policy allows this origin and exposes ` +
+          `Content-Range, Accept-Ranges, Content-Length, ETag.`,
+      );
+    }
+    return error;
+  }
+
   function errorMessage(error: unknown): string {
     return error instanceof Error ? error.message : String(error);
   }
@@ -96,7 +123,10 @@
       container,
       localRangeCoalescing: () => controller.getState().localRangeCoalescing,
       onLoadingStateChange(next) {
-        controller.setLoadingState({ ...next, error: next.error ?? null });
+        controller.setLoadingState({
+          ...next,
+          error: describeLoadingError(next),
+        });
       },
     });
     await rendererHandle.whenReady;
