@@ -95,6 +95,10 @@ type SelectionOptions = {
   forceReplace: boolean;
 };
 
+const RELEASE_SLIDER_LABEL = "Release slider to update valid time…";
+const LOADING_VALID_TIME_LABEL = "Loading valid time…";
+const STEPS_PER_TIME_INDEX = 14;
+
 const initialEcmwf = createEcmwfState("t2m", "2024-01-02");
 const initialState: AppState = {
   localRangeCoalescing: true,
@@ -111,23 +115,45 @@ const initialState: AppState = {
   stepSliderActive: false,
 };
 
+// ---------------------------------------------------------------------------
+// Module-level helpers
+// ---------------------------------------------------------------------------
+
+function toErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
 function selectionKey(s: EcmwfProviderState): string {
   return `${s.refPath}|${s.ecmwfTimeIndex}|${s.ecmwfStepIndex}`;
 }
 
+function isSelectionBusy(ctx: AppControllerContext): boolean {
+  return ctx.state.timeSliderActive || ctx.state.stepSliderActive;
+}
+
+function captureSelectionError(
+  ctx: AppControllerContext,
+  error: unknown,
+  extra: Partial<AppState> = {},
+): void {
+  ctx.setState({ error: toErrorMessage(error), ...extra });
+}
+
 async function refreshValidTime(
   ctx: AppControllerContext,
-  next = ctx.state.ecmwf,
-) {
-  if (!ctx.renderer || ctx.state.timeSliderActive || ctx.state.stepSliderActive)
-    return;
+  next: EcmwfProviderState = ctx.state.ecmwf,
+): Promise<void> {
+  if (!ctx.renderer || isSelectionBusy(ctx)) return;
+
   const token = ++ctx.validTimeToken;
   ctx.setState({ validTimeError: null });
+
   try {
     const value = await ctx.renderer.readValidTime(
       createEcmwfRasterLayerRequest(next).selector,
     );
     if (token !== ctx.validTimeToken) return;
+
     ctx.setState({
       validTimeLabel: formatEcmwfValidTimeSeconds(value),
       validTimeError: null,
@@ -137,7 +163,7 @@ async function refreshValidTime(
     if (token !== ctx.validTimeToken) return;
     ctx.setState({
       validTimeLabel: "valid_time unavailable",
-      validTimeError: error instanceof Error ? error.message : String(error),
+      validTimeError: toErrorMessage(error),
     });
   }
 }
@@ -145,9 +171,8 @@ async function refreshValidTime(
 async function commitSelection(
   ctx: AppControllerContext,
   options: SelectionOptions,
-) {
-  if (!ctx.renderer || ctx.state.timeSliderActive || ctx.state.stepSliderActive)
-    return;
+): Promise<void> {
+  if (!ctx.renderer || isSelectionBusy(ctx)) return;
 
   const { nextEcmwf, forceReplace } = options;
   const nextRequest = createEcmwfRasterLayerRequest(nextEcmwf);
@@ -160,266 +185,306 @@ async function commitSelection(
   )
     return;
 
-  ctx.setState({ reloadingLayer: true, error: null, validTimeError: null });
+  ctx.setState({ error: null, reloadingLayer: true, validTimeError: null });
   const token = ++ctx.layerToken;
 
   try {
-    if (
+    const canUpdateSelector =
       !forceReplace &&
       ctx.renderer.hasLayer() &&
-      ctx.lastRenderedRefPath === nextRequest.refPath
-    ) {
+      ctx.lastRenderedRefPath === nextRequest.refPath;
+
+    if (canUpdateSelector) {
       await ctx.renderer.updateSelector(nextRequest.selector);
     } else {
       await ctx.renderer.replace(nextRequest);
-
       if (token !== ctx.layerToken) return;
       ctx.lastRenderedRefPath = nextRequest.refPath;
     }
 
     if (token !== ctx.layerToken) return;
-
     ctx.setState({ layerAdded: true, reloadingLayer: false });
     await refreshValidTime(ctx, nextEcmwf);
   } catch (error) {
     if (token !== ctx.layerToken) return;
-
-    ctx.setState({
-      reloadingLayer: false,
-      error: error instanceof Error ? error.message : String(error),
-    });
+    captureSelectionError(ctx, error, { reloadingLayer: false });
   }
 }
 
+function seedValidTimeLoading(ctx: AppControllerContext): void {
+  ctx.setState({
+    validTimeLabel: LOADING_VALID_TIME_LABEL,
+    error: null,
+    validTimeError: null,
+  });
+}
+
+function stageSliderIndex(
+  ctx: AppControllerContext,
+  updater: () => EcmwfProviderState,
+): void {
+  try {
+    ctx.setEcmwf(updater());
+    ctx.setState({ validTimeLabel: RELEASE_SLIDER_LABEL, error: null });
+  } catch (error) {
+    captureSelectionError(ctx, error);
+  }
+}
+
+async function commitSliderIndex(
+  ctx: AppControllerContext,
+  flagKey: "timeSliderActive" | "stepSliderActive",
+): Promise<void> {
+  ctx.setState({ [flagKey]: false } as Partial<AppState>);
+  if (!ctx.renderer) return;
+  await commitSelection(ctx, {
+    nextEcmwf: ctx.state.ecmwf,
+    forceReplace: false,
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Sub-controllers
+// ---------------------------------------------------------------------------
+
+function createLifecycleController(
+  deps: AppControllerDeps,
+  ctx: AppControllerContext,
+  listerners: Set<Listener>,
+) {
+  return {
+    subscribe(listener: Listener) {
+      listerners.add(listener);
+      listener(ctx.state);
+      return () => listerners.delete(listener);
+    },
+    getState: () => ctx.state,
+
+    async init(isCancelled: () => boolean = () => false) {
+      const catalog = await (
+        deps.loadInventoryCatalog ?? loadInventoryCatalog
+      )();
+      if (isCancelled() || !catalog.ecmwf.length) return;
+      ctx.setState({ catalog });
+      ctx.setEcmwf(
+        updateEcmwfStateForDate(
+          ctx.state.ecmwf,
+          ecmwfTimeIndexToDate(
+            ctx.state.ecmwf.refStartDate,
+            ctx.state.ecmwf.ecmwfTimeIndex,
+          ),
+          catalog.ecmwf,
+        ),
+      );
+    },
+
+    async attachRenderer(nextRenderer: RasterRenderer) {
+      ctx.renderer = nextRenderer;
+      ctx.setState({ mapReady: true });
+      await commitSelection(ctx, {
+        nextEcmwf: ctx.state.ecmwf,
+        forceReplace: true,
+      });
+    },
+
+    teardown() {
+      ctx.validTimeToken += 1;
+      ctx.layerToken += 1;
+      ctx.renderer = null;
+      ctx.lastRenderedRefPath = "";
+      ctx.setState({
+        mapReady: false,
+        layerAdded: false,
+        reloadingLayer: false,
+      });
+    },
+
+    setLocalRangeCoalescing(next: boolean) {
+      ctx.setState({ localRangeCoalescing: next });
+    },
+
+    setLoadingState(next: unknown) {
+      const loadingState = next as LoadingState;
+      ctx.setState({
+        loadingState,
+        error: loadingState.error?.message ?? null,
+      });
+    },
+
+    async reload() {
+      if (!ctx.renderer) return;
+      await commitSelection(ctx, {
+        nextEcmwf: ctx.state.ecmwf,
+        forceReplace: true,
+      });
+    },
+  };
+}
+
+function createTimeNavigationController(ctx: AppControllerContext) {
+  return {
+    async setDate(dateIso: string) {
+      seedValidTimeLoading(ctx);
+      try {
+        ctx.setEcmwf(
+          updateEcmwfStateForDate(
+            ctx.state.ecmwf,
+            dateIso,
+            ctx.state.catalog.ecmwf,
+          ),
+        );
+        if (ctx.renderer)
+          await commitSelection(ctx, {
+            nextEcmwf: ctx.state.ecmwf,
+            forceReplace: false,
+          });
+      } catch (error) {
+        captureSelectionError(ctx, error);
+      }
+    },
+
+    setTimeSliderActive(active: boolean) {
+      ctx.setState({ timeSliderActive: active });
+    },
+
+    setGlobalTimeIndex(index: number) {
+      stageSliderIndex(ctx, () =>
+        updateEcmwfStateForGlobalTimeIndex(
+          ctx.state.ecmwf,
+          index,
+          ctx.state.catalog.ecmwf,
+        ),
+      );
+    },
+
+    commitGlobalTimeIndex() {
+      return commitSliderIndex(ctx, "timeSliderActive");
+    },
+
+    setStepSliderActive(active: boolean) {
+      ctx.setState({ stepSliderActive: active });
+    },
+
+    setStepIndex(stepIndex: number) {
+      stageSliderIndex(ctx, () =>
+        updateEcmwfStateForStepIndex(ctx.state.ecmwf, stepIndex),
+      );
+    },
+
+    commitStepIndex() {
+      return commitSliderIndex(ctx, "stepSliderActive");
+    },
+  };
+}
+
+function createVariableSelectionController(ctx: AppControllerContext) {
+  async function applyVariableDisplayUpdate(
+    variableId: string,
+    next: EcmwfProviderState,
+  ): Promise<void> {
+    if (!ctx.renderer?.hasLayer()) return;
+    try {
+      await ctx.renderer.updateVariableDisplay({
+        variableId,
+        display: createEcmwfRasterLayerRequest(next).display,
+      });
+    } finally {
+      ctx.setState({ reloadingLayer: false });
+    }
+  }
+
+  return {
+    async setVariable(variableKey: EcmwfVariableKey) {
+      try {
+        const next = updateEcmwfStateForVariable(ctx.state.ecmwf, variableKey);
+        ctx.setEcmwf(next);
+        ctx.setState({
+          error: null,
+          validTimeError: null,
+          reloadingLayer: ctx.renderer?.hasLayer() ?? false,
+        });
+        await applyVariableDisplayUpdate(variableKey, next);
+        if (ctx.renderer) await refreshValidTime(ctx, next);
+      } catch (error) {
+        captureSelectionError(ctx, error, { reloadingLayer: false });
+      }
+    },
+
+    setDisplayOverride(override: {
+      clim: [number, number];
+      colormap: EcmwfColorMapKey;
+    }) {
+      const next = updateEcmwfDisplayOverride(
+        ctx.state.ecmwf,
+        ctx.state.ecmwf.variableKey,
+        override,
+      );
+      ctx.setEcmwf(next);
+      if (!ctx.renderer?.hasLayer()) return;
+      void ctx.renderer.updateVariableDisplay({
+        variableId: next.variableKey,
+        display: createEcmwfRasterLayerRequest(next).display,
+      });
+    },
+  };
+}
+
+function createQueryController(ctx: AppControllerContext) {
+  return {
+    getDisplaySettings() {
+      return ecmwfDisplayConfigForVariable(
+        ctx.state.ecmwf.variableKey,
+        ctx.state.ecmwf.overrideByVar,
+      );
+    },
+    getSelectedDate() {
+      return ecmwfTimeIndexToDate(
+        ctx.state.ecmwf.refStartDate,
+        ctx.state.ecmwf.ecmwfTimeIndex,
+      );
+    },
+    getGlobalTimeIndex() {
+      return mapEcmwfTimeToGlobalIndex(
+        ctx.state.ecmwf.refStartDate,
+        ctx.state.ecmwf.ecmwfTimeIndex,
+        ctx.state.catalog.ecmwf,
+      );
+    },
+    getMaxGlobalTimeIndex() {
+      return Math.max(
+        0,
+        ctx.state.catalog.ecmwf.length * STEPS_PER_TIME_INDEX - 1,
+      );
+    },
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Factory
+// ---------------------------------------------------------------------------
+
 export function createAppController(deps: AppControllerDeps): AppController {
-  const runtime: AppControllerContext = {
+  const ctx: AppControllerContext = {
     state: { ...initialState },
     renderer: null,
     validTimeToken: 0,
     layerToken: 0,
     lastCommittedSelectionKey: "",
     lastRenderedRefPath: "",
-    setState(patch: Partial<AppState>) {
-      runtime.state = { ...runtime.state, ...patch };
-      listeners.forEach((listener) => listener(runtime.state));
+    setState(patch) {
+      ctx.state = { ...ctx.state, ...patch };
+      listeners.forEach((listener) => listener(ctx.state));
     },
-    setEcmwf(ecmwf: EcmwfProviderState) {
-      runtime.setState({ ecmwf });
+    setEcmwf(ecmwf) {
+      ctx.setState({ ecmwf });
     },
   };
   const listeners = new Set<Listener>();
-  const state = () => runtime.state;
-  const setState = (patch: Partial<AppState>) => runtime.setState(patch);
-  const setEcmwf = (ecmwf: EcmwfProviderState) => runtime.setEcmwf(ecmwf);
-  const deriveSelectedDate = () =>
-    ecmwfTimeIndexToDate(
-      state().ecmwf.refStartDate,
-      state().ecmwf.ecmwfTimeIndex,
-    );
-  const deriveDisplaySettings = () =>
-    ecmwfDisplayConfigForVariable(
-      state().ecmwf.variableKey,
-      state().ecmwf.overrideByVar,
-    );
-  const deriveGlobalTimeIndex = () =>
-    mapEcmwfTimeToGlobalIndex(
-      state().ecmwf.refStartDate,
-      state().ecmwf.ecmwfTimeIndex,
-      state().catalog.ecmwf,
-    );
-  const deriveMaxGlobalTimeIndex = () =>
-    Math.max(0, state().catalog.ecmwf.length * 14 - 1);
 
   return {
-    subscribe(listener: Listener) {
-      listeners.add(listener);
-      listener(state());
-      return () => listeners.delete(listener);
-    },
-    getState: () => state(),
-    async init(isCancelled: () => boolean = () => false) {
-      const catalog = await (
-        deps.loadInventoryCatalog ?? loadInventoryCatalog
-      )();
-      if (isCancelled()) return;
-      if (catalog.ecmwf.length) {
-        setState({ catalog });
-        setEcmwf(
-          updateEcmwfStateForDate(
-            state().ecmwf,
-            deriveSelectedDate(),
-            catalog.ecmwf,
-          ),
-        );
-      }
-    },
-    async attachRenderer(nextRenderer: RasterRenderer) {
-      runtime.renderer = nextRenderer;
-      setState({ mapReady: true });
-      await commitSelection(runtime, {
-        nextEcmwf: state().ecmwf,
-        forceReplace: true,
-      });
-    },
-    teardown() {
-      runtime.validTimeToken += 1;
-      runtime.layerToken += 1;
-      runtime.renderer = null;
-      runtime.lastRenderedRefPath = "";
-      setState({ mapReady: false, layerAdded: false, reloadingLayer: false });
-    },
-    setLocalRangeCoalescing(next: boolean) {
-      setState({ localRangeCoalescing: next });
-    },
-    setLoadingState(next: unknown) {
-      const loadingState = next as {
-        loading: boolean;
-        metadata: boolean;
-        chunks: boolean;
-        error?: Error | null | undefined;
-      };
-      setState({ loadingState, error: loadingState.error?.message ?? null });
-    },
-    async reload() {
-      if (runtime.renderer)
-        await commitSelection(runtime, {
-          nextEcmwf: state().ecmwf,
-          forceReplace: true,
-        });
-    },
-    async setDate(dateIso: string) {
-      setState({
-        validTimeLabel: "Loading valid time…",
-        error: null,
-        validTimeError: null,
-      });
-      try {
-        setEcmwf(
-          updateEcmwfStateForDate(
-            state().ecmwf,
-            dateIso,
-            state().catalog.ecmwf,
-          ),
-        );
-        if (runtime.renderer)
-          await commitSelection(runtime, {
-            nextEcmwf: state().ecmwf,
-            forceReplace: false,
-          });
-      } catch (error) {
-        setState({
-          error: error instanceof Error ? error.message : String(error),
-        });
-      }
-    },
-    setTimeSliderActive(active: boolean) {
-      setState({ timeSliderActive: active });
-    },
-    async setGlobalTimeIndex(index: number) {
-      try {
-        setEcmwf(
-          updateEcmwfStateForGlobalTimeIndex(
-            state().ecmwf,
-            index,
-            state().catalog.ecmwf,
-          ),
-        );
-        setState({
-          validTimeLabel: "Release slider to update valid time…",
-          error: null,
-        });
-      } catch (error) {
-        setState({
-          error: error instanceof Error ? error.message : String(error),
-        });
-      }
-    },
-    async commitGlobalTimeIndex() {
-      setState({ timeSliderActive: false });
-      if (runtime.renderer)
-        await commitSelection(runtime, {
-          nextEcmwf: state().ecmwf,
-          forceReplace: false,
-        });
-    },
-    setStepSliderActive(active: boolean) {
-      setState({ stepSliderActive: active });
-    },
-    setStepIndex(stepIndex: number) {
-      try {
-        setEcmwf(updateEcmwfStateForStepIndex(state().ecmwf, stepIndex));
-        setState({
-          validTimeLabel: "Release slider to update valid time…",
-          error: null,
-        });
-      } catch (error) {
-        setState({
-          error: error instanceof Error ? error.message : String(error),
-        });
-      }
-    },
-    async commitStepIndex() {
-      setState({ stepSliderActive: false });
-      if (runtime.renderer)
-        await commitSelection(runtime, {
-          nextEcmwf: state().ecmwf,
-          forceReplace: false,
-        });
-    },
-    async setVariable(variableKey: EcmwfVariableKey) {
-      try {
-        const next = updateEcmwfStateForVariable(state().ecmwf, variableKey);
-        setEcmwf(next);
-        setState({
-          error: null,
-          validTimeError: null,
-          reloadingLayer: runtime.renderer?.hasLayer() ?? false,
-        });
-        if (runtime.renderer?.hasLayer()) {
-          try {
-            await runtime.renderer.updateVariableDisplay({
-              variableId: variableKey,
-              display: createEcmwfRasterLayerRequest(next).display,
-            });
-          } finally {
-            setState({ reloadingLayer: false });
-          }
-        }
-        if (runtime.renderer) await refreshValidTime(runtime, next);
-      } catch (error) {
-        setState({
-          reloadingLayer: false,
-          error: error instanceof Error ? error.message : String(error),
-        });
-      }
-    },
-    setDisplayOverride(override: {
-      clim: [number, number];
-      colormap: EcmwfColorMapKey;
-    }) {
-      const next = updateEcmwfDisplayOverride(
-        state().ecmwf,
-        state().ecmwf.variableKey,
-        override,
-      );
-      setEcmwf(next);
-      if (runtime.renderer?.hasLayer())
-        void runtime.renderer.updateVariableDisplay({
-          variableId: next.variableKey,
-          display: createEcmwfRasterLayerRequest(next).display,
-        });
-    },
-    getDisplaySettings() {
-      return deriveDisplaySettings();
-    },
-    getSelectedDate() {
-      return deriveSelectedDate();
-    },
-    getGlobalTimeIndex() {
-      return deriveGlobalTimeIndex();
-    },
-    getMaxGlobalTimeIndex() {
-      return deriveMaxGlobalTimeIndex();
-    },
+    ...createLifecycleController(deps, ctx, listeners),
+    ...createTimeNavigationController(ctx),
+    ...createVariableSelectionController(ctx),
+    ...createQueryController(ctx),
   };
 }
