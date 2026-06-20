@@ -366,7 +366,7 @@ function createTimeNavigationController(ctx: AppControllerContext) {
       ctx.setState({ timeSliderActive: active });
     },
 
-    setGlobalTimeIndex(index: number) {
+    async setGlobalTimeIndex(index: number) {
       stageSliderIndex(ctx, () =>
         updateEcmwfStateForGlobalTimeIndex(
           ctx.state.ecmwf,
