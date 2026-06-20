@@ -2,7 +2,7 @@
   import { onMount } from "svelte";
   import { Spinner, Styles } from "@sveltestrap/sveltestrap";
   import DevToolsPanel from "@/features/dev-tools/DevToolsPanel.svelte";
-  import MainSideBar from "@/features/sidebar/MainSideBar.svelte";
+  import MainSideBar from "@/features/sidebar/mainSideBar.svelte";
   import {
     getDefaultSideBarWidth,
     type SideBarState,
