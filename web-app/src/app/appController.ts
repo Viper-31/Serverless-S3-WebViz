@@ -168,6 +168,35 @@ async function refreshValidTime(
   }
 }
 
+function isAlreadyCommitted(
+  ctx: AppControllerContext,
+  key: string,
+  forceReplace: boolean,
+): boolean {
+  return (
+    !forceReplace &&
+    key === ctx.lastCommittedSelectionKey &&
+    ctx.state.validTimeLabel !== "valid_time unavailable"
+  );
+}
+
+function canUpdateSelectorInline(
+  ctx: AppControllerContext,
+  refPath: string,
+  forceReplace: boolean,
+): boolean {
+  return (
+    !forceReplace &&
+    ctx.renderer !== null &&
+    ctx.renderer.hasLayer() &&
+    ctx.lastRenderedRefPath === refPath
+  );
+}
+
+function isLayerTokenStale(ctx: AppControllerContext, token: number): boolean {
+  return token !== ctx.layerToken;
+}
+
 async function commitSelection(
   ctx: AppControllerContext,
   options: SelectionOptions,
@@ -178,35 +207,25 @@ async function commitSelection(
   const nextRequest = createEcmwfRasterLayerRequest(nextEcmwf);
   const key = selectionKey(nextEcmwf);
 
-  if (
-    !forceReplace &&
-    key === ctx.lastCommittedSelectionKey &&
-    ctx.state.validTimeLabel !== "valid_time unavailable"
-  )
-    return;
+  if (isAlreadyCommitted(ctx, key, forceReplace)) return;
 
   ctx.setState({ error: null, reloadingLayer: true, validTimeError: null });
   const token = ++ctx.layerToken;
 
   try {
-    const canUpdateSelector =
-      !forceReplace &&
-      ctx.renderer.hasLayer() &&
-      ctx.lastRenderedRefPath === nextRequest.refPath;
-
-    if (canUpdateSelector) {
-      await ctx.renderer.updateSelector(nextRequest.selector);
+    if (canUpdateSelectorInline(ctx, nextRequest.refPath, forceReplace)) {
+      await ctx.renderer!.updateSelector(nextRequest.selector);
     } else {
-      await ctx.renderer.replace(nextRequest);
-      if (token !== ctx.layerToken) return;
+      await ctx.renderer!.replace(nextRequest);
+      if (isLayerTokenStale(ctx, token)) return;
       ctx.lastRenderedRefPath = nextRequest.refPath;
     }
 
-    if (token !== ctx.layerToken) return;
+    if (isLayerTokenStale(ctx, token)) return;
     ctx.setState({ layerAdded: true, reloadingLayer: false });
     await refreshValidTime(ctx, nextEcmwf);
   } catch (error) {
-    if (token !== ctx.layerToken) return;
+    if (isLayerTokenStale(ctx, token)) return;
     captureSelectionError(ctx, error, { reloadingLayer: false });
   }
 }
@@ -250,13 +269,13 @@ async function commitSliderIndex(
 function createLifecycleController(
   deps: AppControllerDeps,
   ctx: AppControllerContext,
-  listerners: Set<Listener>,
+  listeners: Set<Listener>,
 ) {
   return {
     subscribe(listener: Listener) {
-      listerners.add(listener);
+      listeners.add(listener);
       listener(ctx.state);
-      return () => listerners.delete(listener);
+      return () => listeners.delete(listener);
     },
     getState: () => ctx.state,
 
