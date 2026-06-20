@@ -24,6 +24,7 @@ import {
   mapEcmwfTimeToGlobalIndex,
 } from "@/features/time-navigation/time_navigation";
 import type { RasterRenderer } from "@/rendering-layer/Renderer";
+import { ECMWF_TIME_INDEX_COUNT_PER_REF } from "@/datasets/ecmwf/schema";
 
 export type LoadingState = {
   loading: boolean;
@@ -97,7 +98,6 @@ type SelectionOptions = {
 
 const RELEASE_SLIDER_LABEL = "Release slider to update valid time…";
 const LOADING_VALID_TIME_LABEL = "Loading valid time…";
-const STEPS_PER_TIME_INDEX = 14;
 
 const initialEcmwf = createEcmwfState("t2m", "2024-01-02");
 const initialState: AppState = {
@@ -472,7 +472,7 @@ function createQueryController(ctx: AppControllerContext) {
     getMaxGlobalTimeIndex() {
       return Math.max(
         0,
-        ctx.state.catalog.ecmwf.length * STEPS_PER_TIME_INDEX - 1,
+        ctx.state.catalog.ecmwf.length * ECMWF_TIME_INDEX_COUNT_PER_REF - 1,
       );
     },
   };
