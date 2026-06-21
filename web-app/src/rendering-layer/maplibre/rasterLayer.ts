@@ -1,4 +1,7 @@
-import type { LoadingState, ZarrLayer } from "@carbonplan/zarr-layer";
+import type {
+  LoadingState,
+  LoadingStateCallback,
+} from "@carbonplan/zarr-layer";
 
 import type { RasterLayerRequest } from "@/lib/shared/contracts";
 import {
@@ -20,7 +23,7 @@ export type RasterLayerHandle = {
     display: RasterLayerRequest["display"];
   }): Promise<void>;
   readValidTime(selector: RasterLayerRequest["selector"]): Promise<unknown>;
-  remove(): void;
+  remove(): Promise<void>;
   hasLayer(): boolean;
 };
 
@@ -39,6 +42,11 @@ type RasterLayerOptions = {
 type OperationQueue = {
   enqueue<T>(operation: () => Promise<T>): Promise<T>;
   drain(): Promise<void>;
+};
+
+type ReadySignal = {
+  callback: LoadingStateCallback;
+  ready: Promise<void>;
 };
 
 function createOperationQueue(): OperationQueue {
@@ -70,22 +78,24 @@ function removeMapLayer(state: RasterLayerState, map: MapLibreLayerHost) {
   state.active = undefined;
 }
 
-function awaitLayerReady(
-  layer: ZarrLayer,
-  forward?: (s: LoadingState) => void,
-): Promise<void> {
-  return new Promise<void>((resolve, reject) => {
-    layer.onLoadingStateChange = (state) => {
-      forward?.(state);
-      if (state.error) {
-        reject(state.error);
-        return;
-      }
-      if (!state.metadata) {
-        resolve();
-      }
-    };
+function buildReadySignal(userCallback?: LoadingStateCallback): ReadySignal {
+  let resolveReady!: () => void;
+  let rejectReady!: (err: Error) => void;
+  const ready = new Promise<void>((resolve, reject) => {
+    resolveReady = resolve;
+    rejectReady = reject;
   });
+  const callback: LoadingStateCallback = (state) => {
+    userCallback?.(state);
+    if (state.error) {
+      rejectReady(state.error);
+      return;
+    }
+    if (!state.metadata) {
+      resolveReady();
+    }
+  };
+  return { callback, ready };
 }
 
 async function createRasterMap(
@@ -97,24 +107,27 @@ async function createRasterMap(
 
   state.currentSelector = request.selector;
 
+  const { callback: onLoadingStateChange, ready } = buildReadySignal(
+    options.onLoadingStateChange,
+  );
+
   const next = await createEcmwfLayer({
     ...request,
     localRangeCoalescing: options.localRangeCoalescing(),
-    onLoadingStateChange: options.onLoadingStateChange,
+    onLoadingStateChange,
   });
 
   if (state.disposed) return;
-
-  const userOnLoading = options.onLoadingStateChange;
-  const ready = awaitLayerReady(next.layer, userOnLoading);
+  next.ready = ready;
 
   if (hasMapLayer(options.map)) {
     options.map.removeLayer(ECMWF_LAYER_ID);
   }
   options.map.addDataLayer(next.layer);
-
+  // Resolves race condition issue #37
+  // Block until new layer is fully initialised.
+  // Queue will not run next enqueued replace until this promise resolves
   await ready;
-  next.ready = ready;
   state.active = next;
 }
 
