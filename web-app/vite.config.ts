@@ -3,7 +3,7 @@ import { svelte } from "@sveltejs/vite-plugin-svelte";
 import { fileURLToPath, URL } from "node:url";
 
 // https://vite.dev/config/
-export default defineConfig(({ command: _command }) => ({
+export default defineConfig(({ command }) => ({
   plugins: [svelte()],
   resolve: {
     alias: {
@@ -11,5 +11,5 @@ export default defineConfig(({ command: _command }) => ({
     },
   },
   // Use subpath ONLY when building in GitHub Actions, otherwise use root locally.
-  base: process.env.CI ? "/Serverless-S3-WebViz/" : "/",
+  base: command === "build" && process.env.CI ? "/Serverless-S3-WebViz/" : "/",
 }));
