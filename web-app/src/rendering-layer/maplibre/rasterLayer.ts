@@ -1,4 +1,4 @@
-import type { LoadingState } from "@carbonplan/zarr-layer";
+import type { LoadingState, ZarrLayer } from "@carbonplan/zarr-layer";
 
 import type { RasterLayerRequest } from "@/lib/shared/contracts";
 import {
@@ -70,6 +70,24 @@ function removeMapLayer(state: RasterLayerState, map: MapLibreLayerHost) {
   state.active = undefined;
 }
 
+function awaitLayerReady(
+  layer: ZarrLayer,
+  forward?: (s: LoadingState) => void,
+): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    layer.onLoadingStateChange = (state) => {
+      forward?.(state);
+      if (state.error) {
+        reject(state.error);
+        return;
+      }
+      if (!state.metadata) {
+        resolve();
+      }
+    };
+  });
+}
+
 async function createRasterMap(
   state: RasterLayerState,
   options: RasterLayerOptions,
@@ -77,7 +95,6 @@ async function createRasterMap(
 ): Promise<void> {
   if (state.disposed) return;
 
-  removeMapLayer(state, options.map);
   state.currentSelector = request.selector;
 
   const next = await createEcmwfLayer({
@@ -88,11 +105,16 @@ async function createRasterMap(
 
   if (state.disposed) return;
 
-  // Clear any layer that appeared during async create
+  const userOnLoading = options.onLoadingStateChange;
+  const ready = awaitLayerReady(next.layer, userOnLoading);
+
   if (hasMapLayer(options.map)) {
     options.map.removeLayer(ECMWF_LAYER_ID);
   }
   options.map.addDataLayer(next.layer);
+
+  await ready;
+  next.ready = ready;
   state.active = next;
 }
 
@@ -136,11 +158,18 @@ async function readRasterMapValidTime(
   return readEcmwfValidTimeValue(state.active.store, selected);
 }
 
-function disposeRasterMap(
+async function disposeRasterMap(
   state: RasterLayerState,
   map: MapLibreLayerHost,
-): void {
+): Promise<void> {
   state.disposed = true;
+  if (state.active?.ready) {
+    try {
+      await state.active.ready;
+    } catch {
+      // Ignore loading errors during disposal
+    }
+  }
   removeMapLayer(state, map);
 }
 

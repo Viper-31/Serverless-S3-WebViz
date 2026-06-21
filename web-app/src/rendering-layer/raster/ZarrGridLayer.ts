@@ -26,6 +26,7 @@ export type EcmwfLayerBundle = {
   layer: ZarrLayer;
   store: zarr.Readable;
   refPath: string;
+  ready?: Promise<void>;
 };
 
 type ZarrLayerLike = Pick<
