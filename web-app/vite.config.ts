@@ -3,7 +3,7 @@ import { svelte } from "@sveltejs/vite-plugin-svelte";
 import { fileURLToPath, URL } from "node:url";
 
 // https://vite.dev/config/
-export default defineConfig(({ command }) => ({
+export default defineConfig(({ command: _command }) => ({
   plugins: [svelte()],
   resolve: {
     alias: {
