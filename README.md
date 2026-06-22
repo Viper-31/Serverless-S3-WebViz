@@ -102,9 +102,3 @@ Deployment workflow:
 - serve static assets, reference JSON, and frontend code directly
 
 This architecture keeps hosting simple and avoids introducing an application server for data access.
-
-## Design Constraints
-
-- Keep the app fully client-side where possible
-- Prefer anonymous/public-access fetch flows for reference and chunk reads
-- Treat the app as a static web deployment rather than a backend-backed service
