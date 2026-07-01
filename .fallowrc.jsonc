@@ -1,0 +1,33 @@
+{
+  "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
+  "entry": ["src/index.{js,jsx,mjs}", "src/main.{js,jsx,mjs}"],
+  "workspaces": {
+    "packages": ["web-app"]
+  },
+  "rules": {
+    "unused-files": "error",
+    "unused-exports": "error",
+    "unused-types": "error",
+    "unresolved-imports": "error",
+    "unlisted-dependencies": "error",
+    "circular-dependencies": "error",
+    "test-only-dependencies": "warn"
+  },
+  "health": {
+    "ignore": ["**/*.test.{js,jsx,ts,tsx}", "**/__tests__/**"]
+  },
+  "overrides": [
+    {
+      "files": ["**/*.test.{js,jsx,ts,tsx}", "**/__tests__/**"],
+      "rules": {
+        "unused-files": "off",
+        "unused-exports": "off",
+        "unused-types": "off"
+      }
+    }
+  ],
+  "duplicates": {
+    "minOccurrences": 3,
+    "ignore": ["**/*.test.{js,jsx,ts,tsx}", "**/__tests__/**"]
+  }
+}

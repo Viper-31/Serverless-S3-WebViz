@@ -45,7 +45,7 @@ export function createRendererForContainer(options: {
 }): {
   renderer: RasterRenderer;
   whenReady: Promise<void>;
-  remove(): void;
+  remove(): Promise<void>;
 } {
   const mapView = createMapView({ container: options.container });
   const renderer = createRasterRenderer({
@@ -57,8 +57,8 @@ export function createRendererForContainer(options: {
   return {
     renderer,
     whenReady: mapView.whenReady,
-    remove() {
-      renderer.remove();
+    async remove() {
+      await renderer.remove();
       mapView.remove();
     },
   };

@@ -10,5 +10,6 @@ export default defineConfig(({ command }) => ({
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
-  base: command === "build" ? "/Serverless-S3-WebViz/" : "/",
+  // Use subpath ONLY when building in GitHub Actions, otherwise use root locally.
+  base: command === "build" && process.env.CI ? "/Serverless-S3-WebViz/" : "/",
 }));

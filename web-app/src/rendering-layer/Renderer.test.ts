@@ -32,17 +32,31 @@ vi.mock("maplibre-gl", () => ({
 
 vi.mock("@/rendering-layer/raster/ZarrGridLayer", () => ({
   ECMWF_LAYER_ID: "ecmwf-raster",
-  createEcmwfLayer: vi.fn(async () => ({
-    layer: {
-      id: "ecmwf-raster",
-      setSelector,
-      setVariable,
-      setClim,
-      setColormap,
+  createEcmwfLayer: vi.fn(
+    async (options: { onLoadingStateChange?: (state: unknown) => void }) => {
+      const layer: {
+        id: string;
+        onLoadingStateChange?: (state: unknown) => void;
+        setSelector: typeof setSelector;
+        setVariable: typeof setVariable;
+        setClim: typeof setClim;
+        setColormap: typeof setColormap;
+      } = {
+        id: "ecmwf-raster",
+        setSelector,
+        setVariable,
+        setClim,
+        setColormap,
+      };
+      // Simulate what @carbonplan/zarr-layer ZarrLayer constructor does
+      layer.onLoadingStateChange = options.onLoadingStateChange;
+      return {
+        layer,
+        store: {},
+        refPath: "/ref",
+      };
     },
-    store: {},
-    refPath: "/ref",
-  })),
+  ),
   readEcmwfValidTimeValue: vi.fn(async () => "valid-time"),
   updateEcmwfLayerSelector: vi.fn(async (layer, selector) => {
     await layer.setSelector?.(selector);
@@ -55,12 +69,25 @@ vi.mock("@/rendering-layer/raster/ZarrGridLayer", () => ({
 }));
 
 function createFakeMap() {
-  const layers = new Map<string, { id: string }>();
+  const layers = new Map<
+    string,
+    { id: string; onLoadingStateChange?: (state: unknown) => void }
+  >();
   const calls: string[] = [];
   return {
-    addDataLayer(layer: { id: string }) {
+    addDataLayer(layer: {
+      id: string;
+      onLoadingStateChange?: (state: unknown) => void;
+    }) {
       calls.push(`add:${layer.id}`);
       layers.set(layer.id, layer);
+      // Simulate what @carbonplan/zarr-layer _onAddAsync does when metadata phase ends
+      layer.onLoadingStateChange?.({
+        loading: false,
+        metadata: false,
+        chunks: false,
+        error: null,
+      });
     },
     removeLayer(id: string) {
       calls.push(`remove:${id}`);
@@ -111,7 +138,7 @@ describe("RasterRenderer", () => {
       }),
     ).toBe("valid-time");
 
-    renderer.remove();
+    await renderer.remove();
     expect(renderer.hasLayer()).toBe(false);
   });
 
@@ -218,7 +245,7 @@ describe("RasterRenderer", () => {
     await whenReady;
     expect(mapSetProjection).toHaveBeenCalled();
 
-    remove();
+    await remove();
     expect(mapRemove).toHaveBeenCalled();
   });
 });
