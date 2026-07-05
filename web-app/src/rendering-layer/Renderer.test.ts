@@ -68,6 +68,8 @@ vi.mock("@/rendering-layer/raster/ZarrGridLayer", () => ({
   }),
 }));
 
+import { createEcmwfLayer } from "@/rendering-layer/raster/ZarrGridLayer";
+
 function createFakeMap() {
   const layers = new Map<
     string,
@@ -215,6 +217,186 @@ describe("RasterRenderer", () => {
     expect(setVariable).toHaveBeenCalledWith("rh");
     expect(setClim).toHaveBeenCalledWith([2, 3]);
     expect(setColormap).toHaveBeenCalledWith([[2, 2, 2]]);
+  });
+
+  it("prefetch deduplicates requests and discards stale results, identical refs + variable calls", async () => {
+    const map = createFakeMap();
+    const renderer = createRasterRenderer({
+      map,
+      localRangeCoalescing: () => true,
+    });
+
+    const request = {
+      kind: "raster" as const,
+      datasetKind: "ecmwf" as const,
+      refPath: "/next-ref",
+      variableId: "t2m",
+      selector: {
+        time: { selected: 0, type: "index" as const },
+        step: { selected: 1, type: "index" as const },
+      },
+      display: {
+        clim: [0, 1] as [number, number],
+        rgbStops: [[0, 0, 0]] as Array<[number, number, number]>,
+      },
+    };
+
+    (createEcmwfLayer as any).mockClear();
+
+    await renderer.prefetchNextRef(request);
+    await renderer.prefetchNextRef(request);
+
+    expect(createEcmwfLayer).toHaveBeenCalledTimes(1);
+  });
+
+  it("prefetch supersedes when variableId changes", async () => {
+    const map = createFakeMap();
+    const renderer = createRasterRenderer({
+      map,
+      localRangeCoalescing: () => true,
+    });
+
+    (createEcmwfLayer as any).mockClear();
+
+    await renderer.prefetchNextRef({
+      kind: "raster",
+      datasetKind: "ecmwf",
+      refPath: "/next-ref",
+      variableId: "t2m",
+      selector: {
+        time: { selected: 0, type: "index" },
+        step: { selected: 0, type: "index" },
+      },
+      display: { clim: [0, 1], rgbStops: [[0, 0, 0]] },
+    });
+
+    await renderer.prefetchNextRef({
+      kind: "raster",
+      datasetKind: "ecmwf",
+      refPath: "/next-ref",
+      variableId: "msl",
+      selector: {
+        time: { selected: 0, type: "index" },
+        step: { selected: 0, type: "index" },
+      },
+      display: { clim: [0, 1], rgbStops: [[0, 0, 0]] },
+    });
+
+    expect(createEcmwfLayer).toHaveBeenCalledTimes(2);
+  });
+
+  it("replace consumes a matching prefetched layer", async () => {
+    const map = createFakeMap();
+    const renderer = createRasterRenderer({
+      map,
+      localRangeCoalescing: () => true,
+    });
+
+    (createEcmwfLayer as any).mockClear();
+
+    await renderer.prefetchNextRef({
+      kind: "raster",
+      datasetKind: "ecmwf",
+      refPath: "/next-ref",
+      variableId: "t2m",
+      selector: {
+        time: { selected: 0, type: "index" },
+        step: { selected: 0, type: "index" },
+      },
+      display: { clim: [0, 1], rgbStops: [[0, 0, 0]] },
+    });
+
+    (createEcmwfLayer as any).mockClear();
+
+    await renderer.replace({
+      kind: "raster",
+      datasetKind: "ecmwf",
+      refPath: "/next-ref",
+      variableId: "t2m",
+      selector: {
+        time: { selected: 0, type: "index" },
+        step: { selected: 0, type: "index" },
+      },
+      display: { clim: [5, 50], rgbStops: [[1, 2, 3]] },
+    });
+
+    expect(createEcmwfLayer).not.toHaveBeenCalled();
+    expect(renderer.hasLayer()).toBe(true);
+  });
+
+  it("replace falls through when prefetched layer does not match", async () => {
+    const map = createFakeMap();
+    const renderer = createRasterRenderer({
+      map,
+      localRangeCoalescing: () => true,
+    });
+
+    await renderer.prefetchNextRef({
+      kind: "raster",
+      datasetKind: "ecmwf",
+      refPath: "/ref-a",
+      variableId: "t2m",
+      selector: {
+        time: { selected: 0, type: "index" },
+        step: { selected: 0, type: "index" },
+      },
+      display: { clim: [0, 1], rgbStops: [[0, 0, 0]] },
+    });
+
+    (createEcmwfLayer as any).mockClear();
+
+    await renderer.replace({
+      kind: "raster",
+      datasetKind: "ecmwf",
+      refPath: "/ref-b",
+      variableId: "t2m",
+      selector: {
+        time: { selected: 0, type: "index" },
+        step: { selected: 0, type: "index" },
+      },
+      display: { clim: [0, 1], rgbStops: [[0, 0, 0]] },
+    });
+
+    expect(createEcmwfLayer).toHaveBeenCalledTimes(1);
+    expect(renderer.hasLayer()).toBe(true);
+  });
+
+  it("reapplies display settings when consuming a prefetched layer", async () => {
+    const map = createFakeMap();
+    const renderer = createRasterRenderer({
+      map,
+      localRangeCoalescing: () => true,
+    });
+
+    await renderer.prefetchNextRef({
+      kind: "raster",
+      datasetKind: "ecmwf",
+      refPath: "/next-ref",
+      variableId: "t2m",
+      selector: {
+        time: { selected: 0, type: "index" },
+        step: { selected: 0, type: "index" },
+      },
+      display: { clim: [0, 50], rgbStops: [[0, 0, 255]] },
+    });
+
+    setClim.mockClear();
+    setColormap.mockClear();
+
+    await renderer.replace({
+      kind: "raster",
+      datasetKind: "ecmwf",
+      refPath: "/next-ref",
+      variableId: "t2m",
+      selector: {
+        time: { selected: 0, type: "index" },
+        step: { selected: 0, type: "index" },
+      },
+      display: { clim: [10, 40], rgbStops: [[255, 0, 0]] },
+    });
+
+    expect(setClim).toHaveBeenCalledWith([10, 40]);
+    expect(setColormap).toHaveBeenCalledWith([[255, 0, 0]]);
   });
 
   it("creates map view from a container and exposes readiness", async () => {
