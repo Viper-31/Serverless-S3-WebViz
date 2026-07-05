@@ -12,7 +12,7 @@ import type {
 } from "@/zarr-store/types";
 
 const DEFAULT_BYTE_CACHE: ByteCacheOptions = {
-  maxBytes: 24 * 1024 * 1024,
+  maxBytes: 84 * 1024 * 1024,
   maxEntries: 128,
 };
 
