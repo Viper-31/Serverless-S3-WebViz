@@ -98,6 +98,7 @@ type SelectionOptions = {
 
 const RELEASE_SLIDER_LABEL = "Release slider to update valid time…";
 const LOADING_VALID_TIME_LABEL = "Loading valid time…";
+const ECMWF_PREFETCH_THRESHOLD = 11;
 
 const initialEcmwf = createEcmwfState("t2m", "2024-01-02");
 const initialState: AppState = {
@@ -197,6 +198,30 @@ function isLayerTokenStale(ctx: AppControllerContext, token: number): boolean {
   return token !== ctx.layerToken;
 }
 
+function triggerPrefetch(ctx: AppControllerContext): void {
+  if (!ctx.renderer) return;
+
+  const { ecmwf, catalog } = ctx.state;
+  if (ecmwf.ecmwfTimeIndex < ECMWF_PREFETCH_THRESHOLD) return;
+
+  const currentIndex = catalog.ecmwf.findIndex(
+    (entry) => entry.refPath === ecmwf.refPath,
+  );
+  if (currentIndex < 0 || currentIndex >= catalog.ecmwf.length - 1) return;
+
+  const nextRef = catalog.ecmwf[currentIndex + 1];
+  const nextRequest = createEcmwfRasterLayerRequest({
+    refPath: nextRef.refPath,
+    refStartDate: nextRef.refStartDate,
+    ecmwfTimeIndex: 0,
+    ecmwfStepIndex: 0,
+    variableKey: ecmwf.variableKey,
+    overrideByVar: ecmwf.overrideByVar,
+  });
+
+  void ctx.renderer.prefetchNextRef(nextRequest);
+}
+
 async function commitSelection(
   ctx: AppControllerContext,
   options: SelectionOptions,
@@ -224,6 +249,7 @@ async function commitSelection(
     if (isLayerTokenStale(ctx, token)) return;
     ctx.setState({ layerAdded: true, reloadingLayer: false });
     await refreshValidTime(ctx, nextEcmwf);
+    triggerPrefetch(ctx);
   } catch (error) {
     if (isLayerTokenStale(ctx, token)) return;
     captureSelectionError(ctx, error, { reloadingLayer: false });
@@ -423,7 +449,10 @@ function createVariableSelectionController(ctx: AppControllerContext) {
           reloadingLayer: ctx.renderer?.hasLayer() ?? false,
         });
         await applyVariableDisplayUpdate(variableKey, next);
-        if (ctx.renderer) await refreshValidTime(ctx, next);
+        if (ctx.renderer) {
+          await refreshValidTime(ctx, next);
+          triggerPrefetch(ctx);
+        }
       } catch (error) {
         captureSelectionError(ctx, error, { reloadingLayer: false });
       }
