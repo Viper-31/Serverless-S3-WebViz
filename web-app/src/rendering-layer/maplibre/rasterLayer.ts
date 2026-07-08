@@ -131,7 +131,7 @@ async function prefetchRasterMap(
   } catch {
     state.prefetchedRefPath = undefined;
     state.prefetchedVariableId = undefined;
-    // Silently dicard failed prefetch, consumer falls back to
+    // Silently discard failed prefetch, consumer falls back to
     // createEcmwfLayer on normal replace
   }
 }
