@@ -1,7 +1,7 @@
 import { ReferenceStore } from "@zarrita/storage";
 import * as zarr from "zarrita";
 import { createZarritaByteCache } from "@/zarr-store/byteCache";
-import { validateRefSpecZarrayMetadata } from "@/zarr-store/codecMetadata";
+import { validateAllCodecs } from "@/zarr-store/codecMetadata";
 import { rewriteS3Refs } from "@/zarr-store/webvizRefs";
 import type {
   ByteCacheOptions,
@@ -49,7 +49,7 @@ async function resolveSpec(input: {
   const preparedRefSpec = rewriteS3Refs(sourceSpec);
 
   if (input.checkCodec ?? true) {
-    validateRefSpecZarrayMetadata(preparedRefSpec);
+    validateAllCodecs(preparedRefSpec);
   }
 
   return preparedRefSpec;
