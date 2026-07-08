@@ -59,4 +59,12 @@ describe("ref rewrite", () => {
       sourceSpec.refs["airTemperature/metadata"],
     );
   });
+
+  it("leaves s3://webviz URLs inside nested objects untouched", () => {
+    const prepared = prepareWebvizRefSpec(sourceSpec);
+
+    expect(prepared.refs["airTemperature/metadata"]).toEqual({
+      nested: ["s3://webviz/unchanged"],
+    });
+  });
 });

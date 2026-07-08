@@ -15,31 +15,33 @@ function validFilters(elementsize: number) {
 
 describe("codec metadata", () => {
   it("accepts missing, null, or empty filters", () => {
-    expect(validateZarrayCodecMetadata({ dtype: "<f4" })).toBe(true);
-    expect(validateZarrayCodecMetadata({ dtype: "<f4", filters: null })).toBe(
-      true,
-    );
-    expect(validateZarrayCodecMetadata({ dtype: "<f4", filters: [] })).toBe(
-      true,
-    );
+    expect(() => validateZarrayCodecMetadata({ dtype: "<f4" })).not.toThrow();
+    expect(() =>
+      validateZarrayCodecMetadata({ dtype: "<f4", filters: null }),
+    ).not.toThrow();
+    expect(() =>
+      validateZarrayCodecMetadata({ dtype: "<f4", filters: [] }),
+    ).not.toThrow();
   });
 
-  it("accepts shuffle then zlib regardless of compressor metadata", () => {
-    expect(
+  it("accepts shuffle then zlib with null compressor", () => {
+    expect(() =>
       validateZarrayCodecMetadata({
         dtype: "<f4",
         compressor: null,
         filters: validFilters(4),
       }),
-    ).toBe(true);
+    ).not.toThrow();
+  });
 
-    expect(
+  it("accepts shuffle then zlib with blosc compressor", () => {
+    expect(() =>
       validateZarrayCodecMetadata({
         dtype: "<f4",
         compressor: { id: "blosc" },
         filters: validFilters(4),
       }),
-    ).toBe(true);
+    ).not.toThrow();
   });
 
   it("rejects non-array filters metadata", () => {
@@ -53,21 +55,25 @@ describe("codec metadata", () => {
     );
   });
 
-  it("rejects invalid shuffle metadata", () => {
+  it("rejects shuffle filter missing elementsize", () => {
     expect(() =>
       validateZarrayCodecMetadata({
         dtype: "<f4",
         filters: [{ id: "shuffle" }],
       }),
     ).toThrow(/elementsize/i);
+  });
 
+  it("rejects shuffle filter with mismatched dtype", () => {
     expect(() =>
       validateZarrayCodecMetadata({
         dtype: "<f8",
         filters: validFilters(4),
       }),
     ).toThrow(/dtype/i);
+  });
 
+  it("rejects duplicate shuffle filters", () => {
     expect(() =>
       validateZarrayCodecMetadata({
         dtype: "<f4",
@@ -80,14 +86,16 @@ describe("codec metadata", () => {
     ).toThrow(/duplicate shuffle/i);
   });
 
-  it("rejects invalid zlib ordering and duplicate zlib filters", () => {
+  it("rejects zlib before shuffle filter ordering", () => {
     expect(() =>
       validateZarrayCodecMetadata({
         dtype: "<f4",
         filters: [{ id: "zlib" }, { id: "shuffle", elementsize: 4 }],
       }),
     ).toThrow(/order/i);
+  });
 
+  it("rejects duplicate zlib filters", () => {
     expect(() =>
       validateZarrayCodecMetadata({
         dtype: "<f4",
@@ -100,14 +108,16 @@ describe("codec metadata", () => {
     ).toThrow(/duplicate zlib/i);
   });
 
-  it("rejects unknown filters and incomplete filter pipelines", () => {
+  it("rejects unknown filter ids", () => {
     expect(() =>
       validateZarrayCodecMetadata({
         dtype: "<f4",
         filters: [{ id: "unknown", elementsize: 4 }],
       }),
     ).toThrow(/unknown filter/i);
+  });
 
+  it("rejects incomplete filter pipelines missing zlib", () => {
     expect(() =>
       validateZarrayCodecMetadata({
         dtype: "<f4",
@@ -117,7 +127,7 @@ describe("codec metadata", () => {
   });
 
   it("validates only string .zarray entries within a ref spec", () => {
-    expect(
+    expect(() =>
       validateRefSpecZarrayMetadata({
         version: 1,
         refs: {
@@ -138,7 +148,7 @@ describe("codec metadata", () => {
           }),
         },
       }),
-    ).toBe(true);
+    ).not.toThrow();
   });
 
   it("throws when a string .zarray entry contains invalid codec metadata", () => {
