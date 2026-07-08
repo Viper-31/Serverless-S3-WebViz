@@ -11,7 +11,7 @@ import type {
   LayerSelector,
   RasterLayerRequest,
 } from "@/lib/shared/contracts";
-import { openReferencedZarrStore } from "@/zarr-store";
+import { openZarrStore } from "@/zarr-store";
 
 export const ECMWF_LAYER_ID = "ecmwf-raster";
 const ECMWF_DEFAULT_OPACITY = 0.6;
@@ -61,7 +61,7 @@ export type CreateEcmwfLayerOptions = RasterLayerRequest & {
 export async function createEcmwfLayer(
   options: CreateEcmwfLayerOptions,
 ): Promise<EcmwfLayerBundle> {
-  const referencedStore = await openReferencedZarrStore({
+  const referencedStore = await openZarrStore({
     refUrl: options.refPath,
     rangeCoalescing: options.localRangeCoalescing,
   });

@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  prepareWebvizRefSpec,
-  rewriteWebvizS3RefsToPublicHttp,
-} from "@/zarr-store/webvizRefs";
+import { rewriteS3Refs } from "@/zarr-store/refs";
 
 const sourceSpec = {
   version: 1,
@@ -26,7 +23,7 @@ const sourceSpec = {
 describe("ref rewrite", () => {
   it("keeps the source spec untouched", () => {
     const before = JSON.stringify(sourceSpec);
-    const next = rewriteWebvizS3RefsToPublicHttp(sourceSpec);
+    const next = rewriteS3Refs(sourceSpec);
 
     expect(JSON.stringify(sourceSpec)).toBe(before);
     expect(sourceSpec.refs["airTemperature/0.0"][0]).toBe(
@@ -36,7 +33,7 @@ describe("ref rewrite", () => {
   });
 
   it("rewrites only matching s3://webviz chunk refs", () => {
-    const prepared = prepareWebvizRefSpec(sourceSpec);
+    const prepared = rewriteS3Refs(sourceSpec);
 
     expect(prepared.refs["airTemperature/0.0"][0]).toBe(
       "https://projects.pawsey.org.au/webviz/DPIRD/dpird_wa_stations.nc",
@@ -50,7 +47,7 @@ describe("ref rewrite", () => {
   });
 
   it("deep copies nested ref values even when they are not rewritten", () => {
-    const prepared = rewriteWebvizS3RefsToPublicHttp(sourceSpec);
+    const prepared = rewriteS3Refs(sourceSpec);
 
     expect(prepared.refs["airTemperature/metadata"]).toEqual(
       sourceSpec.refs["airTemperature/metadata"],
@@ -58,5 +55,13 @@ describe("ref rewrite", () => {
     expect(prepared.refs["airTemperature/metadata"]).not.toBe(
       sourceSpec.refs["airTemperature/metadata"],
     );
+  });
+
+  it("leaves s3://webviz URLs inside nested objects untouched", () => {
+    const prepared = rewriteS3Refs(sourceSpec);
+
+    expect(prepared.refs["airTemperature/metadata"]).toEqual({
+      nested: ["s3://webviz/unchanged"],
+    });
   });
 });

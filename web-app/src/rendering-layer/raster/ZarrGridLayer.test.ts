@@ -1,18 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const {
-  ZarrLayerMock,
-  openReferencedZarrStoreMock,
-  rootMock,
-  openV2Mock,
-  getMock,
-} = vi.hoisted(() => ({
-  ZarrLayerMock: vi.fn(),
-  openReferencedZarrStoreMock: vi.fn(),
-  rootMock: vi.fn(),
-  openV2Mock: vi.fn(),
-  getMock: vi.fn(),
-}));
+const { ZarrLayerMock, openZarrStoreMock, rootMock, openV2Mock, getMock } =
+  vi.hoisted(() => ({
+    ZarrLayerMock: vi.fn(),
+    openZarrStoreMock: vi.fn(),
+    rootMock: vi.fn(),
+    openV2Mock: vi.fn(),
+    getMock: vi.fn(),
+  }));
 
 vi.mock("@carbonplan/zarr-layer", () => ({
   ZarrLayer: ZarrLayerMock,
@@ -25,7 +20,7 @@ vi.mock("zarrita", () => ({
 }));
 
 vi.mock("@/zarr-store", () => ({
-  openReferencedZarrStore: openReferencedZarrStoreMock,
+  openZarrStore: openZarrStoreMock,
 }));
 
 import {
@@ -82,7 +77,7 @@ describe("ecmwfLayer contract", () => {
     const store = { id: "referenced-store" };
     const layerInstance = { id: ECMWF_LAYER_ID };
     const onLoadingStateChange = vi.fn();
-    openReferencedZarrStoreMock.mockResolvedValue({ store });
+    openZarrStoreMock.mockResolvedValue({ store });
     ZarrLayerMock.mockImplementation(function MockZarrLayer() {
       return layerInstance;
     });
@@ -107,7 +102,7 @@ describe("ecmwfLayer contract", () => {
       onLoadingStateChange,
     };
     const bundle = await createEcmwfLayer(options);
-    expect(openReferencedZarrStoreMock).toHaveBeenCalledWith({
+    expect(openZarrStoreMock).toHaveBeenCalledWith({
       refUrl: "/refs/ecmwf.json",
       rangeCoalescing: true,
     });

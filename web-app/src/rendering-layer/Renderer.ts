@@ -19,6 +19,7 @@ export type RasterRenderer = {
   readValidTime(selector: LayerSelector): Promise<unknown>;
   remove(): void;
   hasLayer(): boolean;
+  prefetchNextRef(request: RasterLayerRequest): Promise<void>;
 };
 
 export function createRasterRenderer(options: {
@@ -35,6 +36,7 @@ export function createRasterRenderer(options: {
     readValidTime: (selector) => rasterLayer.readValidTime(selector),
     remove: () => rasterLayer.remove(),
     hasLayer: () => rasterLayer.hasLayer(),
+    prefetchNextRef: (request) => rasterLayer.prefetchNextRef(request),
   };
 }
 

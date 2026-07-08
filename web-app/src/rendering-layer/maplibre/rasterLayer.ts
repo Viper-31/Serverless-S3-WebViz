@@ -13,6 +13,8 @@ import {
   type EcmwfLayerBundle,
 } from "@/rendering-layer/raster/ZarrGridLayer";
 
+import { preloadEcmwfChunks } from "@/zarr-store";
+
 import type { MapLibreLayerHost } from "./types";
 
 export type RasterLayerHandle = {
@@ -25,12 +27,18 @@ export type RasterLayerHandle = {
   readValidTime(selector: RasterLayerRequest["selector"]): Promise<unknown>;
   remove(): Promise<void>;
   hasLayer(): boolean;
+  prefetchNextRef(request: RasterLayerRequest): Promise<void>;
 };
 
 type RasterLayerState = {
   active: EcmwfLayerBundle | undefined;
   currentSelector: RasterLayerRequest["selector"] | undefined;
   disposed: boolean;
+  prefetched: EcmwfLayerBundle | undefined;
+  prefetchedRefPath: string | undefined;
+  prefetchedVariableId: string | undefined;
+  prefetchToken: number;
+  prefetchAbort: AbortController | undefined;
 };
 
 type RasterLayerOptions = {
@@ -98,6 +106,56 @@ function buildReadySignal(userCallback?: LoadingStateCallback): ReadySignal {
   return { callback, ready };
 }
 
+async function prefetchRasterMap(
+  state: RasterLayerState,
+  options: RasterLayerOptions,
+  request: RasterLayerRequest,
+): Promise<void> {
+  if (
+    state.prefetchedRefPath === request.refPath &&
+    state.prefetchedVariableId === request.variableId
+  ) {
+    return;
+  }
+
+  const token = ++state.prefetchToken;
+
+  state.prefetchAbort?.abort();
+  const abort = new AbortController();
+  state.prefetchAbort = abort;
+
+  state.prefetchedRefPath = request.refPath;
+  state.prefetchedVariableId = request.variableId;
+
+  try {
+    const bundle = await createEcmwfLayer({
+      ...request,
+      localRangeCoalescing: options.localRangeCoalescing(),
+    });
+
+    if (token !== state.prefetchToken) return;
+
+    await preloadEcmwfChunks(
+      bundle.store,
+      request.variableId,
+      request.selector.time!.selected,
+      request.selector.step!.selected,
+      abort.signal,
+    );
+    // Check token again after preload, since it may have been invalidated during the async operation
+    if (token !== state.prefetchToken) return;
+
+    state.prefetched = bundle;
+    state.prefetchAbort = undefined;
+  } catch {
+    state.prefetchedRefPath = undefined;
+    state.prefetchedVariableId = undefined;
+    state.prefetchAbort = undefined;
+    // Silently discard failed prefetch, consumer falls back to
+    // createEcmwfLayer on normal replace
+  }
+}
+
 async function createRasterMap(
   state: RasterLayerState,
   options: RasterLayerOptions,
@@ -111,11 +169,30 @@ async function createRasterMap(
     options.onLoadingStateChange,
   );
 
-  const next = await createEcmwfLayer({
-    ...request,
-    localRangeCoalescing: options.localRangeCoalescing(),
-    onLoadingStateChange,
-  });
+  const isPrefetchHit =
+    state.prefetched !== undefined &&
+    state.prefetchedRefPath === request.refPath &&
+    state.prefetchedVariableId === request.variableId;
+
+  let next: EcmwfLayerBundle;
+
+  if (isPrefetchHit) {
+    next = state.prefetched!;
+    state.prefetched = undefined;
+    state.prefetchedRefPath = undefined;
+    state.prefetchedVariableId = undefined;
+
+    void next.layer.setClim?.(request.display.clim);
+    void next.layer.setColormap?.(request.display.rgbStops);
+
+    onLoadingStateChange({ loading: false, metadata: false, chunks: false });
+  } else {
+    next = await createEcmwfLayer({
+      ...request,
+      localRangeCoalescing: options.localRangeCoalescing(),
+      onLoadingStateChange,
+    });
+  }
 
   if (state.disposed) return;
   next.ready = ready;
@@ -200,6 +277,11 @@ export function createMapLibreRasterLayer(
     active: undefined,
     currentSelector: undefined,
     disposed: false,
+    prefetched: undefined,
+    prefetchedRefPath: undefined,
+    prefetchedVariableId: undefined,
+    prefetchToken: 0,
+    prefetchAbort: undefined,
   };
   const queue = createOperationQueue();
 
@@ -216,5 +298,6 @@ export function createMapLibreRasterLayer(
       readRasterMapValidTime(state, options.map, queue, selector),
     remove: () => disposeRasterMap(state, options.map),
     hasLayer: () => hasActiveRasterMap(state, options.map),
+    prefetchNextRef: (request) => prefetchRasterMap(state, options, request),
   };
 }

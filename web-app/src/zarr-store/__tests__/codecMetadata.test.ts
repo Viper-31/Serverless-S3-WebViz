@@ -1,10 +1,7 @@
 import { describe, expect, it } from "vitest";
-import {
-  validateRefSpecZarrayMetadata,
-  validateZarrayCodecMetadata,
-} from "@/zarr-store/codecMetadata";
+import { validateAllCodecs, validateCodecs } from "@/zarr-store/codecMetadata";
 
-type CodecMetadataInput = Parameters<typeof validateZarrayCodecMetadata>[0];
+type CodecMetadataInput = Parameters<typeof validateCodecs>[0];
 
 function validFilters(elementsize: number) {
   return [
@@ -15,31 +12,29 @@ function validFilters(elementsize: number) {
 
 describe("codec metadata", () => {
   it("accepts missing, null, or empty filters", () => {
-    expect(validateZarrayCodecMetadata({ dtype: "<f4" })).toBe(true);
-    expect(validateZarrayCodecMetadata({ dtype: "<f4", filters: null })).toBe(
-      true,
-    );
-    expect(validateZarrayCodecMetadata({ dtype: "<f4", filters: [] })).toBe(
-      true,
-    );
+    expect(() => validateCodecs({ dtype: "<f4" })).not.toThrow();
+    expect(() => validateCodecs({ dtype: "<f4", filters: null })).not.toThrow();
+    expect(() => validateCodecs({ dtype: "<f4", filters: [] })).not.toThrow();
   });
 
-  it("accepts shuffle then zlib regardless of compressor metadata", () => {
-    expect(
-      validateZarrayCodecMetadata({
+  it("accepts shuffle then zlib with null compressor", () => {
+    expect(() =>
+      validateCodecs({
         dtype: "<f4",
         compressor: null,
         filters: validFilters(4),
       }),
-    ).toBe(true);
+    ).not.toThrow();
+  });
 
-    expect(
-      validateZarrayCodecMetadata({
+  it("accepts shuffle then zlib with blosc compressor", () => {
+    expect(() =>
+      validateCodecs({
         dtype: "<f4",
         compressor: { id: "blosc" },
         filters: validFilters(4),
       }),
-    ).toBe(true);
+    ).not.toThrow();
   });
 
   it("rejects non-array filters metadata", () => {
@@ -48,28 +43,30 @@ describe("codec metadata", () => {
       filters: "shuffle,zlib" as unknown,
     } as CodecMetadataInput;
 
-    expect(() => validateZarrayCodecMetadata(invalidMetadata)).toThrow(
-      /array or null/i,
-    );
+    expect(() => validateCodecs(invalidMetadata)).toThrow(/array or null/i);
   });
 
-  it("rejects invalid shuffle metadata", () => {
+  it("rejects shuffle filter missing elementsize", () => {
     expect(() =>
-      validateZarrayCodecMetadata({
+      validateCodecs({
         dtype: "<f4",
         filters: [{ id: "shuffle" }],
       }),
     ).toThrow(/elementsize/i);
+  });
 
+  it("rejects shuffle filter with mismatched dtype", () => {
     expect(() =>
-      validateZarrayCodecMetadata({
+      validateCodecs({
         dtype: "<f8",
         filters: validFilters(4),
       }),
     ).toThrow(/dtype/i);
+  });
 
+  it("rejects duplicate shuffle filters", () => {
     expect(() =>
-      validateZarrayCodecMetadata({
+      validateCodecs({
         dtype: "<f4",
         filters: [
           { id: "shuffle", elementsize: 4 },
@@ -80,16 +77,18 @@ describe("codec metadata", () => {
     ).toThrow(/duplicate shuffle/i);
   });
 
-  it("rejects invalid zlib ordering and duplicate zlib filters", () => {
+  it("rejects zlib before shuffle filter ordering", () => {
     expect(() =>
-      validateZarrayCodecMetadata({
+      validateCodecs({
         dtype: "<f4",
         filters: [{ id: "zlib" }, { id: "shuffle", elementsize: 4 }],
       }),
     ).toThrow(/order/i);
+  });
 
+  it("rejects duplicate zlib filters", () => {
     expect(() =>
-      validateZarrayCodecMetadata({
+      validateCodecs({
         dtype: "<f4",
         filters: [
           { id: "shuffle", elementsize: 4 },
@@ -100,16 +99,18 @@ describe("codec metadata", () => {
     ).toThrow(/duplicate zlib/i);
   });
 
-  it("rejects unknown filters and incomplete filter pipelines", () => {
+  it("rejects unknown filter ids", () => {
     expect(() =>
-      validateZarrayCodecMetadata({
+      validateCodecs({
         dtype: "<f4",
         filters: [{ id: "unknown", elementsize: 4 }],
       }),
     ).toThrow(/unknown filter/i);
+  });
 
+  it("rejects incomplete filter pipelines missing zlib", () => {
     expect(() =>
-      validateZarrayCodecMetadata({
+      validateCodecs({
         dtype: "<f4",
         filters: [{ id: "shuffle", elementsize: 4 }],
       }),
@@ -117,8 +118,8 @@ describe("codec metadata", () => {
   });
 
   it("validates only string .zarray entries within a ref spec", () => {
-    expect(
-      validateRefSpecZarrayMetadata({
+    expect(() =>
+      validateAllCodecs({
         version: 1,
         refs: {
           ".zgroup": '{"zarr_format":2}',
@@ -138,12 +139,12 @@ describe("codec metadata", () => {
           }),
         },
       }),
-    ).toBe(true);
+    ).not.toThrow();
   });
 
   it("throws when a string .zarray entry contains invalid codec metadata", () => {
     expect(() =>
-      validateRefSpecZarrayMetadata({
+      validateAllCodecs({
         version: 1,
         refs: {
           ".zgroup": '{"zarr_format":2}',
