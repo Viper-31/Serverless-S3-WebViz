@@ -13,7 +13,7 @@ import {
   type EcmwfLayerBundle,
 } from "@/rendering-layer/raster/ZarrGridLayer";
 
-import { preloadEcmwfChunks } from "@/zarr-store/preload";
+import { preloadEcmwfChunks } from "@/zarr-store";
 
 import type { MapLibreLayerHost } from "./types";
 
