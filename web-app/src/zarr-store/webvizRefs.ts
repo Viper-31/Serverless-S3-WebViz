@@ -45,6 +45,6 @@ export function rewriteWebvizS3RefsToPublicHttp<T extends RefSpec>(spec: T): T {
   return next;
 }
 
-export function prepareWebvizRefSpec<T extends RefSpec>(spec: T): T {
+export function rewriteS3Refs<T extends RefSpec>(spec: T): T {
   return rewriteWebvizS3RefsToPublicHttp(spec);
 }

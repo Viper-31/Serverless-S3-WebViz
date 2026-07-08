@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
-  prepareWebvizRefSpec,
+  rewriteS3Refs,
   rewriteWebvizS3RefsToPublicHttp,
 } from "@/zarr-store/webvizRefs";
 
@@ -36,7 +36,7 @@ describe("ref rewrite", () => {
   });
 
   it("rewrites only matching s3://webviz chunk refs", () => {
-    const prepared = prepareWebvizRefSpec(sourceSpec);
+    const prepared = rewriteS3Refs(sourceSpec);
 
     expect(prepared.refs["airTemperature/0.0"][0]).toBe(
       "https://projects.pawsey.org.au/webviz/DPIRD/dpird_wa_stations.nc",
@@ -61,7 +61,7 @@ describe("ref rewrite", () => {
   });
 
   it("leaves s3://webviz URLs inside nested objects untouched", () => {
-    const prepared = prepareWebvizRefSpec(sourceSpec);
+    const prepared = rewriteS3Refs(sourceSpec);
 
     expect(prepared.refs["airTemperature/metadata"]).toEqual({
       nested: ["s3://webviz/unchanged"],
