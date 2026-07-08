@@ -43,7 +43,7 @@ export type ZarrDeps = {
   };
 };
 
-export type ReferencedZarrStore = {
+export type ZarrStore = {
   store: unknown;
   root: unknown;
   node: unknown;

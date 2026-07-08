@@ -5,7 +5,7 @@ import { validateAllCodecs } from "@/zarr-store/codecMetadata";
 import { rewriteS3Refs } from "@/zarr-store/webvizRefs";
 import type {
   ByteCacheOptions,
-  ReferencedZarrStore,
+  ZarrStore,
   ZarrDeps,
   RefSpec,
   ZarrKind,
@@ -131,7 +131,7 @@ export async function openZarrStore(input: {
   checkCodec?: boolean;
   fetchRef?: typeof fetch;
   dependencies?: ZarrDeps;
-}): Promise<ReferencedZarrStore> {
+}): Promise<ZarrStore> {
   const preparedRefSpec = await resolveSpec(input);
   const deps = input.dependencies ?? defaultDependencies();
   const store = await assembleStore(deps, preparedRefSpec, input);

@@ -38,7 +38,7 @@ function expectDecodedRegion(region: Region, shape: number[]) {
   ).toBe(true);
 }
 
-onlineDescribe("referencedZarrStore integration", () => {
+onlineDescribe("ZarrStore integration", () => {
   it("opens a DPIRD ref spec and rewrites webviz chunk URLs", async () => {
     const refSpec = await loadRefSpec(
       "../../public/refs/DPIRD/dpird_wa_stations.nc.json",
