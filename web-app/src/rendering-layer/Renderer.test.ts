@@ -68,6 +68,10 @@ vi.mock("@/rendering-layer/raster/ZarrGridLayer", () => ({
   }),
 }));
 
+vi.mock("@/zarr-store/preload", () => ({
+  preloadEcmwfChunks: vi.fn(async () => {}),
+}));
+
 import { createEcmwfLayer } from "@/rendering-layer/raster/ZarrGridLayer";
 
 function createFakeMap() {
