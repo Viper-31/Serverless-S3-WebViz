@@ -1,5 +1,5 @@
 export * from "./types";
 
-export { loadRefSpec, openReferencedZarrStore } from "./referencedStore";
+export { loadRefSpec, openZarrStore } from "./referencedStore";
 
 export { preloadEcmwfChunks } from "./preload";

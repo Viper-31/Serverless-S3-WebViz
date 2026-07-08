@@ -16,7 +16,7 @@ export type ZarritaCompatibleByteCache = {
   set(key: string, value: Uint8Array | undefined): void;
 };
 
-export type ReferencedZarrStoreDependencies = {
+export type ZarrDeps = {
   zarr: {
     root(store: unknown): { resolve?: (path: string) => unknown } | unknown;
     open: {

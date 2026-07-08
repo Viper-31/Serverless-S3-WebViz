@@ -1,8 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import {
-  loadRefSpec,
-  openReferencedZarrStore,
-} from "@/zarr-store/referencedStore";
+import { loadRefSpec, openZarrStore } from "@/zarr-store/referencedStore";
 
 const validZarrayMetadata = JSON.stringify({
   dtype: "<f4",
@@ -118,7 +115,7 @@ describe("referenced store", () => {
     const fetchRef = createFetchMock(defaultRefSpec);
     const { referenceStore, zarr } = createDependencies();
 
-    await openReferencedZarrStore({
+    await openZarrStore({
       refUrl: "/refs/DPIRD/sample.json",
       fetchRef: fetchRef as unknown as typeof fetch,
       dependencies: { zarr, ReferenceStore: referenceStore },
@@ -142,7 +139,7 @@ describe("referenced store", () => {
     const fetchRef = createFetchMock(defaultRefSpec);
     const { referenceStore, zarr } = createDependencies();
 
-    await openReferencedZarrStore({
+    await openZarrStore({
       refUrl: "/refs/sample.json",
       fetchRef: fetchRef as unknown as typeof fetch,
       dependencies: { zarr, ReferenceStore: referenceStore },
@@ -158,7 +155,7 @@ describe("referenced store", () => {
     const fetchRef = createFetchMock(defaultRefSpec);
     const { referenceStore, zarr } = createDependencies();
 
-    await openReferencedZarrStore({
+    await openZarrStore({
       refUrl: "/refs/sample.json",
       fetchRef: fetchRef as unknown as typeof fetch,
       dependencies: { zarr, ReferenceStore: referenceStore },
@@ -171,7 +168,7 @@ describe("referenced store", () => {
     const fetchRef = createFetchMock(defaultRefSpec);
     const { referenceStore, zarr } = createDependencies();
 
-    const dataset = await openReferencedZarrStore({
+    const dataset = await openZarrStore({
       refUrl: "/refs/sample.json",
       fetchRef: fetchRef as unknown as typeof fetch,
       dependencies: { zarr, ReferenceStore: referenceStore },

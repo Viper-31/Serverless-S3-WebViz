@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import * as zarr from "zarrita";
 import type { Array as ZarrArray, DataType, Readable } from "zarrita";
 
-import { openReferencedZarrStore } from "../../src/zarr-store";
+import { openZarrStore } from "../../src/zarr-store";
 
 const onlineDescribe =
   process.env.RUN_ONLINE_INTEGRATION === "1" ? describe : describe.skip;
@@ -44,7 +44,7 @@ onlineDescribe("referencedZarrStore integration", () => {
       "../../public/refs/DPIRD/dpird_wa_stations.nc.json",
     );
 
-    const dataset = await openReferencedZarrStore({
+    const dataset = await openZarrStore({
       refSpec,
       arrayPath: "lat",
     });
@@ -66,7 +66,7 @@ onlineDescribe("referencedZarrStore integration", () => {
       "../../public/refs/DPIRD/dpird_wa_stations.nc.json",
     );
 
-    const dataset = await openReferencedZarrStore({ refSpec });
+    const dataset = await openZarrStore({ refSpec });
 
     const lat = asZarrArray(await dataset.getArray("lat"));
     const latSelection = zarr.select(lat, { station: zarr.slice(0, 3) });
@@ -126,7 +126,7 @@ onlineDescribe("referencedZarrStore integration", () => {
       "../../public/refs/ECMWF/2024/01/02.nc.json",
     );
 
-    const dataset = await openReferencedZarrStore({ refSpec });
+    const dataset = await openZarrStore({ refSpec });
 
     const time = asZarrArray(await dataset.getArray("time"));
     const timeSelection = zarr.select(time, { time: zarr.slice(0, 3) });
