@@ -13,6 +13,8 @@ import {
   type EcmwfLayerBundle,
 } from "@/rendering-layer/raster/ZarrGridLayer";
 
+import { preloadEcmwfChunks } from "@/zarr-store/preload";
+
 import type { MapLibreLayerHost } from "./types";
 
 export type RasterLayerHandle = {
@@ -36,6 +38,7 @@ type RasterLayerState = {
   prefetchedRefPath: string | undefined;
   prefetchedVariableId: string | undefined;
   prefetchToken: number;
+  prefetchAbort: AbortController | undefined;
 };
 
 type RasterLayerOptions = {
@@ -116,6 +119,11 @@ async function prefetchRasterMap(
   }
 
   const token = ++state.prefetchToken;
+
+  state.prefetchAbort?.abort();
+  const abort = new AbortController();
+  state.prefetchAbort = abort;
+
   state.prefetchedRefPath = request.refPath;
   state.prefetchedVariableId = request.variableId;
 
@@ -127,10 +135,22 @@ async function prefetchRasterMap(
 
     if (token !== state.prefetchToken) return;
 
+    await preloadEcmwfChunks(
+      bundle.store,
+      request.variableId,
+      request.selector.time!.selected,
+      request.selector.step!.selected,
+      abort.signal,
+    );
+    // Check token again after preload, since it may have been invalidated during the async operation
+    if (token !== state.prefetchToken) return;
+
     state.prefetched = bundle;
+    state.prefetchAbort = undefined;
   } catch {
     state.prefetchedRefPath = undefined;
     state.prefetchedVariableId = undefined;
+    state.prefetchAbort = undefined;
     // Silently discard failed prefetch, consumer falls back to
     // createEcmwfLayer on normal replace
   }
@@ -261,6 +281,7 @@ export function createMapLibreRasterLayer(
     prefetchedRefPath: undefined,
     prefetchedVariableId: undefined,
     prefetchToken: 0,
+    prefetchAbort: undefined,
   };
   const queue = createOperationQueue();
 
