@@ -2,7 +2,7 @@ import { ReferenceStore } from "@zarrita/storage";
 import * as zarr from "zarrita";
 import { createZarritaByteCache } from "@/zarr-store/byteCache";
 import { validateAllCodecs } from "@/zarr-store/codecMetadata";
-import { rewriteS3Refs } from "@/zarr-store/webvizRefs";
+import { rewriteS3Refs } from "@/zarr-store/refs";
 import type {
   ByteCacheOptions,
   ZarrStore,

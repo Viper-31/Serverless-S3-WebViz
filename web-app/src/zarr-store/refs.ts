@@ -34,7 +34,7 @@ function rewriteRefValue(value: unknown): unknown {
   ];
 }
 
-export function rewriteWebvizS3RefsToPublicHttp<T extends RefSpec>(spec: T): T {
+export function rewriteS3Refs<T extends RefSpec>(spec: T): T {
   const next = deepCopy(spec);
 
   if (next.refs) {
@@ -43,8 +43,4 @@ export function rewriteWebvizS3RefsToPublicHttp<T extends RefSpec>(spec: T): T {
     }
   }
   return next;
-}
-
-export function rewriteS3Refs<T extends RefSpec>(spec: T): T {
-  return rewriteWebvizS3RefsToPublicHttp(spec);
 }

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   rewriteS3Refs,
   rewriteWebvizS3RefsToPublicHttp,
-} from "@/zarr-store/webvizRefs";
+} from "@/zarr-store/refs";
 
 const sourceSpec = {
   version: 1,
