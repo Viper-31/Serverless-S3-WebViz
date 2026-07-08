@@ -2,11 +2,11 @@ import { ReferenceStore } from "@zarrita/storage";
 import * as zarr from "zarrita";
 import { createZarritaByteCache } from "@/zarr-store/byteCache";
 import { validateRefSpecZarrayMetadata } from "@/zarr-store/codecMetadata";
-import { prepareWebvizRefSpec } from "@/zarr-store/webvizRefs";
+import { rewriteS3Refs } from "@/zarr-store/webvizRefs";
 import type {
   ByteCacheOptions,
   ReferencedZarrStore,
-  ReferencedZarrStoreDependencies,
+  ZarrDeps,
   RefSpec,
   ZarrKind,
 } from "@/zarr-store/types";
@@ -18,7 +18,7 @@ const DEFAULT_BYTE_CACHE: ByteCacheOptions = {
 
 const DEFAULT_RANGE_COALESCE_SIZE = 32768;
 
-function defaultDependencies(): ReferencedZarrStoreDependencies {
+function defaultDependencies(): ZarrDeps {
   return { zarr, ReferenceStore };
 }
 
@@ -33,6 +33,81 @@ function openOptions(kind: ZarrKind) {
   return { kind };
 }
 
+async function resolveSpec(input: {
+  refUrl?: string;
+  refSpec?: RefSpec;
+  fetchRef?: typeof fetch;
+  checkCodec?: boolean;
+}): Promise<RefSpec> {
+  const sourceSpec =
+    input.refSpec ?? (await loadRefSpec(input.refUrl!, input.fetchRef));
+
+  if (!input.refSpec && !input.refUrl) {
+    throw new Error("Either refSpec or refUrl must be provided");
+  }
+
+  const preparedRefSpec = rewriteS3Refs(sourceSpec);
+
+  if (input.checkCodec ?? true) {
+    validateRefSpecZarrayMetadata(preparedRefSpec);
+  }
+
+  return preparedRefSpec;
+}
+
+async function assembleStore(
+  deps: ZarrDeps,
+  preparedRefSpec: RefSpec,
+  options: {
+    rangeCoalescing?: boolean;
+    byteCache?: false | ByteCacheOptions;
+  },
+): Promise<unknown> {
+  const baseStore = await deps.ReferenceStore.fromSpec(preparedRefSpec);
+  const wrappers: Array<(store: unknown) => unknown> = [];
+
+  if (options.rangeCoalescing ?? true) {
+    wrappers.push((store) =>
+      deps.zarr.withRangeCoalescing(store, {
+        coalesceSize: DEFAULT_RANGE_COALESCE_SIZE,
+      }),
+    );
+  }
+
+  if (options.byteCache !== false) {
+    const byteCache = options.byteCache ?? DEFAULT_BYTE_CACHE;
+    wrappers.push((store) =>
+      deps.zarr.withByteCaching(store, {
+        cache: createZarritaByteCache(byteCache),
+      }),
+    );
+  }
+
+  return deps.zarr.extendStore(baseStore, ...wrappers);
+}
+
+async function openTargetNode(
+  deps: ZarrDeps,
+  store: unknown,
+  openPath: string | undefined,
+  requestedKind: ZarrKind,
+): Promise<{ root: unknown; node: unknown }> {
+  const rootLocation = deps.zarr.root(store);
+  const root = await deps.zarr.open.v2(rootLocation, openOptions("group"));
+
+  const node =
+    openPath === undefined
+      ? root
+      : await deps.zarr.open.v2(
+          resolvePath(root, openPath),
+          openOptions(requestedKind),
+        );
+
+  return { root, node };
+}
+
+// Public API ────────────────────────────────────────────────────
+
 export async function loadRefSpec(
   refUrl: string,
   fetchRef: typeof fetch = fetch,
@@ -45,7 +120,7 @@ export async function loadRefSpec(
   return response.json() as Promise<RefSpec>;
 }
 
-export async function openReferencedZarrStore(input: {
+export async function openZarrStore(input: {
   refUrl?: string;
   refSpec?: RefSpec;
   path?: string;
@@ -53,62 +128,22 @@ export async function openReferencedZarrStore(input: {
   kind?: ZarrKind;
   rangeCoalescing?: boolean;
   byteCache?: false | ByteCacheOptions;
-  validateMetadata?: boolean;
+  checkCodec?: boolean;
   fetchRef?: typeof fetch;
-  dependencies?: ReferencedZarrStoreDependencies;
+  dependencies?: ZarrDeps;
 }): Promise<ReferencedZarrStore> {
-  const dependencies = input.dependencies ?? defaultDependencies();
-  const sourceSpec =
-    input.refSpec ?? (await loadRefSpec(input.refUrl ?? "", input.fetchRef));
-
-  if (!input.refSpec && !input.refUrl) {
-    throw new Error("refUrl or refSpec is required");
-  }
-
-  const preparedRefSpec = prepareWebvizRefSpec(sourceSpec);
-
-  if (input.validateMetadata ?? true) {
-    validateRefSpecZarrayMetadata(preparedRefSpec);
-  }
-
-  const baseStore = await dependencies.ReferenceStore.fromSpec(preparedRefSpec);
-  const wrappers: Array<(store: unknown) => unknown> = [];
-
-  if (input.rangeCoalescing ?? true) {
-    wrappers.push((store) =>
-      dependencies.zarr.withRangeCoalescing(store, {
-        coalesceSize: DEFAULT_RANGE_COALESCE_SIZE,
-      }),
-    );
-  }
-
-  if (input.byteCache !== false) {
-    const byteCache = input.byteCache ?? DEFAULT_BYTE_CACHE;
-    wrappers.push((store) =>
-      dependencies.zarr.withByteCaching(store, {
-        cache: createZarritaByteCache(byteCache),
-      }),
-    );
-  }
-
-  const store = await dependencies.zarr.extendStore(baseStore, ...wrappers);
+  const preparedRefSpec = await resolveSpec(input);
+  const deps = input.dependencies ?? defaultDependencies();
+  const store = await assembleStore(deps, preparedRefSpec, input);
 
   const openPath = input.arrayPath ?? input.path;
   const requestedKind = input.kind ?? (input.arrayPath ? "array" : "group");
-
-  const rootLocation = dependencies.zarr.root(store);
-  const root = await dependencies.zarr.open.v2(
-    rootLocation,
-    openOptions("group"),
+  const { root, node } = await openTargetNode(
+    deps,
+    store,
+    openPath,
+    requestedKind,
   );
-
-  const node =
-    openPath === undefined
-      ? root
-      : await dependencies.zarr.open.v2(
-          resolvePath(root, openPath),
-          openOptions(requestedKind),
-        );
 
   return {
     store,
@@ -117,17 +152,11 @@ export async function openReferencedZarrStore(input: {
     preparedRefSpec,
 
     async getArray(path: string) {
-      return dependencies.zarr.open.v2(
-        resolvePath(root, path),
-        openOptions("array"),
-      );
+      return deps.zarr.open.v2(resolvePath(root, path), openOptions("array"));
     },
 
     async openNode(path: string, kind: ZarrKind = "group") {
-      return dependencies.zarr.open.v2(
-        resolvePath(root, path),
-        openOptions(kind),
-      );
+      return deps.zarr.open.v2(resolvePath(root, path), openOptions(kind));
     },
   };
 }
