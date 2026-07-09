@@ -17,15 +17,17 @@ const mapAddControl = vi.fn();
 
 vi.mock("maplibre-gl", () => ({
   default: {
-    Map: vi.fn(() => ({
-      on: mapOn,
-      setProjection: mapSetProjection,
-      remove: mapRemove,
-      addControl: mapAddControl,
-      addLayer: vi.fn(),
-      removeLayer: vi.fn(),
-      getLayer: vi.fn(),
-    })),
+    Map: vi.fn(function () {
+      return {
+        on: mapOn,
+        setProjection: mapSetProjection,
+        remove: mapRemove,
+        addControl: mapAddControl,
+        addLayer: vi.fn(),
+        removeLayer: vi.fn(),
+        getLayer: vi.fn(),
+      };
+    }),
     AttributionControl: vi.fn(),
   },
 }));
