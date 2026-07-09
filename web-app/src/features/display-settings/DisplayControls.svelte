@@ -59,7 +59,7 @@
           ><span>Colour map</span><select
             value={displayColormap}
             onchange={handleColormapChange}
-            >{#each Object.keys(ecmwfColorMaps) as key}<option value={key}
+            >{#each Object.keys(ecmwfColorMaps) as key (key)}<option value={key}
                 >{key}</option
               >{/each}</select
           ></label

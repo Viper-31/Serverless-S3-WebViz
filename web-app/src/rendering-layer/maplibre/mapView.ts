@@ -91,6 +91,7 @@ function setPaintPropertyIfLayerExists(
   value: unknown,
 ) {
   if (!map.getLayer(layerId)) return;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- MapLibre's setPaintProperty types don't encode the property→value dependency
   map.setPaintProperty(layerId, property, value as any);
 }
 
