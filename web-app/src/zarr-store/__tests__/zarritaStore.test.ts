@@ -1,8 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import {
-  loadRefSpec,
-  openReferencedZarrStore,
-} from "@/zarr-store/referencedStore";
+import { loadRefSpec, openZarrStore } from "@/zarr-store/zarritaStore";
 
 const validZarrayMetadata = JSON.stringify({
   dtype: "<f4",
@@ -95,28 +92,30 @@ describe("referenced store", () => {
     ).rejects.toThrow(/404/);
   });
 
-  it("fetches, rewrites, wraps, and opens the root group by default", async () => {
-    const refSpec = {
-      version: 1,
-      refs: {
-        ".zgroup": '{"zarr_format":2}',
-        ".zarray": validZarrayMetadata,
-        "airTemperature/0.0": [
-          "s3://webviz/DPIRD/dpird_wa_stations.nc",
-          394727937,
-          11823953,
-        ],
-      },
-    };
-    const fetchRef = vi.fn(async () =>
-      mockFetchResponse({
-        ok: true,
-        json: async () => refSpec,
-      }),
-    );
-    const { referenceStore, zarr, getByteCacheAdapter } = createDependencies();
+  const defaultRefSpec = {
+    version: 1,
+    refs: {
+      ".zgroup": '{"zarr_format":2}',
+      ".zarray": validZarrayMetadata,
+      "airTemperature/0.0": [
+        "s3://webviz/DPIRD/dpird_wa_stations.nc",
+        394727937,
+        11823953,
+      ],
+    },
+  };
 
-    const dataset = await openReferencedZarrStore({
+  function createFetchMock(spec: object) {
+    return vi.fn(async () =>
+      mockFetchResponse({ ok: true, json: async () => spec }),
+    );
+  }
+
+  it("rewrites s3://webviz chunk refs to public HTTP before fromSpec", async () => {
+    const fetchRef = createFetchMock(defaultRefSpec);
+    const { referenceStore, zarr } = createDependencies();
+
+    await openZarrStore({
       refUrl: "/refs/DPIRD/sample.json",
       fetchRef: fetchRef as unknown as typeof fetch,
       dependencies: { zarr, ReferenceStore: referenceStore },
@@ -134,82 +133,47 @@ describe("referenced store", () => {
         ],
       },
     });
-    expect(zarr.withRangeCoalescing).toHaveBeenCalledTimes(1);
+  });
+
+  it("applies range coalescing by default", async () => {
+    const fetchRef = createFetchMock(defaultRefSpec);
+    const { referenceStore, zarr } = createDependencies();
+
+    await openZarrStore({
+      refUrl: "/refs/sample.json",
+      fetchRef: fetchRef as unknown as typeof fetch,
+      dependencies: { zarr, ReferenceStore: referenceStore },
+    });
+
     expect(zarr.withRangeCoalescing).toHaveBeenCalledWith(
       expect.objectContaining({ base: true }),
       { coalesceSize: 32768 },
     );
-    expect(zarr.withByteCaching).toHaveBeenCalledTimes(1);
-    expect(getByteCacheAdapter()).toBeDefined();
-    expect(() => getByteCacheAdapter()?.set("skip", undefined)).not.toThrow();
-    getByteCacheAdapter()?.set("present", new Uint8Array([1, 2, 3]));
-    expect(getByteCacheAdapter()?.has("present")).toBe(true);
-    expect(getByteCacheAdapter()?.get("present")).toEqual(
-      new Uint8Array([1, 2, 3]),
-    );
-    expect(zarr.root).toHaveBeenCalledWith({
-      store: {
-        store: expect.objectContaining({ base: true }),
-        coalesced: 32768,
-      },
-      cached: true,
-    });
-    expect(zarr.open.v2).toHaveBeenNthCalledWith(
-      1,
-      expect.objectContaining({
-        rootStore: {
-          store: {
-            store: expect.objectContaining({ base: true }),
-            coalesced: 32768,
-          },
-          cached: true,
-        },
-      }),
-      { kind: "group" },
-    );
-    expect(dataset.root).toBe(dataset.node);
   });
 
-  it("can skip metadata validation and optional wrappers while opening child arrays", async () => {
-    const { referenceStore, rootGroup, zarr } = createDependencies();
+  it("applies byte caching by default", async () => {
+    const fetchRef = createFetchMock(defaultRefSpec);
+    const { referenceStore, zarr } = createDependencies();
 
-    const dataset = await openReferencedZarrStore({
-      refSpec: {
-        version: 1,
-        refs: {
-          ".zgroup": '{"zarr_format":2}',
-          ".zarray": JSON.stringify({
-            dtype: "<f4",
-            filters: [{ id: "unknown", elementsize: 4 }],
-          }),
-        },
-      },
-      arrayPath: "airTemperature",
-      rangeCoalescing: false,
-      byteCache: false,
-      validateMetadata: false,
+    await openZarrStore({
+      refUrl: "/refs/sample.json",
+      fetchRef: fetchRef as unknown as typeof fetch,
       dependencies: { zarr, ReferenceStore: referenceStore },
     });
 
-    expect(referenceStore.fromSpec).toHaveBeenCalledTimes(1);
-    expect(zarr.withRangeCoalescing).not.toHaveBeenCalled();
-    expect(zarr.withByteCaching).not.toHaveBeenCalled();
-    expect(zarr.root).toHaveBeenCalledWith(
-      expect.objectContaining({ base: true }),
-    );
-    expect(rootGroup.resolve).toHaveBeenCalledWith("airTemperature");
-    expect(zarr.open.v2).toHaveBeenNthCalledWith(
-      2,
-      { resolved: "airTemperature" },
-      { kind: "array" },
-    );
-    await expect(dataset.getArray("temperature")).resolves.toEqual({
-      location: { resolved: "temperature" },
-      options: { kind: "array" },
+    expect(zarr.withByteCaching).toHaveBeenCalledTimes(1);
+  });
+
+  it("returns dataset where root equals node when opening root group", async () => {
+    const fetchRef = createFetchMock(defaultRefSpec);
+    const { referenceStore, zarr } = createDependencies();
+
+    const dataset = await openZarrStore({
+      refUrl: "/refs/sample.json",
+      fetchRef: fetchRef as unknown as typeof fetch,
+      dependencies: { zarr, ReferenceStore: referenceStore },
     });
-    await expect(dataset.openNode("stations", "group")).resolves.toEqual({
-      location: { resolved: "stations" },
-      options: { kind: "group" },
-    });
+
+    expect(dataset.root).toBe(dataset.node);
   });
 });

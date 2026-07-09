@@ -20,7 +20,7 @@ const ZARR_DTYPE_BYTE_WIDTH: Record<string, number> = {
   "<u8": 8,
 };
 
-export function validateZarrayCodecMetadata(metadata: {
+export function validateCodecs(metadata: {
   dtype?: string;
   compressor?: unknown;
   filters?: CodecFilter[] | null;
@@ -76,12 +76,12 @@ export function validateZarrayCodecMetadata(metadata: {
   return true;
 }
 
-export function validateRefSpecZarrayMetadata(spec: RefSpec): true {
+export function validateAllCodecs(spec: RefSpec): true {
   for (const [key, value] of Object.entries(spec.refs ?? {})) {
     if (!key.endsWith("/.zarray") && key !== ".zarray") continue;
     if (typeof value !== "string") continue;
 
-    validateZarrayCodecMetadata(JSON.parse(value));
+    validateCodecs(JSON.parse(value));
   }
 
   return true;

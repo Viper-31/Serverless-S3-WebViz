@@ -25,7 +25,7 @@
       >{ecmwfDisplayVariables[variableKey].label}</DropdownToggle
     >
     <DropdownMenu>
-      {#each ecmwfDisplayVariableKeys as key}
+      {#each ecmwfDisplayVariableKeys as key (key)}
         <DropdownItem
           active={key === variableKey}
           onclick={() => onVariableChange(key)}

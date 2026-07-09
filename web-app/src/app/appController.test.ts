@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { createAppController } from "./appController";
 import type { RasterRenderer } from "@/rendering-layer/Renderer";
+import { type EcmwfInventoryEntry } from "@/datasets/inventory_parser";
 
 function makeRenderer(): RasterRenderer & { calls: any[] } {
   const calls: any[] = [];
@@ -18,6 +19,9 @@ function makeRenderer(): RasterRenderer & { calls: any[] } {
       async (input) => void calls.push(["updateVariableDisplay", input]),
     ),
     readValidTime: vi.fn(async () => 1717286400),
+    prefetchNextRef: vi.fn(async (request) => {
+      void calls.push(["prefetchNextRef", request]);
+    }),
     remove: vi.fn(() => {
       layer = false;
       void calls.push(["remove"]);
@@ -32,6 +36,25 @@ function deferred<T>() {
     resolve = res;
   });
   return { promise, resolve };
+}
+
+function twoRefCatalog(): EcmwfInventoryEntry[] {
+  return [
+    {
+      datasetKind: "ecmwf" as const,
+      sourceObject: "ECMWF/2024/01/02.nc",
+      refPath: "/refs/ECMWF/2024/01/02.nc.json",
+      refStartDate: "2024-01-02",
+      refEndDate: "2024-01-08",
+    },
+    {
+      datasetKind: "ecmwf" as const,
+      sourceObject: "ECMWF/2024/01/09.nc",
+      refPath: "/refs/ECMWF/2024/01/09.nc.json",
+      refStartDate: "2024-01-09",
+      refEndDate: "2024-01-15",
+    },
+  ];
 }
 
 describe("createAppController", () => {
@@ -184,5 +207,126 @@ describe("createAppController", () => {
     controller.setTimeSliderActive(false);
     await controller.commitGlobalTimeIndex();
     expect(renderer.readValidTime).toHaveBeenCalled();
+  });
+
+  it("triggers prefetch when ecmwfTimeIndex reaches threshold after commit", async () => {
+    const renderer = makeRenderer();
+    const controller = createAppController({
+      loadInventoryCatalog: async () => ({
+        ecmwf: twoRefCatalog(),
+        dpird: [],
+      }),
+    });
+    await controller.init();
+    await controller.attachRenderer(renderer);
+    (renderer.prefetchNextRef as any).mockClear();
+
+    controller.setTimeSliderActive(true);
+    await controller.setGlobalTimeIndex(11);
+    controller.setTimeSliderActive(false);
+    await controller.commitGlobalTimeIndex();
+
+    expect(renderer.prefetchNextRef).toHaveBeenCalledWith(
+      expect.objectContaining({
+        refPath: "/refs/ECMWF/2024/01/09.nc.json",
+        variableId: "t2m",
+        selector: {
+          time: { selected: 0, type: "index" },
+          step: { selected: 0, type: "index" },
+        },
+      }),
+    );
+  });
+
+  it("does not trigger prefetch when ecmwfTimeIndex is below threshold", async () => {
+    const renderer = makeRenderer();
+    const controller = createAppController({
+      loadInventoryCatalog: async () => ({
+        ecmwf: twoRefCatalog(),
+        dpird: [],
+      }),
+    });
+    await controller.init();
+    await controller.attachRenderer(renderer);
+    (renderer.prefetchNextRef as any).mockClear();
+
+    controller.setTimeSliderActive(true);
+    await controller.setGlobalTimeIndex(10);
+    controller.setTimeSliderActive(false);
+    await controller.commitGlobalTimeIndex();
+
+    expect(renderer.prefetchNextRef).not.toHaveBeenCalled();
+  });
+
+  it("does not trigger prefetch at the last reference in the catalog", async () => {
+    const renderer = makeRenderer();
+    const catalog = twoRefCatalog();
+    const controller = createAppController({
+      loadInventoryCatalog: async () => ({
+        ecmwf: catalog,
+        dpird: [],
+      }),
+    });
+    await controller.init();
+    await controller.attachRenderer(renderer);
+    (renderer.prefetchNextRef as any).mockClear();
+
+    controller.setTimeSliderActive(true);
+    await controller.setGlobalTimeIndex(25);
+    controller.setTimeSliderActive(false);
+    await controller.commitGlobalTimeIndex();
+
+    expect(renderer.prefetchNextRef).not.toHaveBeenCalled();
+  });
+
+  it("re-triggers prefetch with new variable after setVariable near threshold", async () => {
+    const renderer = makeRenderer();
+    const controller = createAppController({
+      loadInventoryCatalog: async () => ({
+        ecmwf: twoRefCatalog(),
+        dpird: [],
+      }),
+    });
+    await controller.init();
+    await controller.attachRenderer(renderer);
+
+    controller.setTimeSliderActive(true);
+    await controller.setGlobalTimeIndex(11);
+    controller.setTimeSliderActive(false);
+    await controller.commitGlobalTimeIndex();
+
+    (renderer.prefetchNextRef as any).mockClear();
+
+    await controller.setVariable("msl");
+
+    expect(renderer.prefetchNextRef).toHaveBeenCalledWith(
+      expect.objectContaining({
+        refPath: "/refs/ECMWF/2024/01/09.nc.json",
+        variableId: "msl",
+      }),
+    );
+  });
+
+  it("does not trigger prefetch from setVariable when below threshold", async () => {
+    const renderer = makeRenderer();
+    const controller = createAppController({
+      loadInventoryCatalog: async () => ({
+        ecmwf: twoRefCatalog(),
+        dpird: [],
+      }),
+    });
+    await controller.init();
+    await controller.attachRenderer(renderer);
+
+    controller.setTimeSliderActive(true);
+    await controller.setGlobalTimeIndex(5);
+    controller.setTimeSliderActive(false);
+    await controller.commitGlobalTimeIndex();
+
+    (renderer.prefetchNextRef as any).mockClear();
+
+    await controller.setVariable("msl");
+
+    expect(renderer.prefetchNextRef).not.toHaveBeenCalled();
   });
 });

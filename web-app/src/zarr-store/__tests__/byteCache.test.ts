@@ -5,6 +5,22 @@ import {
 } from "@/zarr-store/byteCache";
 
 describe("byte cache", () => {
+  it("rejects missing key reads", () => {
+    const cache = createByteCache({
+      maxBytes: 24 * 1024 * 1024,
+      maxEntries: 256,
+    });
+
+    expect(cache.get("a")).toBeUndefined();
+    expect(cache.has("a")).toBe(false);
+  });
+
+  it("accepts writes at exactly the memory budget", () => {
+    const cache = createByteCache({ maxBytes: 8, maxEntries: 256 });
+    expect(cache.set("a", new Uint8Array(8))).toBe(true);
+    expect(cache.has("a")).toBe(true);
+  });
+
   it("rejects writes that exceed the memory budget", () => {
     const maxBytes = 24 * 1024 * 1024;
     const cache = createByteCache({ maxBytes, maxEntries: 256 });
@@ -62,5 +78,16 @@ describe("byte cache", () => {
 
     expect(cache.has("a")).toBe(true);
     expect(cache.get("a")).toEqual(new Uint8Array([1, 2, 3]));
+  });
+
+  it("evicts multiple entries when needed to stay under the byte budget", () => {
+    const cache = createByteCache({ maxBytes: 20, maxEntries: 256 });
+    cache.set("a", new Uint8Array(10));
+    cache.set("b", new Uint8Array(10)); // bytes at 20, at capacity
+    cache.set("c", new Uint8Array(15)); // needs 15 → evicts a (-10, still over) → evicts b (-10, now 15)
+
+    expect(cache.has("a")).toBe(false);
+    expect(cache.has("b")).toBe(false);
+    expect(cache.has("c")).toBe(true);
   });
 });

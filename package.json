@@ -20,6 +20,12 @@
     "prettier-plugin-svelte": "^4.1.0"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx,css,scss,html,json,yaml,md}": "prettier --write --ignore-unknown"
+    "*.{js,mjs,cjs,jsx,ts,mts,tsx,css,svelte,md}": [
+      "prettier --write --ignore-unknown",
+      "web-app/node_modules/.bin/eslint --fix --config web-app/eslint.config.js"
+    ],
+    "*.{scss,html,json,yaml}": [
+      "prettier --write --ignore-unknown"
+    ]
   }
 }
