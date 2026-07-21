@@ -19,7 +19,7 @@ async function loadDpirdSpec(): Promise<RefSpec> {
   return JSON.parse(
     await readFile(
       new URL(
-        "../../../../public/refs/DPIRD/dpird_wa_stations.nc.json",
+        "../../../../public/refs/DPIRD/DPIRD_final_stations.nc.json",
         import.meta.url,
       ),
       "utf8",
@@ -40,6 +40,7 @@ function replaceJsonEntry(
   return { ...spec, refs };
 }
 
+// This one is loosy-goosy, hardcoded change to the DPIRD reference "time/.zattrs"
 function expectEqual(path: string, actual: unknown, expected: unknown) {
   if (actual !== expected) {
     throw new SchemaError(
@@ -208,7 +209,7 @@ describe("DPIRD metadata schema", () => {
     const spec = await loadDpirdSpec();
     const refs = {
       ...(spec.refs ?? {}),
-      "code/0": ["s3://webviz/DPIRD/dpird_wa_stations.nc", 0, 10],
+      "code/0": ["s3://webviz/DPIRD/DPIRD_final_stations.nc", 0, 10],
     };
 
     expect(() => validateDpirdRefSpecSchema({ ...spec, refs })).toThrow(

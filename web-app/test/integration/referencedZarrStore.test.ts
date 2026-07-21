@@ -41,7 +41,7 @@ function expectDecodedRegion(region: Region, shape: number[]) {
 onlineDescribe("ZarrStore integration", () => {
   it("opens a DPIRD ref spec and rewrites webviz chunk URLs", async () => {
     const refSpec = await loadRefSpec(
-      "../../public/refs/DPIRD/dpird_wa_stations.nc.json",
+      "../../public/refs/DPIRD/DPIRD_final_stations.nc.json",
     );
 
     const dataset = await openZarrStore({
@@ -56,14 +56,14 @@ onlineDescribe("ZarrStore integration", () => {
     expect(dataset.root).toBeTruthy();
     expect(dataset.node).toBeTruthy();
     expect(chunkRef?.[0]).toBe(
-      "https://projects.pawsey.org.au/webviz/DPIRD/dpird_wa_stations.nc",
+      "https://projects.pawsey.org.au/webviz/DPIRD/DPIRD_final_stations.nc",
     );
     await expect(dataset.openNode("lon", "array")).resolves.toBeTruthy();
   });
 
   it("decodes DPIRD lat, lon, and time with select/get", async () => {
     const refSpec = await loadRefSpec(
-      "../../public/refs/DPIRD/dpird_wa_stations.nc.json",
+      "../../public/refs/DPIRD/DPIRD_final_stations.nc.json",
     );
 
     const dataset = await openZarrStore({ refSpec });

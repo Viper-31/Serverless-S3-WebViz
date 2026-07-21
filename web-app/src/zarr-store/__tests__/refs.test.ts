@@ -7,13 +7,13 @@ const sourceSpec = {
     ".zgroup": '{"zarr_format":2}',
     ".zattrs": '{"title":"DPIRD"}',
     "airTemperature/.zarray":
-      '{"shape":[192,105248],"chunks":[96,52624],"dtype":"<f8","fill_value":"NaN","order":"C","filters":[{"id":"shuffle","elementsize":8},{"id":"zlib","level":7}],"dimension_separator":".","compressor":null,"attributes":{},"zarr_format":2}',
+      '{"shape":[192,105248],"chunks":[96,13156],"dtype":"<f8","fill_value":"NaN","order":"C","filters":[{"id":"shuffle","elementsize":8},{"id":"zlib","level":7}],"dimension_separator":".","compressor":null,"attributes":{},"zarr_format":2}',
     "airTemperature/.zattrs":
       '{"coordinates":"code lat lon","_ARRAY_DIMENSIONS":["station","time"]}',
     "airTemperature/0.0": [
-      "s3://webviz/DPIRD/dpird_wa_stations.nc",
-      394727937,
-      11823953,
+      "s3://webviz/DPIRD/DPIRD_final_stations.nc",
+      487187698,
+      2927801,
     ],
     "airTemperature/1.0": ["https://example.com/already-http.bin", 0, 16],
     "airTemperature/metadata": { nested: ["s3://webviz/unchanged"] },
@@ -27,7 +27,7 @@ describe("ref rewrite", () => {
 
     expect(JSON.stringify(sourceSpec)).toBe(before);
     expect(sourceSpec.refs["airTemperature/0.0"][0]).toBe(
-      "s3://webviz/DPIRD/dpird_wa_stations.nc",
+      "s3://webviz/DPIRD/DPIRD_final_stations.nc",
     );
     expect(next).not.toBe(sourceSpec);
   });
@@ -36,7 +36,7 @@ describe("ref rewrite", () => {
     const prepared = rewriteS3Refs(sourceSpec);
 
     expect(prepared.refs["airTemperature/0.0"][0]).toBe(
-      "https://projects.pawsey.org.au/webviz/DPIRD/dpird_wa_stations.nc",
+      "https://projects.pawsey.org.au/webviz/DPIRD/DPIRD_final_stations.nc",
     );
     expect(prepared.refs["airTemperature/1.0"]).toEqual(
       sourceSpec.refs["airTemperature/1.0"],

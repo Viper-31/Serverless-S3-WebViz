@@ -98,9 +98,9 @@ describe("referenced store", () => {
       ".zgroup": '{"zarr_format":2}',
       ".zarray": validZarrayMetadata,
       "airTemperature/0.0": [
-        "s3://webviz/DPIRD/dpird_wa_stations.nc",
-        394727937,
-        11823953,
+        "s3://webviz/DPIRD/DPIRD_final_stations.nc",
+        487187698,
+        2927801,
       ],
     },
   };
@@ -127,9 +127,9 @@ describe("referenced store", () => {
         ".zgroup": '{"zarr_format":2}',
         ".zarray": validZarrayMetadata,
         "airTemperature/0.0": [
-          "https://projects.pawsey.org.au/webviz/DPIRD/dpird_wa_stations.nc",
-          394727937,
-          11823953,
+          "https://projects.pawsey.org.au/webviz/DPIRD/DPIRD_final_stations.nc",
+          487187698,
+          2927801,
         ],
       },
     });
