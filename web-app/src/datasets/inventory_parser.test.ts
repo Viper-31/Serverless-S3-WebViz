@@ -46,7 +46,7 @@ describe("inventoryParser contract", () => {
   it("builds ECMWF refs from inventory ledger object keys without reading ref JSON files", () => {
     const catalog = buildEcmwfRefCatalogFromInventoryLedger({
       objects: {
-        "DPIRD/dpird_wa_stations.nc": {},
+        "DPIRD/DPIRD_final_stations.nc": {},
         "ECMWF/2024/01/09.nc": {},
         "ECMWF/2024/01/02.nc": {},
       },
@@ -73,7 +73,7 @@ describe("inventoryParser contract", () => {
   it("builds both ECMWF and DPIRD inventory entries from mixed ledger-like input", () => {
     const catalog = buildInventoryCatalog({
       objects: {
-        "DPIRD/dpird_wa_stations.nc": {},
+        "DPIRD/DPIRD_final_stations.nc": {},
         "ECMWF/2024/01/02.nc": {},
         "ECMWF/2024/01/09.nc": {},
         "unrelated/object.nc": {},
@@ -100,8 +100,8 @@ describe("inventoryParser contract", () => {
     expect(catalog.dpird).toEqual([
       {
         datasetKind: "dpird",
-        refPath: "/refs/DPIRD/dpird_wa_stations.nc.json",
-        sourceObject: "DPIRD/dpird_wa_stations.nc",
+        refPath: "/refs/DPIRD/DPIRD_final_stations.nc.json",
+        sourceObject: "DPIRD/DPIRD_final_stations.nc",
       },
     ]);
   });
