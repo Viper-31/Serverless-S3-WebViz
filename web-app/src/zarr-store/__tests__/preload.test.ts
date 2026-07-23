@@ -101,4 +101,80 @@ describe("preloadEcmwfChunks", () => {
       signal: controller.signal,
     });
   });
+
+  it("dedupes concurrent warms for the same chunk coordinates", async () => {
+    let release!: () => void;
+    const gate = new Promise<void>((r) => {
+      release = r;
+    });
+    const getChunk = vi.fn().mockImplementation(async () => {
+      await gate;
+      return new Uint8Array(4);
+    });
+    const mockArray = {
+      chunks: [2, 113, 111, 151],
+      shape: [14, 113, 111, 151],
+      getChunk,
+    };
+    const mockRoot = { resolve: vi.fn().mockReturnValue({}) };
+    vi.mocked(zarr.root).mockReturnValue(mockRoot as never);
+    vi.mocked(zarr.open.v2).mockResolvedValue(mockArray as never);
+
+    const store = {} as never;
+    // time 0 and 1 → same timeC=0 with chunk size 2
+    const p1 = preloadEcmwfChunks(store, "t2m", 0, 0);
+    const p2 = preloadEcmwfChunks(store, "t2m", 1, 0);
+
+    // Allow both to register and open array before release
+    await Promise.resolve();
+    await Promise.resolve();
+
+    // Still one spatial getChunk set in flight (1 lat × 1 lon)
+    expect(getChunk).toHaveBeenCalledTimes(1);
+
+    release();
+    await Promise.all([p1, p2]);
+    expect(getChunk).toHaveBeenCalledTimes(1);
+  });
+
+  it("fetches independently for different time-chunk coordinates", async () => {
+    const getChunk = vi.fn().mockResolvedValue(new Uint8Array(4));
+    const mockArray = {
+      chunks: [2, 113, 111, 151],
+      shape: [14, 113, 111, 151],
+      getChunk,
+    };
+    const mockRoot = { resolve: vi.fn().mockReturnValue({}) };
+    vi.mocked(zarr.root).mockReturnValue(mockRoot as never);
+    vi.mocked(zarr.open.v2).mockResolvedValue(mockArray as never);
+
+    const store = {} as never;
+    await Promise.all([
+      preloadEcmwfChunks(store, "t2m", 0, 0), // timeC 0
+      preloadEcmwfChunks(store, "t2m", 2, 0), // timeC 1
+    ]);
+
+    expect(getChunk).toHaveBeenCalledTimes(2);
+    expect(getChunk).toHaveBeenCalledWith([0, 0, 0, 0], expect.any(Object));
+    expect(getChunk).toHaveBeenCalledWith([1, 0, 0, 0], expect.any(Object));
+  });
+
+  it("clears in-flight entry after settle so a later warm can run again", async () => {
+    const getChunk = vi.fn().mockResolvedValue(new Uint8Array(4));
+    const mockArray = {
+      chunks: [2, 1, 10, 10],
+      shape: [4, 1, 10, 10],
+      getChunk,
+    };
+    const mockRoot = { resolve: vi.fn().mockReturnValue({}) };
+    vi.mocked(zarr.root).mockReturnValue(mockRoot as never);
+    vi.mocked(zarr.open.v2).mockResolvedValue(mockArray as never);
+
+    const store = {} as never;
+    await preloadEcmwfChunks(store, "t2m", 0, 0);
+    await preloadEcmwfChunks(store, "t2m", 0, 0);
+
+    // Second call is a new op (byte-cache would hit in prod; here getChunk runs again)
+    expect(getChunk).toHaveBeenCalledTimes(2);
+  });
 });
