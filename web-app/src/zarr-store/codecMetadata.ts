@@ -20,6 +20,30 @@ const ZARR_DTYPE_BYTE_WIDTH: Record<string, number> = {
   "<u8": 8,
 };
 
+function validateShuffle(
+  filter: CodecFilter,
+  meta: { dtype?: string },
+  hasZlib: boolean,
+  hasShuffle: boolean,
+): true {
+  if (hasZlib) throw new Error("filter order invalid");
+  if (hasShuffle) throw new Error("duplicate shuffle filter");
+  if (filter.elementsize == null)
+    throw new Error("shuffle elementsize required");
+
+  const expected = meta.dtype ? ZARR_DTYPE_BYTE_WIDTH[meta.dtype] : undefined;
+  if (expected == null || expected !== filter.elementsize)
+    throw new Error("dtype mismatch");
+
+  return true;
+}
+
+function validateZlib(hasShuffle: boolean, hasZlib: boolean): true {
+  if (!hasShuffle) throw new Error("filter order invalid");
+  if (hasZlib) throw new Error("duplicate zlib filter");
+  return true;
+}
+
 export function validateCodecs(metadata: {
   dtype?: string;
   compressor?: unknown;
@@ -33,30 +57,6 @@ export function validateCodecs(metadata: {
 
   let seenZlib = false;
   let seenShuffle = false;
-
-  const validateShuffle = (
-    filter: CodecFilter,
-    meta: { dtype?: string },
-    hasZlib: boolean,
-    hasShuffle: boolean,
-  ): true => {
-    if (hasZlib) throw new Error("filter order invalid");
-    if (hasShuffle) throw new Error("duplicate shuffle filter");
-    if (filter.elementsize == null)
-      throw new Error("shuffle elementsize required");
-
-    const expected = meta.dtype ? ZARR_DTYPE_BYTE_WIDTH[meta.dtype] : undefined;
-    if (expected == null || expected !== filter.elementsize)
-      throw new Error("dtype mismatch");
-
-    return true;
-  };
-
-  const validateZlib = (hasShuffle: boolean, hasZlib: boolean): true => {
-    if (!hasShuffle) throw new Error("filter order invalid");
-    if (hasZlib) throw new Error("duplicate zlib filter");
-    return true;
-  };
 
   for (const filter of filters) {
     switch (filter.id) {
