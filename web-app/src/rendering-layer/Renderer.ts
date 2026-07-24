@@ -20,6 +20,7 @@ export type RasterRenderer = {
   remove(): void;
   hasLayer(): boolean;
   prefetchNextRef(request: RasterLayerRequest): Promise<void>;
+  prefetchNextTimeChunk(request: RasterLayerRequest): Promise<void>;
 };
 
 export function createRasterRenderer(options: {
@@ -37,6 +38,8 @@ export function createRasterRenderer(options: {
     remove: () => rasterLayer.remove(),
     hasLayer: () => rasterLayer.hasLayer(),
     prefetchNextRef: (request) => rasterLayer.prefetchNextRef(request),
+    prefetchNextTimeChunk: (request) =>
+      rasterLayer.prefetchNextTimeChunk(request),
   };
 }
 

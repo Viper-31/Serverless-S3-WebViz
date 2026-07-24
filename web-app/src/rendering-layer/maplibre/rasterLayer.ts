@@ -28,6 +28,7 @@ export type RasterLayerHandle = {
   remove(): Promise<void>;
   hasLayer(): boolean;
   prefetchNextRef(request: RasterLayerRequest): Promise<void>;
+  prefetchNextTimeChunk(request: RasterLayerRequest): Promise<void>;
 };
 
 type RasterLayerState = {
@@ -38,7 +39,9 @@ type RasterLayerState = {
   prefetchedRefPath: string | undefined;
   prefetchedVariableId: string | undefined;
   prefetchToken: number;
-  prefetchAbort: AbortController | undefined;
+  prefetchAbort: AbortController | undefined; // Reference bundle prefetch abort
+  chunkWarmAbort: AbortController | undefined; // Chunk prefetch abort
+  prefetchedLoadingSink: ((cb: LoadingStateCallback) => void) | undefined;
 };
 
 type RasterLayerOptions = {
@@ -79,6 +82,11 @@ function hasMapLayer(map: MapLibreLayerHost): boolean {
   return Boolean(map.getLayer(ECMWF_LAYER_ID));
 }
 
+function abortChunkWarm(state: RasterLayerState): void {
+  state.chunkWarmAbort?.abort();
+  state.chunkWarmAbort = undefined;
+}
+
 function removeMapLayer(state: RasterLayerState, map: MapLibreLayerHost) {
   if (hasMapLayer(map)) {
     map.removeLayer(ECMWF_LAYER_ID);
@@ -106,6 +114,13 @@ function buildReadySignal(userCallback?: LoadingStateCallback): ReadySignal {
   return { callback, ready };
 }
 
+function selectedIndex(
+  selector: RasterLayerRequest["selector"],
+  key: "time" | "step",
+): number {
+  return Number(selector[key]!.selected);
+}
+
 async function prefetchRasterMap(
   state: RasterLayerState,
   options: RasterLayerOptions,
@@ -128,9 +143,16 @@ async function prefetchRasterMap(
   state.prefetchedVariableId = request.variableId;
 
   try {
+    let loadingCb: LoadingStateCallback | undefined =
+      options.onLoadingStateChange;
+    state.prefetchedLoadingSink = (next) => {
+      loadingCb = next;
+    };
+
     const bundle = await createEcmwfLayer({
       ...request,
       localRangeCoalescing: options.localRangeCoalescing(),
+      onLoadingStateChange: (s) => loadingCb?.(s),
     });
 
     if (token !== state.prefetchToken) return;
@@ -138,8 +160,8 @@ async function prefetchRasterMap(
     await preloadEcmwfChunks(
       bundle.store,
       request.variableId,
-      request.selector.time!.selected,
-      request.selector.step!.selected,
+      selectedIndex(request.selector, "time"),
+      selectedIndex(request.selector, "step"),
       abort.signal,
     );
     // Check token again after preload, since it may have been invalidated during the async operation
@@ -151,9 +173,63 @@ async function prefetchRasterMap(
     state.prefetchedRefPath = undefined;
     state.prefetchedVariableId = undefined;
     state.prefetchAbort = undefined;
+    state.prefetchedLoadingSink = undefined;
     // Silently discard failed prefetch, consumer falls back to
-    // createEcmwfLayer on normal replace
+    // createEcmwfLayer (cold-path) on normal replace
   }
+}
+
+async function prefetchTimeChunk(
+  state: RasterLayerState,
+  request: RasterLayerRequest,
+): Promise<void> {
+  if (state.disposed) return;
+  if (!state.active || state.active.refPath !== request.refPath) return;
+
+  if (!state.chunkWarmAbort) {
+    state.chunkWarmAbort = new AbortController();
+  }
+  const { signal } = state.chunkWarmAbort;
+
+  try {
+    await preloadEcmwfChunks(
+      state.active.store,
+      request.variableId,
+      selectedIndex(request.selector, "time"),
+      selectedIndex(request.selector, "step"),
+      signal,
+    );
+  } catch {
+    // Silently discard failed prefetch, consumer falls back to
+    // createEcmwfLayer (cold-path) on normal replace
+  }
+}
+
+function consumePrefetch(
+  state: RasterLayerState,
+  request: RasterLayerRequest,
+  onLoadingStateChange: LoadingStateCallback,
+): EcmwfLayerBundle | undefined {
+  if (
+    !state.prefetched ||
+    state.prefetchedRefPath !== request.refPath ||
+    state.prefetchedVariableId !== request.variableId
+  ) {
+    return undefined;
+  }
+
+  const prefetchHit = state.prefetched;
+  state.prefetched = undefined;
+  state.prefetchedRefPath = undefined;
+  state.prefetchedVariableId = undefined;
+
+  prefetchHit.layer.setClim?.(request.display.clim);
+  prefetchHit.layer.setColormap?.(request.display.rgbStops);
+  state.prefetchedLoadingSink?.(onLoadingStateChange);
+  state.prefetchedLoadingSink = undefined;
+
+  onLoadingStateChange({ loading: false, metadata: false, chunks: false });
+  return prefetchHit;
 }
 
 async function createRasterMap(
@@ -163,36 +239,20 @@ async function createRasterMap(
 ): Promise<void> {
   if (state.disposed) return;
 
+  abortChunkWarm(state);
   state.currentSelector = request.selector;
 
   const { callback: onLoadingStateChange, ready } = buildReadySignal(
     options.onLoadingStateChange,
   );
 
-  const isPrefetchHit =
-    state.prefetched !== undefined &&
-    state.prefetchedRefPath === request.refPath &&
-    state.prefetchedVariableId === request.variableId;
-
-  let next: EcmwfLayerBundle;
-
-  if (isPrefetchHit) {
-    next = state.prefetched!;
-    state.prefetched = undefined;
-    state.prefetchedRefPath = undefined;
-    state.prefetchedVariableId = undefined;
-
-    void next.layer.setClim?.(request.display.clim);
-    void next.layer.setColormap?.(request.display.rgbStops);
-
-    onLoadingStateChange({ loading: false, metadata: false, chunks: false });
-  } else {
-    next = await createEcmwfLayer({
+  const next =
+    consumePrefetch(state, request, onLoadingStateChange) ??
+    (await createEcmwfLayer({
       ...request,
       localRangeCoalescing: options.localRangeCoalescing(),
       onLoadingStateChange,
-    });
-  }
+    }));
 
   if (state.disposed) return;
   next.ready = ready;
@@ -229,6 +289,7 @@ async function updateRasterMapDisplay(
 ): Promise<void> {
   if (state.disposed) return;
 
+  // Display clim/colourmap must not cancel chunk prefetch
   if (state.active && hasMapLayer(map)) {
     await updateEcmwfLayerDisplay(state.active.layer, input);
   }
@@ -253,6 +314,9 @@ async function disposeRasterMap(
   map: MapLibreLayerHost,
 ): Promise<void> {
   state.disposed = true;
+  abortChunkWarm(state);
+  state.prefetchAbort?.abort();
+  state.prefetchAbort = undefined;
   if (state.active?.ready) {
     try {
       await state.active.ready;
@@ -282,6 +346,8 @@ export function createMapLibreRasterLayer(
     prefetchedVariableId: undefined,
     prefetchToken: 0,
     prefetchAbort: undefined,
+    chunkWarmAbort: undefined,
+    prefetchedLoadingSink: undefined,
   };
   const queue = createOperationQueue();
 
@@ -299,5 +365,6 @@ export function createMapLibreRasterLayer(
     remove: () => disposeRasterMap(state, options.map),
     hasLayer: () => hasActiveRasterMap(state, options.map),
     prefetchNextRef: (request) => prefetchRasterMap(state, options, request),
+    prefetchNextTimeChunk: (request) => prefetchTimeChunk(state, request),
   };
 }

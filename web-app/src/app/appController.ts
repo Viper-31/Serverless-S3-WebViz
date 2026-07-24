@@ -1,6 +1,7 @@
 import {
   ecmwfRefCatalog,
   loadInventoryCatalog,
+  type EcmwfInventoryEntry,
   type InventoryCatalog,
 } from "@/datasets/inventory_parser";
 import {
@@ -22,8 +23,10 @@ import {
   ecmwfTimeIndexToDate,
   formatEcmwfValidTimeSeconds,
   mapEcmwfTimeToGlobalIndex,
+  mapEcmwfGlobalTimeIndex,
 } from "@/features/time-navigation/time_navigation";
 import type { RasterRenderer } from "@/rendering-layer/Renderer";
+import type { RasterLayerRequest } from "@/lib/shared/contracts";
 import { ECMWF_TIME_INDEX_COUNT_PER_REF } from "@/datasets/ecmwf/schema";
 
 export type LoadingState = {
@@ -49,6 +52,8 @@ export type AppState = {
 
 export type AppControllerDeps = {
   loadInventoryCatalog?: typeof loadInventoryCatalog;
+  //  Forward-looking prefetching; default 2. 0 disables all prefetch.
+  prefetchWindow?: number;
 };
 
 export interface AppController {
@@ -87,6 +92,8 @@ type AppControllerContext = {
   layerToken: number;
   lastCommittedSelectionKey: string;
   lastRenderedRefPath: string;
+  prefetchWindow: number;
+  pendingPrefetchToken: number | null;
   setState(patch: Partial<AppState>): void;
   setEcmwf(ecmwf: EcmwfProviderState): void;
 };
@@ -98,7 +105,7 @@ type SelectionOptions = {
 
 const RELEASE_SLIDER_LABEL = "Release slider to update valid time…";
 const LOADING_VALID_TIME_LABEL = "Loading valid time…";
-const ECMWF_PREFETCH_THRESHOLD = 11;
+const DEFAULT_PREFETCH_WINDOW = 2;
 
 const initialEcmwf = createEcmwfState("t2m", "2024-01-02");
 const initialState: AppState = {
@@ -198,28 +205,108 @@ function isLayerTokenStale(ctx: AppControllerContext, token: number): boolean {
   return token !== ctx.layerToken;
 }
 
-function triggerPrefetch(ctx: AppControllerContext): void {
-  if (!ctx.renderer) return;
+function normalizePrefetchWindow(value: number | undefined): number {
+  if (value === undefined || !Number.isFinite(value)) {
+    return DEFAULT_PREFETCH_WINDOW;
+  }
+  return Math.max(0, Math.floor(value));
+}
 
-  const { ecmwf, catalog } = ctx.state;
-  if (ecmwf.ecmwfTimeIndex < ECMWF_PREFETCH_THRESHOLD) return;
+/**
+ * Pure window policy: next `window` global time positions after current,
+ * split into same-ref vs next-ref RasterLayerRequests.
+ * Exported for unit tests.
+ */
+export function buildPrefetchPlan(
+  ecmwf: EcmwfProviderState,
+  catalog: EcmwfInventoryEntry[],
+  window: number,
+): { sameRef: RasterLayerRequest[]; nextRef: RasterLayerRequest[] } {
+  const sameRef: RasterLayerRequest[] = [];
+  const nextRef: RasterLayerRequest[] = [];
 
-  const currentIndex = catalog.ecmwf.findIndex(
-    (entry) => entry.refPath === ecmwf.refPath,
+  if (window <= 0 || catalog.length === 0) {
+    return { sameRef, nextRef };
+  }
+
+  let globalIndex: number;
+  try {
+    globalIndex = mapEcmwfTimeToGlobalIndex(
+      ecmwf.refStartDate,
+      ecmwf.ecmwfTimeIndex,
+      catalog,
+    );
+  } catch {
+    return { sameRef, nextRef };
+  }
+
+  const maxGlobal = catalog.length * ECMWF_TIME_INDEX_COUNT_PER_REF - 1;
+
+  for (let offset = 1; offset <= window; offset++) {
+    const target = globalIndex + offset;
+    if (target > maxGlobal) break;
+
+    const mapped = mapEcmwfGlobalTimeIndex(target, catalog);
+    const isSameRef = mapped.refPath === ecmwf.refPath;
+    const request = createEcmwfRasterLayerRequest({
+      refPath: mapped.refPath,
+      refStartDate: mapped.refStartDate,
+      ecmwfTimeIndex: mapped.ecmwfTimeIndex,
+      ecmwfStepIndex: isSameRef ? ecmwf.ecmwfStepIndex : 0,
+      variableKey: ecmwf.variableKey,
+      overrideByVar: ecmwf.overrideByVar,
+    });
+
+    if (isSameRef) {
+      sameRef.push(request);
+    } else {
+      nextRef.push(request);
+    }
+  }
+
+  return { sameRef, nextRef };
+}
+
+function dispatchPrefetchPlan(ctx: AppControllerContext): void {
+  if (!ctx.renderer || ctx.prefetchWindow === 0) return;
+
+  const plan = buildPrefetchPlan(
+    ctx.state.ecmwf,
+    ctx.state.catalog.ecmwf,
+    ctx.prefetchWindow,
   );
-  if (currentIndex < 0 || currentIndex >= catalog.ecmwf.length - 1) return;
 
-  const nextRef = catalog.ecmwf[currentIndex + 1];
-  const nextRequest = createEcmwfRasterLayerRequest({
-    refPath: nextRef.refPath,
-    refStartDate: nextRef.refStartDate,
-    ecmwfTimeIndex: 0,
-    ecmwfStepIndex: 0,
-    variableKey: ecmwf.variableKey,
-    overrideByVar: ecmwf.overrideByVar,
-  });
+  for (const request of plan.sameRef) {
+    void ctx.renderer.prefetchNextTimeChunk(request);
+  }
+  for (const request of plan.nextRef) {
+    void ctx.renderer.prefetchNextRef(request);
+  }
+}
 
-  void ctx.renderer.prefetchNextRef(nextRequest);
+function triggerPrefetch(ctx: AppControllerContext): void {
+  if (!ctx.renderer || ctx.prefetchWindow === 0) return;
+
+  if (ctx.state.loadingState.chunks) {
+    // Defer prefetch, since current layer is still loading chunks.
+    ctx.pendingPrefetchToken = ctx.layerToken;
+    return;
+  }
+
+  dispatchPrefetchPlan(ctx);
+}
+
+function flushPendingPrefetch(ctx: AppControllerContext): void {
+  const token = ctx.pendingPrefetchToken;
+  if (token === null) return;
+
+  ctx.pendingPrefetchToken = null;
+  // Stale generation (newer commit / reload / teardown).
+  if (token !== ctx.layerToken) return;
+  // Mid-drag: drop; release commit will re-trigger.
+  if (isSelectionBusy(ctx)) return;
+
+  dispatchPrefetchPlan(ctx);
 }
 
 async function commitSelection(
@@ -335,6 +422,7 @@ function createLifecycleController(
     teardown() {
       ctx.validTimeToken += 1;
       ctx.layerToken += 1;
+      ctx.pendingPrefetchToken = null;
       ctx.renderer = null;
       ctx.lastRenderedRefPath = "";
       ctx.setState({
@@ -354,6 +442,15 @@ function createLifecycleController(
         loadingState,
         error: loadingState.error?.message ?? null,
       });
+
+      if (loadingState.error) {
+        ctx.pendingPrefetchToken = null;
+        return;
+      }
+
+      if (loadingState.chunks === false) {
+        flushPendingPrefetch(ctx);
+      }
     },
 
     async reload() {
@@ -519,6 +616,8 @@ export function createAppController(deps: AppControllerDeps): AppController {
     layerToken: 0,
     lastCommittedSelectionKey: "",
     lastRenderedRefPath: "",
+    prefetchWindow: normalizePrefetchWindow(deps.prefetchWindow),
+    pendingPrefetchToken: null,
     setState(patch) {
       ctx.state = { ...ctx.state, ...patch };
       listeners.forEach((listener) => listener(ctx.state));
