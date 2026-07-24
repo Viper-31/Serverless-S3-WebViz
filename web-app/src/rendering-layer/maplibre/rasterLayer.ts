@@ -205,6 +205,33 @@ async function prefetchTimeChunk(
   }
 }
 
+function consumePrefetch(
+  state: RasterLayerState,
+  request: RasterLayerRequest,
+  onLoadingStateChange: LoadingStateCallback,
+): EcmwfLayerBundle | undefined {
+  if (
+    !state.prefetched ||
+    state.prefetchedRefPath !== request.refPath ||
+    state.prefetchedVariableId !== request.variableId
+  ) {
+    return undefined;
+  }
+
+  const prefetchHit = state.prefetched;
+  state.prefetched = undefined;
+  state.prefetchedRefPath = undefined;
+  state.prefetchedVariableId = undefined;
+
+  prefetchHit.layer.setClim?.(request.display.clim);
+  prefetchHit.layer.setColormap?.(request.display.rgbStops);
+  state.prefetchedLoadingSink?.(onLoadingStateChange);
+  state.prefetchedLoadingSink = undefined;
+
+  onLoadingStateChange({ loading: false, metadata: false, chunks: false });
+  return prefetchHit;
+}
+
 async function createRasterMap(
   state: RasterLayerState,
   options: RasterLayerOptions,
@@ -219,33 +246,13 @@ async function createRasterMap(
     options.onLoadingStateChange,
   );
 
-  const isPrefetchHit =
-    state.prefetched !== undefined &&
-    state.prefetchedRefPath === request.refPath &&
-    state.prefetchedVariableId === request.variableId;
-
-  let next: EcmwfLayerBundle;
-
-  if (isPrefetchHit) {
-    next = state.prefetched!;
-    state.prefetched = undefined;
-    state.prefetchedRefPath = undefined;
-    state.prefetchedVariableId = undefined;
-
-    void next.layer.setClim?.(request.display.clim);
-    void next.layer.setColormap?.(request.display.rgbStops);
-
-    state.prefetchedLoadingSink?.(onLoadingStateChange);
-    state.prefetchedLoadingSink = undefined;
-
-    onLoadingStateChange({ loading: false, metadata: false, chunks: false });
-  } else {
-    next = await createEcmwfLayer({
+  const next =
+    consumePrefetch(state, request, onLoadingStateChange) ??
+    (await createEcmwfLayer({
       ...request,
       localRangeCoalescing: options.localRangeCoalescing(),
       onLoadingStateChange,
-    });
-  }
+    }));
 
   if (state.disposed) return;
   next.ready = ready;
